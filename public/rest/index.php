@@ -7,7 +7,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-$app->setBasePath('/adminrps/public/rest');
+$app->setBasePath('/rest');
 
 $app->get('/helloworld', function (Request $request, Response $response, $args) {
     $response->getBody()->write("Hello world!");
