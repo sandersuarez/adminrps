@@ -93,3 +93,37 @@ CREATE TRIGGER triggersellorder
         END::
 	
 delimiter ;
+
+/* If an order is sold, it can't be deleted */
+
+DROP TRIGGER IF EXISTS triggerdeleteorder;
+
+delimiter ::
+
+CREATE TRIGGER triggerdeleteorder
+	BEFORE DELETE
+		ON orders
+	FOR EACH ROW
+		BEGIN
+			IF OLD.ordersold = 1 THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be deleted if it is sold';
+            END IF;
+        END::
+	
+delimiter ;
+
+DROP TRIGGER IF EXISTS triggerdeletecontain;
+
+delimiter ::
+
+CREATE TRIGGER triggerdeletecontain
+	BEFORE DELETE
+		ON contain
+	FOR EACH ROW
+		BEGIN
+			IF (SELECT orders.ordersold FROM orders WHERE orders.codorder = OLD.codorder) = 1 THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be deleted if it is sold';
+            END IF;
+        END::
+	
+delimiter ;
