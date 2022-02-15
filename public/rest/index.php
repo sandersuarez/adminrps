@@ -17,8 +17,25 @@ $app = AppFactory::create();
 $app->setBasePath('/rest');
 
 $app->post('/login', function (Request $request, Response $response, $args) {
+
+    // Security check
     $security = security();
-    echo $security;
+    if (!is_array($security)) {
+
+        // Check for required parameters
+        $params = $request->getQueryParams();
+
+        if ($params['username'] && $params['key']) {
+			$input_data["username"] = $params['username'];
+			$input_data["key"] = $params['key'];
+			echo json_encode(login($input_data), JSON_UNESCAPED_UNICODE);
+		} else {
+			// Parameters required error notification
+			echo json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
+		}
+    } else {
+        echo json_encode(array("error" => "There is already an open session"), JSON_UNESCAPED_UNICODE);
+    }
 });
 
 $app->run();
