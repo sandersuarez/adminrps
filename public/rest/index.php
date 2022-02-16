@@ -16,7 +16,9 @@ $app = AppFactory::create();
 // Application path
 $app->setBasePath('/rest');
 
-$app->post('/login', function (Request $request, Response $response, $args) {
+$app->post('/login', function (Request $request, Response $response) {
+
+    $response_content = '';
 
     // Security check
     $security = security();
@@ -28,14 +30,17 @@ $app->post('/login', function (Request $request, Response $response, $args) {
         if ($params['username'] && $params['key']) {
 			$input_data["username"] = $params['username'];
 			$input_data["key"] = $params['key'];
-			echo json_encode(login($input_data), JSON_UNESCAPED_UNICODE);
+			$response_content = json_encode(login($input_data), JSON_UNESCAPED_UNICODE);
 		} else {
 			// Parameters required error notification
-			echo json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
+			$response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
 		}
     } else {
-        echo json_encode(array("error" => "There is already an open session"), JSON_UNESCAPED_UNICODE);
+        $response_content = json_encode(array("error" => "There is already an open session"), JSON_UNESCAPED_UNICODE);
     }
+
+    $response->getBody()->write($response_content);
+    return $response;
 });
 
 $app->run();
