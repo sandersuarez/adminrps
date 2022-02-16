@@ -4,7 +4,7 @@ require __DIR__ . '/../../src/pdo/pdo_factory.php';
 
 /**
  * Security function to protect services
- **/
+ */
 function security()
 {
     $answer = -3;
@@ -39,13 +39,10 @@ function security()
                     $answer = -2;
                 }
 
-                // Query data and PDO object destruction
-                $query->closeCursor();
-                $connection = null;
+                clear_query_data($query, $connection);
+
             } catch (PDOException $e) {
-                // Error catch and notification
-                $error = 'Error: ' . $e->getMessage();
-                return array('error' => "Error: $error");
+                return process_pdo_exception($e);
             }
         }
     }
@@ -56,7 +53,7 @@ function security()
 /**
  * Function that returns the reason why there is not an active session
  * @param integer $security
- **/
+ */
 function reason_no_session($security)
 {
     if ($security < -2) {
@@ -71,8 +68,8 @@ function reason_no_session($security)
 
 /**
  * Login function
- * @param Array $input_data
- **/
+ * @param array $input_data
+ */
 function login($input_data)
 {
     // Input data control
@@ -107,13 +104,10 @@ function login($input_data)
             $answer = array('message' => 'The user is not registered');
         }
 
-        // Liberación de los input_data de la consulta y destrucción del objeto PDO
-        $query->closeCursor();
-        $connection = null;
+        clear_query_data($query, $connection);
+
     } catch (PDOException $e) {
-        // Recogida de errores y notificación
-        $error = 'Error: ' . $e->getMessage();
-        return array('error' => "Error: $error");
+        return process_pdo_exception($e);
     }
 
     return $answer;

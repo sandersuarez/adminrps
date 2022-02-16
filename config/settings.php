@@ -15,4 +15,4 @@ define('ORDERS', 'orders');
 define('CONTAIN', 'contain');
 
 // Session variables
-define('SESSION_TIME', 1); // Session time in minutes
+define('SESSION_TIME', 45); // Session time in minutes
