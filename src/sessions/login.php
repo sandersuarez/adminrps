@@ -2,7 +2,9 @@
 
 require __DIR__ . '/../../src/pdo/pdo_factory.php';
 
-// Security function to protect services
+/**
+ * Security function to protect services
+ **/
 function security()
 {
     $answer = -3;
@@ -51,7 +53,10 @@ function security()
     return $answer;
 }
 
-// Function that returns the reason why there is not an active session
+/**
+ * Function that returns the reason why there is not an active session
+ * @param integer $security
+ **/
 function reason_no_session($security)
 {
     if ($security < -2) {
@@ -64,7 +69,10 @@ function reason_no_session($security)
     return $answer;
 }
 
-// Login function
+/**
+ * Login function
+ * @param Array $input_data
+ **/
 function login($input_data)
 {
     // Input data control
