@@ -40,7 +40,6 @@ function security()
                 }
 
                 clear_query_data($query, $connection);
-
             } catch (PDOException $e) {
                 return process_pdo_exception($e);
             }
@@ -105,7 +104,6 @@ function login($input_data)
         }
 
         clear_query_data($query, $connection);
-
     } catch (PDOException $e) {
         return process_pdo_exception($e);
     }

@@ -1,6 +1,6 @@
 <?php
 // Session
-session_name("adminrps_session001");
+session_name('adminrps_session001');
 session_start();
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -10,6 +10,7 @@ use Slim\Factory\AppFactory;
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../config/settings.php';
 require __DIR__ . '/../../src/sessions/login.php';
+require __DIR__ . '/../../src/crud/products_crud.php';
 
 $app = AppFactory::create();
 
@@ -28,16 +29,100 @@ $app->post('/login', function (Request $request, Response $response) {
         $params = $request->getQueryParams();
 
         if ($params['username'] && $params['key']) {
-			$input_data["username"] = $params['username'];
-			$input_data["key"] = $params['key'];
-			$response_content = json_encode(login($input_data), JSON_UNESCAPED_UNICODE);
-		} else {
-			// Parameters required error notification
-			$response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
-		}
+            $input_data['username'] = $params['username'];
+            $input_data['key'] = $params['key'];
+            $response_content = json_encode(login($input_data), JSON_UNESCAPED_UNICODE);
+        } else {
+            // Parameters required error notification
+            $response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
+        }
     } else {
-        $response_content = json_encode(array("error" => "There is already an open session"), JSON_UNESCAPED_UNICODE);
+        $response_content = json_encode(array('error' => 'There is already an open session'), JSON_UNESCAPED_UNICODE);
     }
+
+    $response->getBody()->write($response_content);
+    return $response;
+});
+
+$app->get('/obtain_products', function (Request $request, Response $response) {
+
+    $response_content = '';
+
+    // Security check
+    $security = security();
+    if (is_array($security)) {
+        if (array_key_exists('user', $security)) {
+
+            // Check for required parameters
+            $params = $request->getQueryParams();
+
+            if ($params['name']) {
+                $requirements['name'] = $params['name'];
+            } else {
+                $requirements['name'] = '000nothing_in_here000';
+            }
+
+            if ($params['page']) {
+                $requirements['page'] = $params['page'];
+            } else {
+                $requirements['page'] = 1;
+            }
+
+            if ($params['products_number']) {
+                $requirements['products_number'] = $params['products_number'];
+            } else {
+                $requirements['products_number'] = 15;
+            }
+
+            $response_content = json_encode(obtain_products($requirements), JSON_UNESCAPED_UNICODE);
+        } else {
+            $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
+        }
+    } else {
+        // Return the reason for no active session
+        $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
+    }
+
+    $response->getBody()->write($response_content);
+    return $response;
+});
+
+$app->get('/obtain_product', function (Request $request, Response $response) {
+
+    $response_content = '';
+
+    // Security check
+    $security = security();
+    if (is_array($security)) {
+        if (array_key_exists('user', $security)) {
+
+            // Check for required parameters
+            $params = $request->getQueryParams();
+
+            if ($params['codproduct']) {
+                $response_content = json_encode(obtain_product($params['codproduct']), JSON_UNESCAPED_UNICODE);
+            } else {
+                // Parameters required error notification
+                $response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
+        }
+    } else {
+        // Return the reason for no active session
+        $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
+    }
+
+    $response->getBody()->write($response_content);
+    return $response;
+});
+
+$app->post('/add_product', function (Request $request, Response $response) {
+
+    $response_content = '';
+
+    // Security check
+    $security = security();
 
     $response->getBody()->write($response_content);
     return $response;
