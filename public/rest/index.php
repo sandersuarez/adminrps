@@ -53,13 +53,13 @@ $app->get('/obtain_products', function (Request $request, Response $response) {
     if (is_array($security)) {
         if (array_key_exists('user', $security)) {
 
-            // Check for required parameters
             $params = $request->getQueryParams();
 
+            // Check for parameters
             if ($params['name']) {
                 $requirements['name'] = $params['name'];
             } else {
-                $requirements['name'] = '000nothing_in_here000';
+                $requirements['name'] = '';
             }
 
             if ($params['page']) {
@@ -79,7 +79,6 @@ $app->get('/obtain_products', function (Request $request, Response $response) {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
         }
     } else {
-        // Return the reason for no active session
         $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
     }
 
@@ -96,9 +95,9 @@ $app->get('/obtain_product', function (Request $request, Response $response) {
     if (is_array($security)) {
         if (array_key_exists('user', $security)) {
 
-            // Check for required parameters
             $params = $request->getQueryParams();
 
+            // Check for required parameters
             if ($params['codproduct']) {
                 $response_content = json_encode(obtain_product($params['codproduct']), JSON_UNESCAPED_UNICODE);
             } else {
@@ -109,7 +108,6 @@ $app->get('/obtain_product', function (Request $request, Response $response) {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
         }
     } else {
-        // Return the reason for no active session
         $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
     }
 
@@ -123,6 +121,29 @@ $app->post('/add_product', function (Request $request, Response $response) {
 
     // Security check
     $security = security();
+    if (is_array($security)) {
+        if (array_key_exists('user', $security)) {
+
+            // Check for required parameters
+            $params = $request->getQueryParams();
+
+            if ($params['nameproduct'] && $params['priceproduct']) {
+
+                $input_data['nameproduct'] = $params['nameproduct'];
+                $input_data['priceproduct'] = $params['priceproduct'];
+                if ($params['stockproduct']) $input_data['stockproduct'] = $params['stockproduct'];
+
+                $response_content = json_encode(add_product($input_data), JSON_UNESCAPED_UNICODE);
+            } else {
+                // Parameters required error notification
+                $response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
+        }
+    } else {
+        $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
+    }
 
     $response->getBody()->write($response_content);
     return $response;
