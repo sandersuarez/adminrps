@@ -68,7 +68,7 @@ function obtain_products($requirements)
 function obtain_product($codproduct)
 {
     // Requirements control
-    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1) return array('mensaje' => 'The product code is invalid');
+    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1) return array('message' => 'The product code is invalid');
 
     try {
         // SQL Query to search products in alphabetic order
@@ -145,7 +145,7 @@ function add_product($input_data)
         $query->execute();
 
         $connection = null;
-        return array('success_message' => 'The product has been added correctly');;
+        return array('success_message' => 'The product has been added correctly');
     } catch (PDOException $e) {
         return process_pdo_exception($e);
     }
@@ -157,6 +157,87 @@ function add_product($input_data)
  */
 function edit_product($input_data)
 {
+    // Requirements control
+    if (array_key_exists('nameproduct', $input_data)) {
+        $input_data['nameproduct'] = trim($input_data['nameproduct']);
+        if ($input_data['nameproduct'] == '') return array('message' => 'The product name is required');
+        if (strlen($input_data['nameproduct']) > 240) return array('message' => 'The product name is invalid');
+    }
+
+    if (array_key_exists('priceproduct', $input_data)) {
+        if ((!is_numeric($input_data['priceproduct'])) || $input_data['priceproduct'] < 0 || round($input_data['priceproduct'], 2) > 999.99) return array('message' => 'The price is invalid');
+        $input_data['priceproduct'] = round($input_data['priceproduct'], 2);
+    }
+
+    if (
+        array_key_exists('stockproduct', $input_data) &&
+        (((!filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT)) || $input_data['stockproduct'] < 0 || $input_data['stockproduct'] > 2147483647) && $input_data['stockproduct'] != 'null')
+    )
+        return array('message' => 'The stock is invalid');
+
+    if ((!filter_var($input_data['codproduct'], FILTER_VALIDATE_INT)) || $input_data['codproduct'] < 1) return array('mensaje' => 'The product code is invalid');
+
+    // Obtain the product data
+    $product_data = obtain_product($input_data['codproduct']);
+    if (array_key_exists('message', $product_data)) return $product_data;
+    $equal = 0;
+    foreach ($input_data as $element => $value) {
+        foreach ($product_data['product'] as $product_attr => $product_value) {
+            if ($element == $product_attr && ($value == $product_value || ($value == 'null' && $product_value == null))) {
+                $equal = $equal + 1;
+            }
+        }
+    }
+    if ($equal == count($input_data)) return array('message' => 'There is nothing to change');
+
+    try {
+        // SQL Query to edit a product
+        $connection = create_pdo_object();
+        $connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+        $nameproduct_clause = '';
+        if (array_key_exists('nameproduct', $input_data)) $nameproduct_clause = "nameproduct = :nameproduct";
+
+        $stockproduct_clause = '';
+        if (array_key_exists('stockproduct', $input_data)) {
+            if ($nameproduct_clause != '') {
+                $stockproduct_clause = ", stockproduct = :stockproduct";
+            } else {
+                $stockproduct_clause = "stockproduct = :stockproduct";
+            }
+        }
+
+        $priceproduct_clause = '';
+        if (array_key_exists('priceproduct', $input_data)) {
+            if ($stockproduct_clause != '' || $nameproduct_clause != '') {
+                $priceproduct_clause = ", priceproduct = :priceproduct";
+            } else {
+                $priceproduct_clause = "priceproduct = :priceproduct";
+            }
+        }
+
+        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET " . $nameproduct_clause . $stockproduct_clause . $priceproduct_clause . " WHERE codproduct = :codproduct AND coduser = :coduser");
+
+        // Parameters binding and execution
+        $query->bindParam(':codproduct', $input_data['codproduct'], PDO::PARAM_INT);
+        if (array_key_exists('nameproduct', $input_data)) $query->bindParam(':nameproduct', $input_data['nameproduct'], PDO::PARAM_STR);
+        if (array_key_exists('priceproduct', $input_data)) $query->bindParam(':priceproduct', $input_data['priceproduct'], PDO::PARAM_STR);
+        if (array_key_exists('stockproduct', $input_data)) {
+            if ($input_data['stockproduct'] == 'null') {
+                $query->bindValue(':stockproduct', NULL, PDO::PARAM_NULL);
+            } else {
+                $query->bindParam(':stockproduct', $input_data['stockproduct'], PDO::PARAM_INT);
+            }
+        }
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+
+        $connection = null;
+        return array('success_message' => 'The product has been edited correctly');
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
 }
 
 /**
@@ -165,4 +246,27 @@ function edit_product($input_data)
  */
 function delete_product($codproduct)
 {
+    // Requirements control
+    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1) return array('message' => 'The product code is invalid');
+
+    try {
+        // SQL Query to delete a product
+        $connection = create_pdo_object();
+        $query = $connection->prepare("DELETE FROM " . PRODUCTS . " WHERE codproduct = :codproduct AND coduser = :coduser");
+
+        // Parameters binding and execution
+        $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $rows_affected = $query->rowCount();
+        if ($rows_affected == 0) {
+            return array('message' => 'There is no coincident product');
+        }
+
+        $connection = null;
+        return array('success_message' => 'The product has been deleted correctly');
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
 }
