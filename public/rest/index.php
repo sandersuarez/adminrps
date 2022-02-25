@@ -14,6 +14,7 @@ $app = AppFactory::create();
 $app->setBasePath('/rest');
 
 require __DIR__ . '/../../src/routes/session.php';
+require __DIR__ . '/../../src/routes/users.php';
 require __DIR__ . '/../../src/routes/products.php';
 
 $app->run();
