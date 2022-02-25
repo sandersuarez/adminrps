@@ -175,7 +175,7 @@ function edit_product($input_data)
     )
         return array('message' => 'The stock is invalid');
 
-    if ((!filter_var($input_data['codproduct'], FILTER_VALIDATE_INT)) || $input_data['codproduct'] < 1) return array('mensaje' => 'The product code is invalid');
+    if ((!filter_var($input_data['codproduct'], FILTER_VALIDATE_INT)) || $input_data['codproduct'] < 1) return array('message' => 'The product code is invalid');
 
     // Obtain the product data
     $product_data = obtain_product($input_data['codproduct']);
