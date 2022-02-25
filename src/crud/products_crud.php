@@ -3,6 +3,7 @@
 /**
  * Function to obtain products added by a user that meet certain requirements and according to paging
  * @param array $requirements
+ * @return array
  */
 function obtain_products($requirements)
 {
@@ -64,6 +65,7 @@ function obtain_products($requirements)
 /**
  * Function to obtain the data of a product added by a user
  * @param integer $codproduct
+ * @return array
  */
 function obtain_product($codproduct)
 {
@@ -97,6 +99,7 @@ function obtain_product($codproduct)
 /**
  * Function to add a new product for a user
  * @param array $input_data
+ * @return array
  */
 function add_product($input_data)
 {
@@ -154,6 +157,7 @@ function add_product($input_data)
 /**
  * Function to edit a product added by a user
  * @param array $input_data
+ * @return array
  */
 function edit_product($input_data)
 {
@@ -243,6 +247,7 @@ function edit_product($input_data)
 /**
  * Function to delete a product added by a user
  * @param integer $codproduct
+ * @return array
  */
 function delete_product($codproduct)
 {

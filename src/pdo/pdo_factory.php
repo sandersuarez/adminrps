@@ -2,6 +2,7 @@
 
 /**
  * Function to create a PDO object using the application constant variables with the default configuration
+ * @return PDO
  */
 function create_pdo_object()
 {
@@ -14,6 +15,7 @@ function create_pdo_object()
  * Function to clear a query data and destroy a PDO object
  * @param PDOStatement|false $query
  * @param PDO $connection
+ * @return void
  */
 function clear_query_data($query, $connection)
 {
@@ -24,6 +26,7 @@ function clear_query_data($query, $connection)
 /**
  * Function to proccess a PDO exception and return a message in JSON format
  * @param PDOException $e
+ * @return array
  */
 function process_pdo_exception($e)
 {

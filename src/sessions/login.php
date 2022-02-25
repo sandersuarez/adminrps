@@ -4,6 +4,7 @@ require __DIR__ . '/../../src/pdo/pdo_factory.php';
 
 /**
  * Security function to protect services
+ * @return array|int If there is a pdo exception or a valid user session returns an array. If there is not an active session returns an int
  */
 function security()
 {
@@ -52,6 +53,7 @@ function security()
 /**
  * Function that returns the reason why there is not an active session
  * @param integer $security
+ * @return array
  */
 function reason_no_session($security)
 {
@@ -68,6 +70,7 @@ function reason_no_session($security)
 /**
  * Login function
  * @param array $input_data
+ * @return array
  */
 function login($input_data)
 {

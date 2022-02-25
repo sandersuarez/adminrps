@@ -2,6 +2,7 @@
 
 /**
  * Function to obtain the last key update date
+ * @return array
  */
 function obtain_date_last_key()
 {
@@ -29,6 +30,7 @@ function obtain_date_last_key()
  * Function to modify the applied iva of the user
  * @param float $iva
  * @param float $old_iva
+ * @return array
  */
 function edit_user_iva($iva, $old_iva)
 {
@@ -59,6 +61,7 @@ function edit_user_iva($iva, $old_iva)
 /**
  * Function to update the user password
  * @param array $input_data
+ * @return array
  */
 function update_password($input_data)
 {
@@ -67,7 +70,6 @@ function update_password($input_data)
     if (strlen($input_data['password']) < 6 || strlen($input_data['password']) > 20) return array('message' => 'The password must have a length between 6 and 20');
     if ($input_data['password'] != $input_data['repeat_password']) return array('message' => 'The passwords do not match');
     if ($input_data['old_password'] == $input_data['password']) return array('message' => 'The password is the same');
-    
 
     try {
         // SQL Query to update the password
