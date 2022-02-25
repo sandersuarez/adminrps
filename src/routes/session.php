@@ -31,3 +31,25 @@ $app->post('/login', function (Request $request, Response $response) {
     $response->getBody()->write($response_content);
     return $response;
 });
+
+$app->get('/session_status', function (Request $request, Response $response) {
+
+    $response_content = '';
+
+    // Security check
+    $security = security();
+    if (is_array($security)) {
+        $response_content = json_encode($security, JSON_UNESCAPED_UNICODE);
+    } else {
+        $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
+    }
+
+    $response->getBody()->write($response_content);
+    return $response;
+});
+
+$app->get('/logout', function (Request $request, Response $response) {
+    session_destroy();
+    $response->getBody()->write(json_encode(array('null' => 'null'), JSON_UNESCAPED_UNICODE));
+    return $response;
+});
