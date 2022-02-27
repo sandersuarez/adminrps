@@ -37,7 +37,7 @@ function obtain_products($requirements)
         if ($requirements['name'] != '') $name_clause = " AND (nameproduct REGEXP :nameproduct)";
 
         // SQL Query to search products in alphabetic order
-        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE coduser = :coduser" . $name_clause .
+        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE productdeleted = 0 AND coduser = :coduser" . $name_clause .
             " ORDER BY nameproduct LIMIT :begin, :end");
 
         // Parameters binding and execution
@@ -75,7 +75,7 @@ function obtain_product($codproduct)
     try {
         // SQL Query to search products in alphabetic order
         $connection = create_pdo_object();
-        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE coduser = :coduser AND codproduct = :codproduct");
+        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE productdeleted = 0 AND coduser = :coduser AND codproduct = :codproduct");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
@@ -220,7 +220,8 @@ function edit_product($input_data)
             }
         }
 
-        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET " . $nameproduct_clause . $stockproduct_clause . $priceproduct_clause . " WHERE codproduct = :codproduct AND coduser = :coduser");
+        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET " . $nameproduct_clause . $stockproduct_clause . $priceproduct_clause . 
+            " WHERE productdeleted = 0 AND codproduct = :codproduct AND coduser = :coduser");
 
         // Parameters binding and execution
         $query->bindParam(':codproduct', $input_data['codproduct'], PDO::PARAM_INT);
