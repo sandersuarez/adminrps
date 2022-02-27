@@ -3,8 +3,8 @@
 // Database connection variables
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'adminrps');
-define('DB_USER', 'adminrpsserver');
-define('DB_KEY', 'Maei45.12xc');
+define('DB_USER', '');
+define('DB_KEY', '');
 define('DB_CHARSET', 'utf8mb4');
 
 // Data Entities
