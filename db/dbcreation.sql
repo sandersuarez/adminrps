@@ -59,12 +59,16 @@ CREATE TABLE IF NOT EXISTS orders
     ordersold BIT NOT NULL DEFAULT 0,
     orderisdraft BIT NOT NULL DEFAULT 1,
     codcustomer INT NULL DEFAULT NULL,
+    coduser INT NOT NULL,
     CONSTRAINT pk_orders PRIMARY KEY (codorder),
     CONSTRAINT numdayorder_unsigned CHECK (numdayorder > 0),
     CONSTRAINT moneyreceived_unsigned CHECK (moneyreceived >= 0),
     CONSTRAINT fk_orders_customer FOREIGN KEY (codcustomer)
 		REFERENCES customers (codcustomer) ON DELETE NO ACTION
-        ON UPDATE CASCADE
+        ON UPDATE CASCADE,
+	CONSTRAINT fk_orders_users FOREIGN KEY (coduser)
+		REFERENCES users (coduser) ON DELETE CASCADE
+		ON UPDATE CASCADE
     ) COLLATE 'utf8mb4_bin';
 
 /* Contain table creation */
