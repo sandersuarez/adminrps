@@ -45,7 +45,7 @@ function obtain_products($requirements)
         $query->bindParam(':begin', $begin, PDO::PARAM_INT);
         $query->bindParam(':end', $end, PDO::PARAM_INT);
 
-        if ($requirements['name'] != '') $query->bindParam(':nameproduct', $name_clause, PDO::PARAM_STR);
+        if ($requirements['name'] != '') $query->bindParam(':nameproduct', $requirements['name'], PDO::PARAM_STR);
 
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -73,9 +73,10 @@ function obtain_product($codproduct)
     if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1) return array('message' => 'The product code is invalid');
 
     try {
-        // SQL Query to search products in alphabetic order
+        // SQL Query to search the product
         $connection = create_pdo_object();
-        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE productdeleted = 0 AND coduser = :coduser AND codproduct = :codproduct");
+        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS .
+            " WHERE productdeleted = 0 AND coduser = :coduser AND codproduct = :codproduct");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
@@ -118,7 +119,6 @@ function add_product($input_data)
         return array('message' => 'The stock is invalid');
 
     try {
-
         // SQL Query to search a new primary key
         $connection = create_pdo_object();
         $query = $connection->prepare("SELECT max(codproduct) FROM " . PRODUCTS);
@@ -220,7 +220,7 @@ function edit_product($input_data)
             }
         }
 
-        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET " . $nameproduct_clause . $stockproduct_clause . $priceproduct_clause . 
+        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET " . $nameproduct_clause . $stockproduct_clause . $priceproduct_clause .
             " WHERE productdeleted = 0 AND codproduct = :codproduct AND coduser = :coduser");
 
         // Parameters binding and execution
