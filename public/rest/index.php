@@ -17,5 +17,6 @@ require __DIR__ . '/../../src/routes/session.php';
 require __DIR__ . '/../../src/routes/users.php';
 require __DIR__ . '/../../src/routes/products.php';
 require __DIR__ . '/../../src/routes/customers.php';
+require __DIR__ . '/../../src/routes/orders.php';
 
 $app->run();
