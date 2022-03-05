@@ -70,7 +70,7 @@ function obtain_customers($requirements)
 function obtain_customer($codcustomer)
 {
     // Requirements control
-    if ((!filter_var($codcustomer, FILTER_VALIDATE_INT)) || $codcustomer < 1) return array('message' => 'The customer code is invalid');
+    if ((!filter_var($codcustomer, FILTER_VALIDATE_INT)) || $codcustomer < 1 || $codcustomer > 9223372036854775808) return array('message' => 'The customer code is invalid');
 
     try {
         // SQL Query to search the customer
@@ -119,7 +119,7 @@ function add_customer($input_data)
         $query->closeCursor();
         $codcustomer = $codcustomer + 1;
 
-        if ($codcustomer > 2147483647) return array('overflow' => 'The customer list is full. Contact the administrator');
+        if ($codcustomer > 9223372036854775808) return array('overflow' => 'The customer list is full. Contact the administrator');
 
         // SQL Query to insert a customer
         $query = $connection->prepare("INSERT INTO " . CUSTOMERS . " (codcustomer, namecustomer, telcustomer, coduser) VALUES " .
@@ -159,7 +159,8 @@ function edit_customer($input_data)
         if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'The phone number is invalid');
     }
 
-    if ((!filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT)) || $input_data['codcustomer'] < 1) return array('message' => 'The customer code is invalid');
+    if ((!filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT)) || $input_data['codcustomer'] < 1 || $input_data['codcustomer'] > 9223372036854775808)
+        return array('message' => 'The customer code is invalid');
 
     // Obtain the customer data
     $customer_data = obtain_customer($input_data['codcustomer']);

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users
 /* Products table creation */
 CREATE TABLE IF NOT EXISTS products
 	(
-    codproduct INT,
+    codproduct BIGINT,
     nameproduct VARCHAR (240) NOT NULL COLLATE 'utf8mb4_spanish_ci',
     stockproduct INT NULL DEFAULT NULL,
     priceproduct DECIMAL(5,2) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS products
 /* Customers table creation */
 CREATE TABLE IF NOT EXISTS customers
 	(
-    codcustomer INT,
+    codcustomer BIGINT,
     namecustomer VARCHAR (60) NOT NULL COLLATE 'utf8mb4_spanish_ci',
     telcustomer CHAR(9) NOT NULL,
     coduser INT NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS customers
 /* Orders table creation */
 CREATE TABLE IF NOT EXISTS orders
 	(
-    codorder INT,
+    codorder BIGINT,
     idordersold CHAR(6) NULL DEFAULT NULL,
     numdayorder MEDIUMINT NULL DEFAULT NULL,
     dateorder DATE NULL DEFAULT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS orders
     moneyreceived DECIMAL(5,2) NULL DEFAULT NULL,
     ordersold BIT NOT NULL DEFAULT 0,
     orderisdraft BIT NOT NULL DEFAULT 1,
-    codcustomer INT NULL DEFAULT NULL,
+    codcustomer BIGINT NULL DEFAULT NULL,
     coduser INT NOT NULL,
     CONSTRAINT pk_orders PRIMARY KEY (codorder),
     CONSTRAINT numdayorder_unsigned CHECK (numdayorder > 0),
@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS orders
 /* Contain table creation */
 CREATE TABLE IF NOT EXISTS contain
 	(
-    codproduct INT,
-    codorder INT,
+    codproduct BIGINT,
+    codorder BIGINT,
     amountproductorder SMALLINT NOT NULL DEFAULT 1,
     CONSTRAINT pk_contain PRIMARY KEY (codproduct, codorder),
     CONSTRAINT amountproductorder_restriction CHECK (amountproductorder > 0),

@@ -70,7 +70,7 @@ function obtain_products($requirements)
 function obtain_product($codproduct)
 {
     // Requirements control
-    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1) return array('message' => 'The product code is invalid');
+    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1 || $codproduct > 9223372036854775808) return array('message' => 'The product code is invalid');
 
     try {
         // SQL Query to search the product
@@ -127,7 +127,7 @@ function add_product($input_data)
         $query->closeCursor();
         $codproduct = $codproduct + 1;
 
-        if ($codproduct > 2147483647) return array('overflow' => 'The product list is full. Contact the administrator');
+        if ($codproduct > 9223372036854775808) return array('overflow' => 'The product list is full. Contact the administrator');
 
         // SQL Query to insert a product
         if (array_key_exists('stockproduct', $input_data)) {

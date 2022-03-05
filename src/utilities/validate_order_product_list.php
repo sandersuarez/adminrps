@@ -18,7 +18,8 @@ function validate_order_product_list($product_list)
                 }
 
                 if (!array_key_exists('codproduct', $product)) return array('message' => 'A product code is missing');
-                if ((!filter_var($product['codproduct'], FILTER_VALIDATE_INT)) || $product['codproduct'] < 1) return array('message' => 'The product code is invalid');
+                if ((!filter_var($product['codproduct'], FILTER_VALIDATE_INT)) || $product['codproduct'] < 1 || $product['codproduct'] > 9223372036854775808)
+                    return array('message' => 'The product code is invalid');
                 if (!array_key_exists('amountproductorder', $product)) return array('message' => 'A product amount is missing');
                 if ((!filter_var($product['amountproductorder'], FILTER_VALIDATE_INT)) || $product['amountproductorder'] < 1 || $product['amountproductorder'] > 32767)
                     return array('message' => 'The amount of product is invalid');
