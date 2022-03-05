@@ -1,47 +1,5 @@
 USE adminrps;
 
-/* If a user is deleted, all his data must be deleted too. */
-
-DROP TRIGGER IF EXISTS triggerdeleteuser;
-
-delimiter ::
-
-CREATE TRIGGER triggerdeleteuser
-	BEFORE DELETE 
-		ON users
-	FOR EACH ROW
-		BEGIN
-			SET SQL_SAFE_UPDATES = 0;
-            
-			DELETE FROM contain 
-				WHERE contain.codorder IN (
-                SELECT orders.codorder 
-					FROM orders 
-                    WHERE orders.codcustomer IN (
-                    SELECT customers.codcustomer 
-						FROM customers 
-                        WHERE customers.coduser = OLD.coduser
-					)
-				);
-			
-			DELETE FROM orders
-				WHERE orders.codcustomer IN (
-                SELECT customers.codcustomer 
-					FROM customers 
-                    WHERE customers.coduser = OLD.coduser
-				);
-                
-			DELETE FROM products 
-				WHERE products.coduser = OLD.coduser;
-                
-			DELETE FROM customers
-				WHERE customers.coduser = OLD.coduser;
-                
-			SET SQL_SAFE_UPDATES = 1;
-        END::
-	
-delimiter ;
-
 /* If an order is added, it can't be already sold and it can't have money received from the customer. If so, the manager will throw an exception. */
 
 DROP TRIGGER IF EXISTS triggerinsertorder;
