@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Function to obtain order drafts added by a user
+ * Function to obtain drafts added by a user
  * @return array
  */
 function obtain_drafts()
@@ -10,8 +10,8 @@ function obtain_drafts()
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT orders.codorder, customers.namecustomer, customers.telcustomer FROM " . ORDERS .
-            " LEFT JOIN customers ON orders.codcustomer = customers.codcustomer WHERE orders.orderisdraft = 1 AND orders.coduser = :coduser ORDER BY orders.codorder DESC");
+        $query = $connection->prepare("SELECT drafts.coddraft, drafts.namecustomertmp, drafts.telcustomertmp, drafts.codcustomer, customers.namecustomer, customers.telcustomer FROM " . DRAFTS .
+            " LEFT JOIN customers ON drafts.codcustomer = customers.codcustomer WHERE drafts.coduser = :coduser ORDER BY drafts.coddraft DESC");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
@@ -32,24 +32,25 @@ function obtain_drafts()
 }
 
 /**
- * Function to obtain an order draft added by a user
- * @param array $codorder
+ * Function to obtain a draft added by a user
+ * @param array $coddraft
  * @return array
  */
-function obtain_draft($codorder)
+function obtain_draft($coddraft)
 {
     // Requirements control
-    if ((!filter_var($codorder, FILTER_VALIDATE_INT)) || $codorder < 1)
-        return array('message' => 'The order code is invalid');
+    if ((!filter_var($coddraft, FILTER_VALIDATE_INT)) || $coddraft < 1 || $coddraft > 9223372036854775808)
+        return array('message' => 'The draft code is invalid');
 
     try {
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT orders.codorder, customers.namecustomer, customers.telcustomer FROM " . ORDERS .
-            " LEFT JOIN customers ON orders.codcustomer = customers.codcustomer WHERE orders.orderisdraft = 1 AND orders.codorder = :codorder AND orders.coduser = :coduser");
+        $query = $connection->prepare("SELECT drafts.coddraft, drafts.namecustomertmp, drafts.telcustomertmp, drafts.codcustomer, customers.namecustomer, customers.telcustomer FROM " . DRAFTS .
+            " LEFT JOIN customers ON drafts.codcustomer = customers.codcustomer WHERE drafts.coddraft = :coddraft AND drafts.coduser = :coduser");
 
         // Parameters binding and execution
+        $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
         $query->execute();

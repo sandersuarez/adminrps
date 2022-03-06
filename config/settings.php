@@ -12,7 +12,10 @@ define('USERS', 'users');
 define('PRODUCTS', 'products');
 define('CUSTOMERS', 'customers');
 define('ORDERS', 'orders');
-define('CONTAIN', 'contain');
+define('ORDERS_SOLD', 'orders_sold');
+define('ORDERS_CONTAIN', 'orders_contain');
+define('DRAFTS', 'drafts');
+define('DRAFTS_CONTAIN', 'drafts_contain');
 
 // Session variables
 define('SESSION_TIME', 45); // Session time in minutes

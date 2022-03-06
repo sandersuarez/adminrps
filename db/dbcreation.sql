@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS products
 	(
     codproduct BIGINT,
-    nameproduct VARCHAR (240) NOT NULL COLLATE 'utf8mb4_spanish_ci',
+    nameproduct VARCHAR(240) NOT NULL COLLATE 'utf8mb4_spanish_ci',
     stockproduct INT NULL DEFAULT NULL,
     priceproduct DECIMAL(5,2) NOT NULL,
     productdeleted BIT NOT NULL DEFAULT 0,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS products
 CREATE TABLE IF NOT EXISTS customers
 	(
     codcustomer BIGINT,
-    namecustomer VARCHAR (60) NOT NULL COLLATE 'utf8mb4_spanish_ci',
+    namecustomer VARCHAR(60) NOT NULL COLLATE 'utf8mb4_spanish_ci',
     telcustomer CHAR(9) NOT NULL,
     coduser INT NOT NULL,
     CONSTRAINT pk_customers PRIMARY KEY (codcustomer),
@@ -51,38 +51,81 @@ CREATE TABLE IF NOT EXISTS customers
 CREATE TABLE IF NOT EXISTS orders
 	(
     codorder BIGINT,
-    idordersold CHAR(6) NULL DEFAULT NULL,
-    numdayorder MEDIUMINT NULL DEFAULT NULL,
-    dateorder DATE NULL DEFAULT NULL,
-    hourorder TIME NULL DEFAULT NULL,
-    moneyreceived DECIMAL(5,2) NULL DEFAULT NULL,
-    ordersold BIT NOT NULL DEFAULT 0,
-    orderisdraft BIT NOT NULL DEFAULT 1,
-    codcustomer BIGINT NULL DEFAULT NULL,
-    coduser INT NOT NULL,
+    numdayorder MEDIUMINT NOT NULL,
+    dateorder DATE NOT NULL DEFAULT (CURDATE()),
+    hourorder TIME NOT NULL DEFAULT (CURTIME()),
+    codcustomer BIGINT NOT NULL,
     CONSTRAINT pk_orders PRIMARY KEY (codorder),
+    CONSTRAINT codorder_unsigned CHECK (codorder > 0),
     CONSTRAINT numdayorder_unsigned CHECK (numdayorder > 0),
-    CONSTRAINT moneyreceived_unsigned CHECK (moneyreceived >= 0),
     CONSTRAINT fk_orders_customer FOREIGN KEY (codcustomer)
 		REFERENCES customers (codcustomer) ON DELETE NO ACTION
-        ON UPDATE CASCADE,
-	CONSTRAINT fk_orders_users FOREIGN KEY (coduser)
-		REFERENCES users (coduser) ON DELETE CASCADE
-		ON UPDATE CASCADE
+        ON UPDATE CASCADE
     ) COLLATE 'utf8mb4_bin';
+    
+/* Orders Sold table creation */
+CREATE TABLE IF NOT EXISTS orders_sold
+	(
+    codordersold BIGINT,
+    idordersold CHAR(6) NOT NULL,
+    moneyreceived DECIMAL(5,2) NOT NULL,
+    dateordersold DATE NOT NULL DEFAULT (CURDATE()),
+    hourordersold TIME NOT NULL DEFAULT (CURTIME()),
+    codorder BIGINT UNIQUE NOT NULL,
+    CONSTRAINT pk_orders_sold PRIMARY KEY (codordersold),
+    CONSTRAINT codordersold_unsigned CHECK (codordersold > 0),
+    CONSTRAINT moneyreceived_unsigned CHECK (moneyreceived > 0),
+    CONSTRAINT fk_orders_sold_order FOREIGN KEY (codorder)
+		REFERENCES orders (codorder) ON DELETE NO ACTION
+        ON UPDATE CASCADE
+    );
 
-/* Contain table creation */
-CREATE TABLE IF NOT EXISTS contain
+/* Orders Contain table creation */
+CREATE TABLE IF NOT EXISTS orders_contain
 	(
     codproduct BIGINT,
     codorder BIGINT,
     amountproductorder SMALLINT NOT NULL DEFAULT 1,
-    CONSTRAINT pk_contain PRIMARY KEY (codproduct, codorder),
+    CONSTRAINT pk_orders_contain PRIMARY KEY (codproduct, codorder),
     CONSTRAINT amountproductorder_restriction CHECK (amountproductorder > 0),
-    CONSTRAINT fk_contain_product FOREIGN KEY (codproduct)
+    CONSTRAINT fk_orders_contain_product FOREIGN KEY (codproduct)
 		REFERENCES products (codproduct) ON DELETE NO ACTION
         ON UPDATE CASCADE,
-    CONSTRAINT fk_contain_order FOREIGN KEY (codorder)
+    CONSTRAINT fk_orders_contain_order FOREIGN KEY (codorder)
 		REFERENCES orders (codorder) ON DELETE NO ACTION
+        ON UPDATE CASCADE
+    ) COLLATE 'utf8mb4_bin';
+    
+/* Drafts table creation */
+CREATE TABLE IF NOT EXISTS drafts
+	(
+    coddraft BIGINT,
+    namecustomertmp VARCHAR(60) NULL COLLATE 'utf8mb4_spanish_ci' DEFAULT NULL,
+    telcustomertmp VARCHAR(9) NULL DEFAULT NULL,
+    coduser INT NOT NULL,
+    codcustomer BIGINT NULL DEFAULT NULL,
+    CONSTRAINT pk_drafts PRIMARY KEY (coddraft),
+    CONSTRAINT coddraft_unsigned CHECK (coddraft > 0),
+    CONSTRAINT fk_drafts_user FOREIGN KEY (coduser)
+		REFERENCES users (coduser) ON DELETE NO ACTION
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_drafts_customer FOREIGN KEY (codcustomer)
+		REFERENCES customers (codcustomer) ON DELETE NO ACTION
+        ON UPDATE CASCADE
+    );
+    
+/* Drafts Contain table creation */
+CREATE TABLE IF NOT EXISTS drafts_contain
+	(
+    codproduct BIGINT,
+    coddraft BIGINT,
+    amountproductdraft SMALLINT NOT NULL DEFAULT 1,
+    CONSTRAINT pk_drafts_contain PRIMARY KEY (codproduct, coddraft),
+    CONSTRAINT amountproductdraft_restriction CHECK (amountproductdraft > 0),
+    CONSTRAINT fk_drafts_contain_product FOREIGN KEY (codproduct)
+		REFERENCES products (codproduct) ON DELETE NO ACTION
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_drafts_contain_draft FOREIGN KEY (coddraft)
+		REFERENCES drafts (coddraft) ON DELETE NO ACTION
         ON UPDATE CASCADE
     ) COLLATE 'utf8mb4_bin';

@@ -1,59 +1,6 @@
 USE adminrps;
 
-/* If an order is added, it can't be already sold and it can't have money received from the customer. If so, the manager will throw an exception. */
-
-DROP TRIGGER IF EXISTS triggerinsertorder;
-
-delimiter ::
-
-CREATE TRIGGER triggerinsertorder
-	BEFORE INSERT 
-		ON orders
-	FOR EACH ROW
-		BEGIN
-			IF (NEW.ordersold = 1) THEN 
-                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created as sold';
-			END IF;
-            
-            IF (NEW.moneyreceived IS NOT NULL) THEN 
-                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created with money received from the customer already';
-			END IF;
-            
-            IF (NEW.orderisdraft = 1) THEN
-				IF (NEW.dateorder IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot be created with order creation date';
-				END IF;
-				IF (NEW.hourorder IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot be created with order creation hour';
-				END IF;
-				IF (NEW.numdayorder IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot be created with order number';
-				END IF;
-				IF (NEW.idordersold IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot be created with order id';
-				END IF;
-            END IF;
-            
-            IF (NEW.orderisdraft = 0) THEN
-				IF (NEW.numdayorder IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no order number';
-				END IF;
-                IF (NEW.dateorder IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no creation date';
-				END IF;
-                IF (NEW.hourorder IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no creation hour';
-				END IF;
-                IF (NEW.codcustomer IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no customer';
-				END IF;
-            END IF;
-        END::
-	
-delimiter ;
-
-/* If an order is marked as sold, it must have at least one product and money received by the customer. If not, the manager will throw an exception. 
-An order can't be marked as not sold if it has been sold already. */
+/* If an order is sold, it cannot be deleted or updated */
 
 DROP TRIGGER IF EXISTS triggerupdateorder;
 
@@ -64,133 +11,106 @@ CREATE TRIGGER triggerupdateorder
 		ON orders
 	FOR EACH ROW
 		BEGIN
-			IF (NEW.ordersold = 0) AND (OLD.ordersold = 1) THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be marked as not sold if it has been sold already';
-            END IF;
-            
-            IF (NEW.orderisdraft = 1) AND (OLD.orderisdraft = 0) THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be marked as a draft if it has been saved as order already';
-            END IF;
-            
-            IF (NEW.ordersold = 1) AND (NEW.orderisdraft = 1) THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A draft cannot be marked as sold';
-            END IF;
-            
-            IF (NEW.orderisdraft = 1) THEN
-				IF (NEW.dateorder IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot have order creation date';
-                END IF;
-                IF (NEW.hourorder IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot have order creation hour';
-				END IF;
-                IF (NEW.numdayorder IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot have order number';
-				END IF;
-                IF (NEW.idordersold IS NOT NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An draft cannot be created with order id';
-				END IF;
-            END IF;
-            
-            IF (NEW.orderisdraft = 0) THEN
-				IF (NEW.numdayorder IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no order number';
-                END IF;
-				IF (NEW.dateorder IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no creation date';
-				END IF;
-				IF (NEW.hourorder IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no creation hour';
-				END IF;
-				IF (NEW.codcustomer IS NULL) THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it has no customer';
-				END IF;
-            END IF;
-            
-			IF (NEW.orderisdraft = 0) OR (NEW.ordersold = 1) AND NOT EXISTS (
-				SELECT contain.codproduct 
-					FROM contain 
-                    WHERE contain.codorder = NEW.codorder
-				) THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be created if it is empty';
-            END IF;
-            
-            IF (NEW.ordersold = 1) THEN
-				IF (NEW.moneyreceived) IS NULL THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be sold without money received from the customer';
-				END IF;
-                IF (NEW.idordersold) IS NULL THEN
-					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be sold without an order id';
-				END IF;
-            END IF;
-            
-            IF (OLD.ordersold = 1) THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be updated if it is sold';
-            END IF;
+			IF EXISTS (
+            SELECT codorder
+				FROM orders_sold
+				WHERE codorder = OLD.codorder
+			) AND (USER() = 'adminrps@127.0.0.1') THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be updated if it is sold';
+			END IF;
         END::
 	
 delimiter ;
 
-/* If an order is sold, it can't be deleted or updated */
-
-DROP TRIGGER IF EXISTS triggerdeleteorder;
+DROP TRIGGER IF EXISTS triggerinsertorderscontain;
 
 delimiter ::
 
-CREATE TRIGGER triggerdeleteorder
-	BEFORE DELETE
-		ON orders
-	FOR EACH ROW
-		BEGIN
-			IF OLD.ordersold = 1 THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be deleted if it is sold';
-            END IF;
-        END::
-	
-delimiter ;
-
-DROP TRIGGER IF EXISTS triggerdeletecontain;
-
-delimiter ::
-
-CREATE TRIGGER triggerdeletecontain
-	BEFORE DELETE
-		ON contain
-	FOR EACH ROW
-		BEGIN
-			IF (SELECT orders.ordersold FROM orders WHERE orders.codorder = OLD.codorder) = 1 THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be deleted if it is sold';
-            END IF;
-        END::
-	
-delimiter ;
-
-DROP TRIGGER IF EXISTS triggerupdatecontain;
-
-delimiter ::
-
-CREATE TRIGGER triggerupdatecontain
-	BEFORE UPDATE
-		ON contain
-	FOR EACH ROW
-		BEGIN
-			IF (SELECT orders.ordersold FROM orders WHERE orders.codorder = OLD.codorder) = 1 THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be updated if it is sold';
-            END IF;
-        END::
-	
-delimiter ;
-
-DROP TRIGGER IF EXISTS triggerinsertcontain;
-
-delimiter ::
-
-CREATE TRIGGER triggerinsertcontain
+CREATE TRIGGER triggerinsertorderscontain
 	BEFORE INSERT
-		ON contain
+		ON orders_contain
 	FOR EACH ROW
 		BEGIN
-			IF (SELECT orders.ordersold FROM orders WHERE orders.codorder = NEW.codorder) = 1 THEN
+			IF EXISTS (
+            SELECT codorder
+				FROM orders_sold
+				WHERE codorder = NEW.codorder
+			) AND (USER() = 'adminrpsuser@127.0.0.1') THEN
 				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be updated if it is sold';
+            END IF;
+        END::
+	
+delimiter ;
+
+DROP TRIGGER IF EXISTS triggerdeleteorderscontain;
+
+delimiter ::
+
+CREATE TRIGGER triggerdeleteorderscontain
+	BEFORE DELETE
+		ON orders_contain
+	FOR EACH ROW
+		BEGIN
+			IF EXISTS (
+            SELECT codorder
+				FROM orders_sold
+				WHERE codorder = OLD.codorder
+			) AND (USER() = 'adminrpsuser@127.0.0.1') THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be deleted if it is sold';
+            END IF;
+        END::
+	
+delimiter ;
+
+DROP TRIGGER IF EXISTS triggerupdateorderscontain;
+
+delimiter ::
+
+CREATE TRIGGER triggerupdateorderscontain
+	BEFORE UPDATE
+		ON orders_contain
+	FOR EACH ROW
+		BEGIN
+			IF EXISTS (
+            SELECT codorder
+				FROM orders_sold
+				WHERE codorder = OLD.codorder
+			) AND (USER() = 'adminrpsuser@127.0.0.1') THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An order cannot be updated if it is sold';
+            END IF;
+        END::
+	
+delimiter ;
+
+/* The drafts cannot have both a customer name and customer phone number and a customer code */
+
+DROP TRIGGER IF EXISTS triggerinsertdraft;
+
+delimiter ::
+
+CREATE TRIGGER triggerinsertdraft
+	BEFORE INSERT
+		ON drafts
+	FOR EACH ROW
+		BEGIN
+			IF ((NEW.namecustomertmp IS NOT NULL OR NEW.telcustomertmp IS NOT NULL) AND NEW.codcustomer IS NOT NULL) THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A draft cannot have both a customer name and customer phone number and a customer code ';
+            END IF;
+        END::
+	
+delimiter ;
+
+DROP TRIGGER IF EXISTS triggerupdatedraft;
+
+delimiter ::
+
+CREATE TRIGGER triggerupdatedraft
+	BEFORE UPDATE
+		ON drafts
+	FOR EACH ROW
+		BEGIN
+			IF ((NEW.namecustomertmp IS NOT NULL OR NEW.telcustomertmp IS NOT NULL) AND NEW.codcustomer IS NOT NULL) THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'A draft cannot have both a customer name and customer phone number and a customer code ';
             END IF;
         END::
 	
