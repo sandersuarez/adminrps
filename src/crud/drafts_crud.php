@@ -46,8 +46,9 @@ function obtain_draft($coddraft)
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT drafts.coddraft, drafts.namecustomertmp, drafts.telcustomertmp, drafts.codcustomer, customers.namecustomer, customers.telcustomer FROM " . DRAFTS .
-            " LEFT JOIN customers ON drafts.codcustomer = customers.codcustomer WHERE drafts.coddraft = :coddraft AND drafts.coduser = :coduser");
+        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".codcustomer, "
+            . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . DRAFTS . " LEFT JOIN " . CUSTOMERS . " ON " . DRAFTS . ".codcustomer = "
+            . CUSTOMERS . ".codcustomer WHERE " . DRAFTS . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
 
         // Parameters binding and execution
         $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
@@ -56,7 +57,22 @@ function obtain_draft($coddraft)
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         if ($result) {
+
             $answer = array('drafts' => $result);
+            $query->closeCursor();
+
+            // SQL Query to search the products of the draft
+            $query = $connection->prepare("SELECT " . DRAFTS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct FROM " . DRAFTS_CONTAIN .
+                " JOIN " . PRODUCTS . " ON " . DRAFTS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " . DRAFTS . " ON " . DRAFTS_CONTAIN . ".coddraft = " . DRAFTS .
+                ".coddraft WHERE " . DRAFTS_CONTAIN . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
+
+            // Parameters binding and execution
+            $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+            if ($result) $answer['drafts'][0]['products'] = $result;
         } else {
             $answer = array('message' => 'There is no coincident draft');
         }
@@ -145,8 +161,8 @@ function add_draft($input_data)
             $telcustomertmp_clause[0] = ", telcustomertmp";
             $telcustomertmp_clause[1] = ", :telcustomertmp";
         }
-    
-        $query = $connection->prepare("INSERT INTO " . DRAFTS . " (coddraft" . $codcustomer_clause[0] . $namecustomertmp_clause[0] . $telcustomertmp_clause[0] . 
+
+        $query = $connection->prepare("INSERT INTO " . DRAFTS . " (coddraft" . $codcustomer_clause[0] . $namecustomertmp_clause[0] . $telcustomertmp_clause[0] .
             ", coduser) VALUES (:coddraft" . $codcustomer_clause[1] . $namecustomertmp_clause[1] . $telcustomertmp_clause[1] . ", :coduser)");
 
         // Parameters binding and execution
