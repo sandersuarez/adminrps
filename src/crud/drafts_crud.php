@@ -59,7 +59,7 @@ function obtain_draft($coddraft)
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         if ($result) {
 
-            $answer = array('drafts' => $result);
+            $answer = array('draft' => $result);
             $query->closeCursor();
 
             // SQL Query to search the products of the draft
@@ -73,7 +73,7 @@ function obtain_draft($coddraft)
 
             $query->execute();
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
-            if ($result) $answer['drafts'][0]['products'] = $result;
+            if ($result) $answer['draft'][0]['products'] = $result;
         } else {
             $answer = array('message' => 'There is no coincident draft');
         }
