@@ -38,11 +38,18 @@ $app->post('/add_draft', function (Request $request, Response $response) {
             // Check for required parameters
             $params = $request->getQueryParams();
 
-            $input_data = [];
-            if (array_key_exists('codcustomer', $params)) $input_data['codcustomer'] = $params['codcustomer'];
-            if (array_key_exists('products', $params)) $input_data['products'] = json_decode($params['products'], true);
+            if (!((array_key_exists('namecustomertmp', $params) || array_key_exists('telcustomertmp', $params)) && array_key_exists('codcustomer', $params))) {
 
-            $response_content = json_encode(add_draft($input_data), JSON_UNESCAPED_UNICODE);
+                $input_data = [];
+                if (array_key_exists('namecustomertmp', $params)) $input_data['namecustomertmp'] = $params['namecustomertmp'];
+                if (array_key_exists('telcustomertmp', $params)) $input_data['telcustomertmp'] = $params['telcustomertmp'];
+                if (array_key_exists('codcustomer', $params)) $input_data['codcustomer'] = $params['codcustomer'];
+                if (array_key_exists('products', $params)) $input_data['products'] = json_decode($params['products'], true);
+
+                $response_content = json_encode(add_draft($input_data), JSON_UNESCAPED_UNICODE);
+            } else {
+                $response_content = json_encode(array('message', 'The customer code and the customer data cannot be inserted at the same time'), JSON_UNESCAPED_UNICODE);
+            }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
         }
