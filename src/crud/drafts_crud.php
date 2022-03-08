@@ -10,8 +10,9 @@ function obtain_drafts()
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT drafts.coddraft, drafts.namecustomertmp, drafts.telcustomertmp, drafts.codcustomer, customers.namecustomer, customers.telcustomer FROM " . DRAFTS .
-            " LEFT JOIN customers ON drafts.codcustomer = customers.codcustomer WHERE drafts.coduser = :coduser ORDER BY drafts.coddraft DESC");
+        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".codcustomer, " . CUSTOMERS . 
+            ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . DRAFTS . " LEFT JOIN " . CUSTOMERS . " ON " . DRAFTS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " . 
+            DRAFTS . ".coduser = :coduser ORDER BY " . DRAFTS . ".coddraft DESC");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
