@@ -452,3 +452,101 @@ function edit_draft($input_data)
     $connection = null;
     return array('success_message' => 'The draft has been edited correctly');
 }
+
+/**
+ * Function to delete a draft added by a user
+ * @param integer $coddraft
+ * @return array
+ */
+function delete_draft($coddraft)
+{
+    // Requirements control
+    if (!filter_var($coddraft, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The draft code is invalid');
+
+    try {
+        // Transaction to completely delete a draft
+        $connection = create_pdo_object();
+        $connection->beginTransaction();
+
+        // SQL Query to delete the draft products
+        $query = $connection->prepare("DELETE " . DRAFTS_CONTAIN . " FROM " . DRAFTS_CONTAIN . " JOIN " . DRAFTS . " ON " . DRAFTS_CONTAIN . ".coddraft = " . DRAFTS .
+            ".coddraft WHERE " . DRAFTS_CONTAIN . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
+
+        $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $query->closeCursor();
+
+        // SQL Query to delete a draft
+        $query = $connection->prepare("DELETE FROM " . DRAFTS . " WHERE coddraft = :coddraft AND coduser = :coduser");
+
+        // Parameters binding and execution
+        $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $rows_affected = $query->rowCount();
+        if ($rows_affected == 0) {
+            return array('message' => 'There is no coincident draft');
+        }
+
+        $connection->commit();
+    } catch (PDOException $e) {
+        $connection->rollBack();
+        return process_pdo_exception($e);
+    }
+
+    $connection = null;
+    return array('success_message' => 'The draft has been deleted correctly');
+}
+
+/**
+ * Function to delete all drafts added by a user
+ * @return array
+ */
+function delete_all_drafts()
+{
+    try {
+        // Transaction to completely delete a draft
+        $connection = create_pdo_object();
+        $connection->beginTransaction();
+
+        // SQL Query to find the draft codes added by a user
+        $query = $connection->prepare("SELECT coddraft FROM " . DRAFTS . " WHERE coduser = :coduser");
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        $query->closeCursor();
+
+        if ($result) {
+            foreach ($result as $draft) {
+                // SQL Query to delete the draft products
+                $query = $connection->prepare("DELETE FROM " . DRAFTS_CONTAIN . " WHERE coddraft = :coddraft");
+                $query->bindParam(':coddraft', $draft['coddraft'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+
+                // SQL Query to delete a draft
+                $query = $connection->prepare("DELETE FROM " . DRAFTS . " WHERE coddraft = :coddraft");
+                $query->bindParam(':coddraft', $draft['coddraft'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+            }
+        } else {
+            return array('message' => 'There are no drafts');
+        }
+
+        $connection->commit();
+    } catch (PDOException $e) {
+        $connection->rollBack();
+        return process_pdo_exception($e);
+    }
+
+    $connection = null;
+    return array('success_message' => 'The drafts has been deleted correctly');
+}
