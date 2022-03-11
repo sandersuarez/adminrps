@@ -8,7 +8,7 @@
 function obtain_customers($requirements)
 {
     // If the page number is invalid its value will be the default
-    if ((!filter_var($requirements['page'], FILTER_VALIDATE_INT)) || $requirements['page'] < 1) $requirements['page'] = 1;
+    if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
 
     // Paging calculation
     $begin = $requirements['page'] - 1;
@@ -70,7 +70,8 @@ function obtain_customers($requirements)
 function obtain_customer($codcustomer)
 {
     // Requirements control
-    if ((!filter_var($codcustomer, FILTER_VALIDATE_INT)) || $codcustomer < 1 || $codcustomer > 9223372036854775808) return array('message' => 'The customer code is invalid');
+    if (!filter_var($codcustomer, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The customer code is invalid');
 
     try {
         // SQL Query to search the customer
@@ -159,7 +160,7 @@ function edit_customer($input_data)
         if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'The phone number is invalid');
     }
 
-    if ((!filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT)) || $input_data['codcustomer'] < 1 || $input_data['codcustomer'] > 9223372036854775808)
+    if (!filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
         return array('message' => 'The customer code is invalid');
 
     // Obtain the customer data
@@ -217,7 +218,8 @@ function edit_customer($input_data)
 function delete_customer($codcustomer)
 {
     // Requirements control
-    if ((!filter_var($codcustomer, FILTER_VALIDATE_INT)) || $codcustomer < 1) return array('message' => 'The customer code is invalid');
+    if (!filter_var($codcustomer, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The customer code is invalid');
 
     try {
         // SQL Query to delete a customer

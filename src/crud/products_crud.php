@@ -8,7 +8,7 @@
 function obtain_products($requirements)
 {
     // If the page number is invalid its value will be the default
-    if ((!filter_var($requirements['page'], FILTER_VALIDATE_INT)) || $requirements['page'] < 1) $requirements['page'] = 1;
+    if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
 
     // Paging calculation
     $begin = $requirements['page'] - 1;
@@ -70,7 +70,8 @@ function obtain_products($requirements)
 function obtain_product($codproduct)
 {
     // Requirements control
-    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1 || $codproduct > 9223372036854775808) return array('message' => 'The product code is invalid');
+    if (!filter_var($codproduct, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The product code is invalid');
 
     try {
         // SQL Query to search the product
@@ -114,7 +115,8 @@ function add_product($input_data)
 
     if (
         array_key_exists('stockproduct', $input_data) &&
-        ((!filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT)) || $input_data['stockproduct'] < 0 || $input_data['stockproduct'] > 2147483647)
+        !(filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT) === 0 ||
+            filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '2147483647']]))
     )
         return array('message' => 'The stock is invalid');
 
@@ -175,11 +177,14 @@ function edit_product($input_data)
 
     if (
         array_key_exists('stockproduct', $input_data) &&
-        (((!filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT)) || $input_data['stockproduct'] < 0 || $input_data['stockproduct'] > 2147483647) && $input_data['stockproduct'] != 'null')
+        ((!(filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT) === 0 ||
+            filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '2147483647']])))
+            && $input_data['stockproduct'] != 'null')
     )
         return array('message' => 'The stock is invalid');
 
-    if ((!filter_var($input_data['codproduct'], FILTER_VALIDATE_INT)) || $input_data['codproduct'] < 1) return array('message' => 'The product code is invalid');
+    if (!filter_var($input_data['codproduct'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The product code is invalid');
 
     // Obtain the product data
     $product_data = obtain_product($input_data['codproduct']);
@@ -253,7 +258,8 @@ function edit_product($input_data)
 function delete_product($codproduct)
 {
     // Requirements control
-    if ((!filter_var($codproduct, FILTER_VALIDATE_INT)) || $codproduct < 1) return array('message' => 'The product code is invalid');
+    if (!filter_var($codproduct, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The product code is invalid');
 
     try {
         // SQL Query to delete a product

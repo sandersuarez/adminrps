@@ -40,7 +40,7 @@ function obtain_drafts()
 function obtain_draft($coddraft)
 {
     // Requirements control
-    if ((!filter_var($coddraft, FILTER_VALIDATE_INT)) || $coddraft < 1 || $coddraft > 9223372036854775808)
+    if (!filter_var($coddraft, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
         return array('message' => 'The draft code is invalid');
 
     try {
@@ -63,9 +63,9 @@ function obtain_draft($coddraft)
             $query->closeCursor();
 
             // SQL Query to search the products of the draft
-            $query = $connection->prepare("SELECT " . DRAFTS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . DRAFTS_CONTAIN . ".amountproductdraft FROM " .
-                DRAFTS_CONTAIN . " JOIN " . PRODUCTS . " ON " . DRAFTS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " . DRAFTS . " ON " . DRAFTS_CONTAIN . ".coddraft = " . DRAFTS .
-                ".coddraft WHERE " . DRAFTS_CONTAIN . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
+            $query = $connection->prepare("SELECT " . DRAFTS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
+                DRAFTS_CONTAIN . ".amountproductdraft FROM " . DRAFTS_CONTAIN . " JOIN " . PRODUCTS . " ON " . DRAFTS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
+                DRAFTS . " ON " . DRAFTS_CONTAIN . ".coddraft = " . DRAFTS . ".coddraft WHERE " . DRAFTS_CONTAIN . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
 
             // Parameters binding and execution
             $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
@@ -93,13 +93,16 @@ function obtain_draft($coddraft)
 function add_draft($input_data)
 {
     // Requirements control
-    if (array_key_exists('codcustomer', $input_data) && ((!filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT)) || $input_data['codcustomer'] < 1))
-        return array('message' => 'The customer code is invalid');
+    if (array_key_exists('coddraft', $input_data) && !filter_var($input_data['coddraft'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The draft code is invalid');
 
     if (array_key_exists('products', $input_data)) {
         $validation = validate_order_product_list($input_data['products']);
         if (array_key_exists('message', $validation)) return $validation;
     }
+
+    if (array_key_exists('codcustomer', $input_data) && !filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The draft code is invalid');
 
     if (array_key_exists('namecustomertmp', $input_data)) {
         $input_data['namecustomertmp'] = trim($input_data['namecustomertmp']);
@@ -146,19 +149,19 @@ function add_draft($input_data)
 
         // SQL Query to add a new draft
         $codcustomer_clause = array("", "");
-        if (array_key_exists("codcustomer", $input_data)) {
+        if (array_key_exists('codcustomer', $input_data)) {
             $codcustomer_clause[0] = ", codcustomer";
             $codcustomer_clause[1] = ", :codcustomer";
         }
 
         $namecustomertmp_clause = array("", "");
-        if (array_key_exists("namecustomertmp", $input_data)) {
+        if (array_key_exists('namecustomertmp', $input_data)) {
             $namecustomertmp_clause[0] = ", namecustomertmp";
             $namecustomertmp_clause[1] = ", :namecustomertmp";
         }
 
         $telcustomertmp_clause = array("", "");
-        if (array_key_exists("telcustomertmp", $input_data)) {
+        if (array_key_exists('telcustomertmp', $input_data)) {
             $telcustomertmp_clause[0] = ", telcustomertmp";
             $telcustomertmp_clause[1] = ", :telcustomertmp";
         }
@@ -232,10 +235,11 @@ function edit_draft($input_data)
     )
         return array('message', 'The customer code and the customer data cannot be inserted at the same time');
 
-    if (array_key_exists('coddraft', $input_data) && (filter_var($input_data['coddraft'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 9223372036854775808]])))
+    if (array_key_exists('coddraft', $input_data) && !filter_var($input_data['coddraft'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
         return array('message' => 'The draft code is invalid');
 
-    if (array_key_exists('codcustomer', $input_data) && (filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 9223372036854775808]])))
+    if (array_key_exists('codcustomer', $input_data) && !(filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT) === 0 ||
+        filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']])))
         return array('message' => 'The customer code is invalid');
 
     if (array_key_exists('products', $input_data) && $input_data['products'] !== []) {
@@ -437,20 +441,6 @@ function edit_draft($input_data)
                     }
                 }
             }
-            /*
-            if (empty($input_data['products'])) {
-                foreach ($input_data['products'] as $product) {
-                    // SQL Query to add product records to the order
-                    $query = $connection->prepare("DELETE FROM " . DRAFTS_CONTAIN . " WHERE codproduct = :codproduct AND coddraft = :coddraft");
-
-                    // Parameters binding and execution
-                    $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);
-                    $query->bindParam(':coddraft', $input_data['coddraft'], PDO::PARAM_INT);
-
-                    $query->execute();
-                    $query->closeCursor();
-                }
-            }*/
         }
 
         $connection->commit();
