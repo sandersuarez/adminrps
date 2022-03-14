@@ -13,10 +13,14 @@ $app = AppFactory::create();
 // Application path
 $app->setBasePath('/rest');
 
+// Utilities
+require __DIR__ . '/../../src/utilities/validate_order_product_list.php';
+
 require __DIR__ . '/../../src/routes/session.php';
 require __DIR__ . '/../../src/routes/users.php';
 require __DIR__ . '/../../src/routes/products.php';
 require __DIR__ . '/../../src/routes/customers.php';
 require __DIR__ . '/../../src/routes/drafts.php';
+require __DIR__ . '/../../src/routes/orders.php';
 
 $app->run();

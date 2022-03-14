@@ -4,7 +4,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 require __DIR__ . '/../../src/crud/drafts_crud.php';
-require __DIR__ . '/../../src/utilities/validate_order_product_list.php';
 
 $app->get('/obtain_drafts', function (Request $request, Response $response) {
 
