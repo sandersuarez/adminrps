@@ -1,7 +1,72 @@
 <?php
 
 /**
- * Function to obtain am order added by a user
+ * Function to obtain an order added by a user
+ * @param array $codorder
+ * @return array
+ */
+function obtain_active_orders($today)
+{
+    try {
+        $connection = create_pdo_object();
+
+        $today_clause = '';
+        if ($today == 1 || $today == 0) {
+            if ($today) {
+                $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".numdayorder";
+            } else {
+                $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE())";
+            }
+        } else {
+            return array('message' => 'Select a valid order time segment');
+        }
+
+        // SQL Query to search active orders
+        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
+            ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
+            ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
+            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $today_clause);
+
+        // Parameters binding and execution
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        if ($result) {
+
+            $answer = array('orders' => $result);
+            $query->closeCursor();
+
+            for ($i = 0; sizeof($answer['orders']) > $i; $i++) {
+                
+                // SQL Query to search the products of the order
+                $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
+                    ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
+                    ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " .
+                    ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser");
+
+                // Parameters binding and execution
+                $query->bindParam(':codorder', $answer['orders'][$i]['codorder'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $result = $query->fetchAll(PDO::FETCH_ASSOC);
+                if ($result) $answer['orders'][$i]['products'] = $result;
+                $query->closeCursor();
+            }
+        } else {
+            $answer = array('message' => 'There is no coincident orders');
+        }
+
+        clear_query_data($query, $connection);
+        return $answer;
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
+}
+
+/**
+ * Function to obtain an order added by a user
  * @param array $codorder
  * @return array
  */
@@ -16,8 +81,8 @@ function obtain_active_order($codorder)
 
         // SQL Query to search active orders
         $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
-            ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " . 
-            ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " . 
+            ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
+            ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
             ORDERS . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
 
         // Parameters binding and execution
@@ -33,8 +98,8 @@ function obtain_active_order($codorder)
 
             // SQL Query to search the products of the order
             $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
-            ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
-                ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " . 
+                ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
+                ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " .
                 ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser");
 
             // Parameters binding and execution
@@ -116,7 +181,7 @@ function add_order($coddraft)
 
         if ($draft['draft'][0]['codcustomer'] == null && $draft['draft'][0]['namecustomertmp'] != null && $draft['draft'][0]['telcustomertmp'] == null)
             return array('message' => 'An order must have a phone number');
-        
+
         if ($draft['draft'][0]['telcustomertmp'] != null && !preg_match('#^[6-9]([0-9]){8}$#', $draft['draft'][0]['telcustomertmp']))
             return array('message' => 'The phone number is not valid');
 
