@@ -1,18 +1,39 @@
 <?php
 
 /**
- * Function to obtain an order added by a user
+ * Function to obtain an order added by a user according to paging
  * @param array $codorder
  * @return array
  */
-function obtain_active_orders($today)
+function obtain_active_orders($requirements)
 {
+    // If the page number is invalid its value will be the default
+    if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
+
+    // Paging calculation
+    $begin = $requirements['page'] - 1;
+    $end = 15;
+
+    switch ($requirements['orders_number']) {
+        case 15:
+            $end = 15;
+            break;
+        case 30:
+            $end = 30;
+            break;
+        default:
+            $end = 15;
+    }
+
+    $begin = $begin * $end;
+    $end = $begin + $end;
+
     try {
         $connection = create_pdo_object();
 
         $today_clause = '';
-        if ($today == 1 || $today == 0) {
-            if ($today) {
+        if ($requirements['today'] == 1 || $requirements['today'] == 0) {
+            if ($requirements['today']) {
                 $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".numdayorder";
             } else {
                 $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE())";
@@ -25,10 +46,12 @@ function obtain_active_orders($today)
         $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
             ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
             ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
-            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $today_clause);
+            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $today_clause . " LIMIT :begin, :end");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+        $query->bindParam(':begin', $begin, PDO::PARAM_INT);
+        $query->bindParam(':end', $end, PDO::PARAM_INT);
 
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);

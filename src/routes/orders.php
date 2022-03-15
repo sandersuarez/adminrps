@@ -17,8 +17,18 @@ $app->get('/obtain_active_orders', function (Request $request, Response $respons
             // Check for required parameters
             $params = $request->getQueryParams();
 
-            if (array_key_exists('today', $params)) {
-                $response_content = json_encode(obtain_active_orders($params['today']), JSON_UNESCAPED_UNICODE);
+            if (array_key_exists('today', $params) && array_key_exists('page', $params)) {
+
+                $requirements['today'] = $params['today'];
+                $requirements['page'] = $params['page'];
+
+                if (array_key_exists('orders_number', $params)) {
+                    $requirements['orders_number'] = $params['orders_number'];
+                } else {
+                    $requirements['orders_number'] = 0;
+                }
+
+                $response_content = json_encode(obtain_active_orders($requirements), JSON_UNESCAPED_UNICODE);
             } else {
                 $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
             }
