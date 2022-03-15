@@ -61,7 +61,7 @@ function obtain_active_orders($requirements)
             $query->closeCursor();
 
             for ($i = 0; sizeof($answer['orders']) > $i; $i++) {
-                
+
                 // SQL Query to search the products of the order
                 $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
                     ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
@@ -318,4 +318,228 @@ function add_order($coddraft)
 
     $connection = null;
     return array('success_message' => 'The order has been added correctly');
+}
+
+/**
+ * Function to edit an order added by a user
+ * @param array $input_data
+ * @return array
+ */
+
+function edit_order($input_data)
+{
+    // Obtain the order data
+    $order_data = obtain_active_order($input_data['codorder']);
+    if (array_key_exists('message', $order_data)) return $order_data;
+
+    // Requirements control
+    if (!filter_var($input_data['codorder'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The order code is invalid');
+
+    if ((array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data)) && array_key_exists('codcustomer', $input_data))
+        return array('message', 'The customer code and the customer data cannot be inserted at the same time');
+
+    if (array_key_exists('namecustomer', $input_data)) {
+        $input_data['namecustomer'] = trim($input_data['namecustomer']);
+        if (strlen($input_data['namecustomer']) > 60 || strlen($input_data['namecustomer']) == 0) return array('message' => 'The customer name is invalid');
+    }
+
+    if (array_key_exists('telcustomer', $input_data)) {
+        $input_data['telcustomer'] = trim($input_data['telcustomer']);
+        if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'The customer phone number is invalid');
+    }
+
+    if (array_key_exists('codcustomer', $input_data) && !filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The customer code is invalid');
+
+    if (!array_key_exists('codcustomer', $input_data) && !array_key_exists('namecustomer', $input_data) && array_key_exists('telcustomer', $input_data))
+        return array('message' => 'An customer must have a name');
+
+    if (!array_key_exists('codcustomer', $input_data) && array_key_exists('namecustomer', $input_data) && !array_key_exists('telcustomer', $input_data))
+        return array('message' => 'An order must have a phone number');
+
+    $validation = validate_order_product_list($input_data['products']);
+    if (array_key_exists('message', $validation)) return $validation;
+
+    $equal = 0;
+    foreach ($input_data as $element => $value) {
+        foreach ($order_data['order'][0] as $order_attr => $order_value) {
+            if ($element == $order_attr && $value == $order_value) $equal = $equal + 1;
+        }
+    }
+
+    $equal_products = 0;
+    foreach ($input_data['products'] as $product) {
+        foreach ($order_data['order'][0]['products'] as $order_product) {
+            if ($product['codproduct'] == $order_product['codproduct'] && $product['amountproduct'] == $order_product['amountproductorder'])
+                $equal_products = $equal_products + 1;
+        }
+    }
+    if ($equal_products == max(count($input_data['products']), count($order_data['order'][0]['products']))) $equal = $equal + 1;
+
+    if ($equal == count($input_data)) return array('message' => 'There is nothing to change');
+
+    try {
+        $connection = create_pdo_object();
+
+        if (array_key_exists('codcustomer', $input_data) && $input_data['codcustomer'] != 0) {
+            // SQL Query to check if the customer exists
+            $query = $connection->prepare("SELECT codcustomer FROM " . CUSTOMERS . " WHERE codcustomer = :codcustomer AND coduser = :coduser");
+
+            // Parameters binding and execution
+            $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            if (!$result) return array('message' => 'The customer does not exists');
+            $query->closeCursor();
+        }
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
+
+    $connection->beginTransaction();
+    try {
+
+        // SQL Query to insert a new customer
+        if (array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data)) {
+
+            // SQL Query to find a primary key
+            $query = $connection->prepare("SELECT max(codcustomer) FROM " . CUSTOMERS);
+            $query->execute();
+            $codcustomer = $query->fetch()[0];
+            $query->closeCursor();
+            $codcustomer = $codcustomer + 1;
+
+            if ($codcustomer > 9223372036854775808) return array('overflow' => 'The customer list is full. Contact the administrator');
+
+            // SQL Query to insert a customer
+            $query = $connection->prepare("INSERT INTO " . CUSTOMERS . " (codcustomer, namecustomer, telcustomer, coduser) VALUES " .
+                "(:codcustomer, :namecustomer, :telcustomer, :coduser)");
+
+            // Parameters binding and execution
+            $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
+            $query->bindParam(':namecustomer', $input_data['namecustomer'], PDO::PARAM_STR);
+            $query->bindParam(':telcustomer', $input_data['telcustomer'], PDO::PARAM_STR_CHAR);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
+            $query->closeCursor();
+        }
+
+        // SQL Query to edit the order
+        if (array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data) || array_key_exists('codcustomer', $input_data)) {
+            
+            $query = $connection->prepare("UPDATE " . ORDERS . " SET codcustomer = :codcustomer WHERE codorder = :codorder");
+
+            // Parameters binding and execution
+            $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+
+            if (array_key_exists('codcustomer', $input_data)) {
+                $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
+            } else {
+                $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
+            }
+
+            $query->execute();
+            $query->closeCursor();
+        }
+
+        if (!array_key_exists('products', $order_data['order'][0])) {
+            foreach ($input_data['products'] as $index => $product) {
+                // SQL Query to add product records to the order
+                $query = $connection->prepare("INSERT INTO " . ORDERS_CONTAIN . " (codproduct, codorder, amountproductorder) VALUES (:codproduct, :codorder, :amountproductorder)");
+
+                // Parameters binding and execution
+                $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);
+                $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+                $query->bindParam(':amountproductorder', $product['amountproduct'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+            }
+        } else {
+            if ($equal_products != max(count($input_data['products']), count($order_data['order'][0]['products']))) {
+
+                $codproducts_delete = [];
+                foreach ($order_data['order'][0]['products'] as $order_product)
+                    array_push($codproducts_delete, $order_product['codproduct']);
+
+                $codproducts_insert = [];
+                foreach ($input_data['products'] as $product)
+                    array_push($codproducts_insert, $product['codproduct']);
+
+                // Product elements modification
+                foreach ($input_data['products'] as $product) {
+                    foreach ($order_data['order'][0]['products'] as $order_product) {
+                        if ($product['codproduct'] == $order_product['codproduct']) {
+
+                            if (($key = array_search($product['codproduct'], $codproducts_insert)) !== false) unset($codproducts_insert[$key]);
+                            if (($key = array_search($order_product['codproduct'], $codproducts_delete)) !== false) unset($codproducts_delete[$key]);
+
+                            if ($product['amountproduct'] != $order_product['amountproductorder']) {
+                                // SQL Query to add product records to the order
+                                $query = $connection->prepare("UPDATE " . ORDERS_CONTAIN . " SET amountproductorder = :amountproductorder WHERE codproduct = :codproduct " .
+                                    "AND codorder = :codorder");
+
+                                // Parameters binding and execution
+                                $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
+                                $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+                                $query->bindParam(':amountproductorder', $product['amountproduct'], PDO::PARAM_INT);
+
+                                $query->execute();
+                                $query->closeCursor();
+                            }
+                        }
+                    }
+                }
+
+                $products_delete = [];
+                foreach ($order_data['order'][0]['products'] as $order_product) {
+                    if (in_array($order_product['codproduct'], $codproducts_delete)) array_push($products_delete, $order_product);
+                }
+
+                $products_insert = [];
+                foreach ($input_data['products'] as $product) {
+                    if (in_array($product['codproduct'], $codproducts_insert)) array_push($products_insert, $product);
+                }
+
+                // Product elements insertion
+                foreach ($products_insert as $product_insert) {
+                    // SQL Query to add product records to the order
+                    $query = $connection->prepare("INSERT INTO " . ORDERS_CONTAIN . " (codproduct, codorder, amountproductorder) VALUES (:codproduct, :codorder, :amountproductorder)");
+
+                    // Parameters binding and execution
+                    $query->bindParam(':codproduct', $product_insert['codproduct'], PDO::PARAM_INT);
+                    $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+                    $query->bindParam(':amountproductorder', $product_insert['amountproduct'], PDO::PARAM_INT);
+
+                    $query->execute();
+                    $query->closeCursor();
+                }
+
+                // Product elements deletion
+                foreach ($products_delete as $product_delete) {
+                    // SQL Query to add product records to the order
+                    $query = $connection->prepare("DELETE FROM " . ORDERS_CONTAIN . " WHERE codproduct = :codproduct AND codorder = :codorder");
+
+                    // Parameters binding and execution
+                    $query->bindParam(':codproduct', $product_delete['codproduct'], PDO::PARAM_INT);
+                    $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+
+                    $query->execute();
+                    $query->closeCursor();
+                }
+            }
+        }
+
+        $connection->commit();
+    } catch (PDOException $e) {
+        $connection->rollBack();
+        return process_pdo_exception($e);
+    }
+
+    $connection = null;
+    return array('success_message' => 'The order has been edited correctly');
 }

@@ -296,7 +296,7 @@ function edit_draft($input_data)
     $connection->beginTransaction();
     try {
 
-        // SQL Query to add a new draft
+        // SQL Query to edit the draft
         if (array_key_exists('namecustomertmp', $input_data) || array_key_exists('telcustomertmp', $input_data) || array_key_exists('codcustomer', $input_data)) {
 
             $namecustomertmp_clause = '';

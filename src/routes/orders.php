@@ -98,3 +98,38 @@ $app->post('/add_order', function (Request $request, Response $response) {
     $response->getBody()->write($response_content);
     return $response;
 });
+
+$app->put('/edit_order', function (Request $request, Response $response) {
+
+    $response_content = '';
+
+    // Security check
+    $security = security();
+    if (is_array($security)) {
+        if (array_key_exists('user', $security)) {
+
+            // Check for required parameters
+            $params = $request->getQueryParams();
+
+            if (array_key_exists('codorder', $params) && array_key_exists('products', $params)) {
+
+                $input_data['codorder'] = $params['codorder'];
+                $input_data['products'] = json_decode($params['products'], true);
+                if (array_key_exists('codcustomer', $params)) $input_data['codcustomer'] = $params['codcustomer'];
+                if (array_key_exists('namecustomer', $params)) $input_data['namecustomer'] = $params['namecustomer'];
+                if (array_key_exists('telcustomer', $params)) $input_data['telcustomer'] = $params['telcustomer'];
+
+                $response_content = json_encode(edit_order($input_data), JSON_UNESCAPED_UNICODE);
+            } else {
+                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
+        }
+    } else {
+        $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
+    }
+
+    $response->getBody()->write($response_content);
+    return $response;
+});
