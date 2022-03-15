@@ -201,7 +201,7 @@ function add_draft($input_data)
     }
 
     $connection = null;
-    return array('success_message' => 'The draft has been added correctly');
+    return array('success_message' => 'The draft has been added correctly', 'coddraft' => $coddraft);
 }
 
 /**
