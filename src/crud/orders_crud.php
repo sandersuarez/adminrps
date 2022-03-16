@@ -430,7 +430,7 @@ function edit_order($input_data)
 
         // SQL Query to edit the order
         if (array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data) || array_key_exists('codcustomer', $input_data)) {
-            
+
             $query = $connection->prepare("UPDATE " . ORDERS . " SET codcustomer = :codcustomer WHERE codorder = :codorder");
 
             // Parameters binding and execution
@@ -542,4 +542,56 @@ function edit_order($input_data)
 
     $connection = null;
     return array('success_message' => 'The order has been edited correctly');
+}
+
+/**
+ * Function to delete an active order added by a user
+ * @param integer $codorder
+ * @return array
+ */
+function delete_order($codorder)
+{
+    // Requirements control
+    if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The order code is invalid');
+
+    try {
+        // Transaction to completely delete an order
+        $connection = create_pdo_object();
+        $connection->beginTransaction();
+
+        // SQL Query to delete the order products
+        $query = $connection->prepare("DELETE " . ORDERS_CONTAIN . " FROM " . ORDERS_CONTAIN . " JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " .
+            CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
+            ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
+
+        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $query->closeCursor();
+
+        // SQL Query to delete an order
+        $query = $connection->prepare("DELETE " . ORDERS . " FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " .
+            ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " . ORDERS . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " .
+            ORDERS_SOLD . ".codordersold IS NULL");
+
+        // Parameters binding and execution
+        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $rows_affected = $query->rowCount();
+        if ($rows_affected == 0) {
+            return array('message' => 'There is no coincident order');
+        }
+
+        $connection->commit();
+    } catch (PDOException $e) {
+        $connection->rollBack();
+        return process_pdo_exception($e);
+    }
+
+    $connection = null;
+    return array('success_message' => 'The order has been deleted correctly');
 }
