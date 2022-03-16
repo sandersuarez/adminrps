@@ -595,3 +595,65 @@ function delete_order($codorder)
     $connection = null;
     return array('success_message' => 'The order has been deleted correctly');
 }
+
+/**
+ * Function to mark an order as sold
+ * @param integer $codorder
+ * @param float $moneyreceived
+ * @return array
+ */
+function sell_order($codorder, $moneyreceived)
+{
+    // Requirements control
+    if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The order code is invalid');
+
+    if ((!is_numeric($moneyreceived)) || $moneyreceived < 0 || round($moneyreceived, 2) > 999.99) return array('message' => 'The money received is invalid');
+    $moneyreceived = round($moneyreceived, 2);
+
+    try {
+        $connection = create_pdo_object();
+
+        // SQL Query to search the order
+        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS_SOLD . ".codordersold FROM " . ORDERS . " LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " .
+            ORDERS_SOLD . ".codorder WHERE " . ORDERS . ".codorder = :codorder AND " . ORDERS_SOLD . ".codordersold IS NULL");
+        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+        $query->execute();
+        $order = $query->fetchAll(PDO::FETCH_ASSOC);
+        if (!$order) return array('message' => 'The order does not exist or is already sold');
+
+        // SQL Query to search for a primary key
+        $query = $connection->prepare("SELECT max(codordersold) FROM " . ORDERS_SOLD);
+        $query->execute();
+        $codordersold = $query->fetch()[0];
+        $query->closeCursor();
+        $codordersold = $codordersold + 1;
+
+        if ($codordersold > 9223372036854775808) return array('overflow' => 'The orders sold list is full. Contact the administrator');
+
+        // SQL Query to search for a unique id
+        $query = $connection->prepare("SELECT max(cast(idordersold AS SIGNED)) FROM " . ORDERS_SOLD);
+        $query->execute();
+        $idordersold = $query->fetch()[0];
+        $query->closeCursor();
+        $idordersold = $idordersold + 1;
+
+        if ($codordersold > 999999) return array('overflow' => 'The orders sold id list is full. Contact the administrator');
+        $idordersold = str_pad($idordersold, 6, '0', STR_PAD_LEFT);
+
+        // SQL Query to set an order as sold
+        $query = $connection->prepare("INSERT INTO " . ORDERS_SOLD . " (codordersold, idordersold, moneyreceived, codorder) VALUES (:codordersold, :idordersold, :moneyreceived, :codorder)");
+
+        // Parameters binding and execution
+        $query->bindParam(':codordersold', $codordersold, PDO::PARAM_INT);
+        $query->bindParam(':idordersold', $idordersold, PDO::PARAM_STR_CHAR);
+        $query->bindParam(':moneyreceived', $moneyreceived, PDO::PARAM_STR);
+        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+
+        $query->execute();
+        $connection = null;
+        return array('success_message' => 'The order has been marked as sold correctly');
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
+}
