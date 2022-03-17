@@ -34,7 +34,7 @@ function obtain_drafts()
 
 /**
  * Function to obtain a draft added by a user
- * @param array $coddraft
+ * @param integer $coddraft
  * @return array
  */
 function obtain_draft($coddraft)

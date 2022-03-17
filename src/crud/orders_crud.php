@@ -2,7 +2,7 @@
 
 /**
  * Function to obtain an order added by a user according to paging
- * @param array $codorder
+ * @param array $requirements
  * @return array
  */
 function obtain_active_orders($requirements)
@@ -90,7 +90,7 @@ function obtain_active_orders($requirements)
 
 /**
  * Function to obtain an order added by a user
- * @param array $codorder
+ * @param integer $codorder
  * @return array
  */
 function obtain_active_order($codorder)
@@ -134,6 +134,82 @@ function obtain_active_order($codorder)
             if ($result) $answer['order'][0]['products'] = $result;
         } else {
             $answer = array('message' => 'There is no coincident order');
+        }
+
+        clear_query_data($query, $connection);
+        return $answer;
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
+}
+
+/**
+ * Function to obtain the sold orders according to requirements
+ * @param array $requirements
+ * @return array
+ */
+function obtain_sold_orders($requirements)
+{
+    // Requirements control
+    if (array_key_exists('datebegin', $requirements) && !validateDate($requirements['datebegin'])) return array('message' => 'The minimum date is invalid');
+    if (array_key_exists('dateend', $requirements) && !validateDate($requirements['dateend'])) return array('message' => 'The maximum date is invalid');
+
+    // If the page number is invalid its value will be the default
+    if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
+
+    // Paging calculation
+    $begin = $requirements['page'] - 1;
+    $end = 15;
+
+    switch ($requirements['orders_number']) {
+        case 30:
+            $end = 30;
+            break;
+        case 60:
+            $end = 60;
+            break;
+        default:
+            $end = 30;
+    }
+
+    $begin = $begin * $end;
+    $end = $begin + $end;
+
+    try {
+        $connection = create_pdo_object();
+
+        // If there is a customer name or number phone to search, the clause is added
+        $telname_clause = '';
+        $requirements['nametelcustomer'] = trim($requirements['nametelcustomer']);
+        if ($requirements['nametelcustomer'] != '') $telname_clause = " AND (" . CUSTOMERS . ".namecustomer REGEXP :nametelcustomer OR " . CUSTOMERS . ".telcustomer REGEXP :nametelcustomer)";
+
+        // Date clauses
+        $datebegin_clause = '';
+        if (array_key_exists('datebegin', $requirements)) $datebegin_clause = " AND " . ORDERS_SOLD . ".dateordersold >= :datebegin";
+
+        $dateend_clause = '';
+        if (array_key_exists('dateend', $requirements)) $dateend_clause = " AND " . ORDERS_SOLD . ".dateordersold <= :dateend";
+
+        // SQL Query to search products ordered by their id
+        $query = $connection->prepare("SELECT " . ORDERS_SOLD . ".codordersold, " . ORDERS_SOLD . ".idordersold, " . ORDERS_SOLD . ".dateordersold, " . ORDERS_SOLD .
+            ".hourordersold, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS_SOLD . " JOIN " . ORDERS . " ON " . ORDERS_SOLD . ".codorder = " . ORDERS .
+            ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " . CUSTOMERS . ".coduser = :coduser" . $telname_clause .
+            $datebegin_clause . $dateend_clause . " LIMIT :begin, :end");
+
+        // Parameters binding and execution
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+        $query->bindParam(':begin', $begin, PDO::PARAM_INT);
+        $query->bindParam(':end', $end, PDO::PARAM_INT);
+        if ($requirements['nametelcustomer'] != '') $query->bindParam(':nametelcustomer', $requirements['nametelcustomer'], PDO::PARAM_STR);
+        if (array_key_exists('datebegin', $requirements)) $query->bindParam(':datebegin', $requirements['datebegin'], PDO::PARAM_STR);
+        if (array_key_exists('dateend', $requirements)) $query->bindParam(':dateend', $requirements['dateend'], PDO::PARAM_STR);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        if ($result) {
+            $answer = array('sold_orders' => $result);
+        } else {
+            $answer = array('message' => 'There are no coincident sold orders');
         }
 
         clear_query_data($query, $connection);
