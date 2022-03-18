@@ -112,6 +112,34 @@ $app->get('/obtain_sold_orders', function (Request $request, Response $response)
     return $response;
 });
 
+$app->get('/obtain_sold_order', function (Request $request, Response $response) {
+
+    $response_content = '';
+
+    // Security check
+    $security = security();
+    if (is_array($security)) {
+        if (array_key_exists('user', $security)) {
+
+            // Check for required parameters
+            $params = $request->getQueryParams();
+
+            if (array_key_exists('codordersold', $params)) {
+                $response_content = json_encode(obtain_sold_order($params['codordersold']), JSON_UNESCAPED_UNICODE);
+            } else {
+                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
+        }
+    } else {
+        $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);
+    }
+
+    $response->getBody()->write($response_content);
+    return $response;
+});
+
 $app->post('/add_order', function (Request $request, Response $response) {
 
     $response_content = '';

@@ -220,6 +220,62 @@ function obtain_sold_orders($requirements)
 }
 
 /**
+ * Function to obtain a sold order added by a user
+ * @param integer $codorder
+ * @return array
+ */
+function obtain_sold_order($codordersold)
+{
+    // Requirements control
+    if (!filter_var($codordersold, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The order sold code is invalid');
+
+    try {
+        $connection = create_pdo_object();
+
+        // SQL Query to search active orders
+        $query = $connection->prepare("SELECT " . ORDERS_SOLD . ".codordersold, " . ORDERS_SOLD . ".idordersold, " . ORDERS_SOLD . ".dateordersold, " . ORDERS_SOLD . ".moneyreceived, " .
+            ORDERS_SOLD . ".hourordersold, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . CUSTOMERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS .
+            ".telcustomer FROM " . ORDERS_SOLD . " JOIN " . ORDERS . " ON " . ORDERS_SOLD . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " .
+            CUSTOMERS . ".codcustomer WHERE " . ORDERS_SOLD . ".codordersold = :codordersold AND " . CUSTOMERS . ".coduser = :coduser");
+
+        // Parameters binding and execution
+        $query->bindParam(':codordersold', $codordersold, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        if ($result) {
+
+            $answer = array('order_sold' => $result);
+            $query->closeCursor();
+
+            // SQL Query to search the products of the order
+            $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
+                ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
+                ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " . ORDERS_SOLD . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS_SOLD .
+                ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " . ORDERS_SOLD . ".codordersold = :codordersold AND " .
+                CUSTOMERS . ".coduser = :coduser");
+
+            // Parameters binding and execution
+            $query->bindParam(':codordersold', $codordersold, PDO::PARAM_INT);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
+            $result = $query->fetchAll(PDO::FETCH_ASSOC);
+            if ($result) $answer['order_sold'][0]['products'] = $result;
+        } else {
+            $answer = array('message' => 'There is no coincident sold order');
+        }
+
+        clear_query_data($query, $connection);
+        return $answer;
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
+}
+
+/**
  * Function to convert a draft into an order
  * @param integer $coddraft
  * @return array
