@@ -746,14 +746,13 @@ function sell_order($codorder, $moneyreceived)
     try {
         $connection = create_pdo_object();
 
-        // SQL Query to search the order
-        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS_SOLD . ".codordersold FROM " . ORDERS . " LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " .
-            ORDERS_SOLD . ".codorder WHERE " . ORDERS . ".codorder = :codorder AND " . ORDERS_SOLD . ".codordersold IS NULL");
-        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
-        $query->execute();
-        $order = $query->fetchAll(PDO::FETCH_ASSOC);
-        if (!$order) return array('message' => 'The order does not exist or is already sold');
-
+        // Check if the money received is enough
+        $order = obtain_active_order($codorder);
+        if (array_key_exists('message', $order)) return $order;
+        $total_price = 0;
+        foreach ($order['order'][0]['products'] as $product) $total_price += ($product['priceproduct'] * $product['amountproductorder']);
+        if ($total_price > $moneyreceived) return array('message' => 'The money received is less than the price of the order');
+        
         // SQL Query to search for a primary key
         $query = $connection->prepare("SELECT max(codordersold) FROM " . ORDERS_SOLD);
         $query->execute();
