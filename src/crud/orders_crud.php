@@ -377,7 +377,7 @@ function add_order($coddraft)
 
     $connection->beginTransaction();
     try {
-        if ($draft['draft'][0]['codcustomertmp'] == null) {
+        if ($draft['draft'][0]['codcustomer'] == null) {
             // SQL Query to insert a customer
             $query = $connection->prepare("INSERT INTO " . CUSTOMERS . " (codcustomer, namecustomer, telcustomer, coduser) VALUES " .
                 "(:codcustomer, :namecustomer, :telcustomer, :coduser)");
