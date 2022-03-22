@@ -262,22 +262,97 @@ function delete_product($codproduct)
         return array('message' => 'The product code is invalid');
 
     try {
-        // SQL Query to delete a product
         $connection = create_pdo_object();
-        $query = $connection->prepare("DELETE FROM " . PRODUCTS . " WHERE codproduct = :codproduct AND coduser = :coduser");
+
+        // SQL Query to check if the product exists
+        $query = $connection->prepare("SELECT codproduct FROM " . PRODUCTS . " WHERE productdeleted = 0 AND codproduct = :codproduct AND coduser = :coduser");
 
         // Parameters binding and execution
         $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
         $query->execute();
-        $rows_affected = $query->rowCount();
-        if ($rows_affected == 0) {
-            return array('message' => 'There is no coincident product');
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        if (!$result) return array('message' => 'There is no coincident product');
+        $query->closeCursor();
+
+        // SQL Query search a product on orders and drafts
+        $query = $connection->prepare("SELECT EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . ORDERS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " .
+            ORDERS_CONTAIN . ".codproduct WHERE " . PRODUCTS . ".productdeleted = 0 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS .
+            ".coduser = :coduser) OR EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . DRAFTS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " . DRAFTS_CONTAIN .
+            ".codproduct WHERE " . PRODUCTS . ".productdeleted = 0 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS . ".coduser = :coduser)");
+
+        // Parameters binding and execution
+        $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $result = array_values($query->fetch(PDO::FETCH_ASSOC))[0];
+        $query->closeCursor();
+        if ($result) {
+            // SQL Query to modify a product to display as deleted
+            $query = $connection->prepare("UPDATE " . PRODUCTS . " SET productdeleted = 1 WHERE productdeleted = 0 AND codproduct = :codproduct AND coduser = :coduser");
+
+            // Parameters binding and execution
+            $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
+        } else {
+            // SQL Query to delete a product
+            $query = $connection->prepare("DELETE FROM " . PRODUCTS . " WHERE productdeleted = 0 AND codproduct = :codproduct AND coduser = :coduser");
+
+            // Parameters binding and execution
+            $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
         }
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The product has been deleted correctly');
+    } catch (PDOException $e) {
+        return process_pdo_exception($e);
+    }
+}
+
+/**
+ * Function to restore a product deleted by a user
+ * @param integer $codproduct
+ * @return array
+ */
+function restore_product($codproduct)
+{
+    // Requirements control
+    if (!filter_var($codproduct, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The product code is invalid');
+
+    try {
+        $connection = create_pdo_object();
+
+        // SQL Query to check if the deleted product exists
+        $query = $connection->prepare("SELECT codproduct FROM " . PRODUCTS . " WHERE productdeleted = 1 AND codproduct = :codproduct AND coduser = :coduser");
+
+        // Parameters binding and execution
+        $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        if (!$result) return array('message' => 'There is no coincident deleted product');
+        $query->closeCursor();
+
+        // SQL Query to modify a product to not display as deleted
+        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET productdeleted = 0 WHERE productdeleted = 1 AND codproduct = :codproduct AND coduser = :coduser");
+
+        // Parameters binding and execution
+        $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+
+        clear_query_data($query, $connection);
+        return array('success_message' => 'The product has been restored correctly');
     } catch (PDOException $e) {
         return process_pdo_exception($e);
     }
