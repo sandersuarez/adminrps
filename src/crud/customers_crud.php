@@ -222,8 +222,20 @@ function delete_customer($codcustomer)
         return array('message' => 'The customer code is invalid');
 
     try {
-        // SQL Query to delete a customer
         $connection = create_pdo_object();
+
+        // SQL Query search a customer on orders and drafts
+        $query = $connection->prepare("SELECT EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . ORDERS . " ON " . CUSTOMERS . ".codcustomer = " . ORDERS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser) OR EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . DRAFTS . " ON " . CUSTOMERS . ".codcustomer = " . DRAFTS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser)");
+
+        // Parameters binding and execution
+        $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        if (array_values($query->fetch(PDO::FETCH_ASSOC))[0]) return array('message' => 'The customer cannot be deleted because he has orders or drafts created in his name');
+        $query->closeCursor();
+
+        // SQL Query to delete a customer
         $query = $connection->prepare("DELETE FROM " . CUSTOMERS . " WHERE codcustomer = :codcustomer AND coduser = :coduser");
 
         // Parameters binding and execution
