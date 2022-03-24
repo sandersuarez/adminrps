@@ -42,16 +42,24 @@ function obtain_active_orders($requirements)
             return array('message' => 'Select a valid order time segment');
         }
 
+        // If there is a customer name to search, the clause is added
+        $tel_name_clause = '';
+        $requirements['telnamecustomer'] = trim($requirements['telnamecustomer']);
+        if ($requirements['telnamecustomer'] != '' && $requirements['today'] == 1)
+            $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS . ".telcustomer REGEXP :telnamecustomer))";
+
         // SQL Query to search active orders
         $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
             ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
             ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
-            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $today_clause . " LIMIT :begin, :end");
+            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $tel_name_clause . $today_clause . " LIMIT :begin, :end");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
         $query->bindParam(':begin', $begin, PDO::PARAM_INT);
         $query->bindParam(':end', $end, PDO::PARAM_INT);
+
+        if ($requirements['telnamecustomer'] != '' && $requirements['today'] == 1) $query->bindParam(':telnamecustomer', $requirements['telnamecustomer'], PDO::PARAM_STR);
 
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -752,7 +760,7 @@ function sell_order($codorder, $moneyreceived)
         $total_price = 0;
         foreach ($order['order'][0]['products'] as $product) $total_price += ($product['priceproduct'] * $product['amountproductorder']);
         if ($total_price > $moneyreceived) return array('message' => 'The money received is less than the price of the order');
-        
+
         // SQL Query to search for a primary key
         $query = $connection->prepare("SELECT max(codordersold) FROM " . ORDERS_SOLD);
         $query->execute();

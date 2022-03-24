@@ -28,6 +28,12 @@ $app->get('/obtain_active_orders', function (Request $request, Response $respons
                     $requirements['orders_number'] = 0;
                 }
 
+                if (array_key_exists('telnamecustomer', $params)) {
+                    $requirements['telnamecustomer'] = $params['telnamecustomer'];
+                } else {
+                    $requirements['telnamecustomer'] = '';
+                }
+
                 $response_content = json_encode(obtain_active_orders($requirements), JSON_UNESCAPED_UNICODE);
             } else {
                 $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
