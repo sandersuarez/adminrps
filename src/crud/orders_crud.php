@@ -428,6 +428,25 @@ function add_order($coddraft)
 
                 $query->execute();
                 $query->closeCursor();
+
+                // SQL Query to update the products stock if needed
+                if ($draft_product['stockproduct'] !== null) {
+                    $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                    if ($draft_product['stockproduct'] >= $draft_product['amountproductdraft']) {
+                        $new_stock = $draft_product['stockproduct'] - $draft_product['amountproductdraft'];
+                    } else {
+                        $connection->rollBack();
+                        $connection = null;
+                        return array('message' => 'The product ' . $draft_product['nameproduct'] . ' has not enough stock');
+                    }
+
+                    $query->bindParam(':codproduct', $draft_product['codproduct'], PDO::PARAM_INT);
+                    $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
+
+                    $query->execute();
+                    $query->closeCursor();
+                }
             }
         }
 
@@ -586,87 +605,177 @@ function edit_order($input_data)
             $query->closeCursor();
         }
 
-        if (!array_key_exists('products', $order_data['order'][0])) {
-            foreach ($input_data['products'] as $index => $product) {
-                // SQL Query to add product records to the order
-                $query = $connection->prepare("INSERT INTO " . ORDERS_CONTAIN . " (codproduct, codorder, amountproductorder) VALUES (:codproduct, :codorder, :amountproductorder)");
+        if ($equal_products != max(count($input_data['products']), count($order_data['order'][0]['products']))) {
 
-                // Parameters binding and execution
-                $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);
-                $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
-                $query->bindParam(':amountproductorder', $product['amountproduct'], PDO::PARAM_INT);
+            $codproducts_delete = [];
+            foreach ($order_data['order'][0]['products'] as $order_product)
+                array_push($codproducts_delete, $order_product['codproduct']);
 
-                $query->execute();
-                $query->closeCursor();
-            }
-        } else {
-            if ($equal_products != max(count($input_data['products']), count($order_data['order'][0]['products']))) {
+            $codproducts_insert = [];
+            foreach ($input_data['products'] as $product)
+                array_push($codproducts_insert, $product['codproduct']);
 
-                $codproducts_delete = [];
-                foreach ($order_data['order'][0]['products'] as $order_product)
-                    array_push($codproducts_delete, $order_product['codproduct']);
+            // Product elements modification
+            foreach ($input_data['products'] as $product) {
+                foreach ($order_data['order'][0]['products'] as $order_product) {
+                    if ($product['codproduct'] == $order_product['codproduct']) {
 
-                $codproducts_insert = [];
-                foreach ($input_data['products'] as $product)
-                    array_push($codproducts_insert, $product['codproduct']);
+                        if (($key = array_search($product['codproduct'], $codproducts_insert)) !== false) unset($codproducts_insert[$key]);
+                        if (($key = array_search($order_product['codproduct'], $codproducts_delete)) !== false) unset($codproducts_delete[$key]);
 
-                // Product elements modification
-                foreach ($input_data['products'] as $product) {
-                    foreach ($order_data['order'][0]['products'] as $order_product) {
-                        if ($product['codproduct'] == $order_product['codproduct']) {
+                        if ($product['amountproduct'] != $order_product['amountproductorder']) {
+                            // SQL Query to add product records to the order
+                            $query = $connection->prepare("UPDATE " . ORDERS_CONTAIN . " SET amountproductorder = :amountproductorder WHERE codproduct = :codproduct " .
+                                "AND codorder = :codorder");
 
-                            if (($key = array_search($product['codproduct'], $codproducts_insert)) !== false) unset($codproducts_insert[$key]);
-                            if (($key = array_search($order_product['codproduct'], $codproducts_delete)) !== false) unset($codproducts_delete[$key]);
+                            // Parameters binding and execution
+                            $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
+                            $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+                            $query->bindParam(':amountproductorder', $product['amountproduct'], PDO::PARAM_INT);
 
-                            if ($product['amountproduct'] != $order_product['amountproductorder']) {
-                                // SQL Query to add product records to the order
-                                $query = $connection->prepare("UPDATE " . ORDERS_CONTAIN . " SET amountproductorder = :amountproductorder WHERE codproduct = :codproduct " .
-                                    "AND codorder = :codorder");
+                            $query->execute();
+                            $query->closeCursor();
 
-                                // Parameters binding and execution
-                                $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
-                                $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
-                                $query->bindParam(':amountproductorder', $product['amountproduct'], PDO::PARAM_INT);
+                            // SQL Query to obtain the product stock
+                            $query = $connection->prepare("SELECT stockproduct FROM " . PRODUCTS . " WHERE codproduct = :codproduct AND coduser = :coduser");
 
-                                $query->execute();
-                                $query->closeCursor();
+                            // Parameters binding and execution
+                            $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
+                            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                            $query->execute();
+                            $result = array_values($query->fetch(PDO::FETCH_ASSOC));
+                            $stockproduct = $result[0];
+                            $nameproduct = $result[1];
+                            $query->closeCursor();
+
+                            // SQL Query to update the products stock if needed
+                            if ($stockproduct !== null) {
+                                if ($product['amountproduct'] > $order_product['amountproductorder']) {
+
+                                    $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                                    if (($stockproduct + $order_product['amountproductorder']) >= $product['amountproduct']) {
+                                        $new_stock = $stockproduct - $product['amountproduct'] + $order_product['amountproductorder'];
+                                    } else {
+                                        $connection->rollBack();
+                                        $connection = null;
+                                        return array('message' => 'The product ' . $nameproduct . ' has not enough stock');
+                                    }
+
+                                    $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
+                                    $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
+
+                                    $query->execute();
+                                    $query->closeCursor();
+                                }
+
+                                if ($product['amountproduct'] < $order_product['amountproductorder']) {
+                                    $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                                    $new_stock = $stockproduct - $product['amountproduct'] + $order_product['amountproductorder'];
+
+                                    $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
+                                    $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
+
+                                    $query->execute();
+                                    $query->closeCursor();
+                                }
                             }
                         }
                     }
                 }
+            }
 
-                $products_delete = [];
-                foreach ($order_data['order'][0]['products'] as $order_product) {
-                    if (in_array($order_product['codproduct'], $codproducts_delete)) array_push($products_delete, $order_product);
-                }
+            $products_delete = [];
+            foreach ($order_data['order'][0]['products'] as $order_product) {
+                if (in_array($order_product['codproduct'], $codproducts_delete)) array_push($products_delete, $order_product);
+            }
 
-                $products_insert = [];
-                foreach ($input_data['products'] as $product) {
-                    if (in_array($product['codproduct'], $codproducts_insert)) array_push($products_insert, $product);
-                }
+            $products_insert = [];
+            foreach ($input_data['products'] as $product) {
+                if (in_array($product['codproduct'], $codproducts_insert)) array_push($products_insert, $product);
+            }
 
-                // Product elements insertion
-                foreach ($products_insert as $product_insert) {
-                    // SQL Query to add product records to the order
-                    $query = $connection->prepare("INSERT INTO " . ORDERS_CONTAIN . " (codproduct, codorder, amountproductorder) VALUES (:codproduct, :codorder, :amountproductorder)");
+            // Product elements insertion
+            foreach ($products_insert as $product_insert) {
+                // SQL Query to add product records to the order
+                $query = $connection->prepare("INSERT INTO " . ORDERS_CONTAIN . " (codproduct, codorder, amountproductorder) VALUES (:codproduct, :codorder, :amountproductorder)");
 
-                    // Parameters binding and execution
+                // Parameters binding and execution
+                $query->bindParam(':codproduct', $product_insert['codproduct'], PDO::PARAM_INT);
+                $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+                $query->bindParam(':amountproductorder', $product_insert['amountproduct'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+
+                // SQL Query to obtain the product stock
+                $query = $connection->prepare("SELECT stockproduct FROM " . PRODUCTS . " WHERE codproduct = :codproduct AND coduser = :coduser");
+
+                // Parameters binding and execution
+                $query->bindParam(':codproduct', $product_insert['codproduct'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $result = array_values($query->fetch(PDO::FETCH_ASSOC));
+                $stockproduct = $result[0];
+                $nameproduct = $result[1];
+                $query->closeCursor();
+
+                // SQL Query to update the products stock if needed
+                if ($stockproduct !== null) {
+                    $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                    if ($stockproduct >= $product_insert['amountproduct']) {
+                        $new_stock = $stockproduct - $product_insert['amountproduct'];
+                    } else {
+                        $connection->rollBack();
+                        $connection = null;
+                        return array('message' => 'The product ' . $nameproduct . ' has not enough stock');
+                    }
+
                     $query->bindParam(':codproduct', $product_insert['codproduct'], PDO::PARAM_INT);
-                    $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
-                    $query->bindParam(':amountproductorder', $product_insert['amountproduct'], PDO::PARAM_INT);
+                    $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
 
                     $query->execute();
                     $query->closeCursor();
                 }
+            }
 
-                // Product elements deletion
-                foreach ($products_delete as $product_delete) {
-                    // SQL Query to add product records to the order
-                    $query = $connection->prepare("DELETE FROM " . ORDERS_CONTAIN . " WHERE codproduct = :codproduct AND codorder = :codorder");
+            // Product elements deletion
+            foreach ($products_delete as $product_delete) {
+                // SQL Query to add product records to the order
+                $query = $connection->prepare("DELETE FROM " . ORDERS_CONTAIN . " WHERE codproduct = :codproduct AND codorder = :codorder");
 
-                    // Parameters binding and execution
+                // Parameters binding and execution
+                $query->bindParam(':codproduct', $product_delete['codproduct'], PDO::PARAM_INT);
+                $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+
+                // SQL Query to obtain the product stock
+                $query = $connection->prepare("SELECT stockproduct FROM " . PRODUCTS . " WHERE codproduct = :codproduct AND coduser = :coduser");
+
+                // Parameters binding and execution
+                $query->bindParam(':codproduct', $product_delete['codproduct'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $result = array_values($query->fetch(PDO::FETCH_ASSOC));
+                $stockproduct = $result[0];
+                $nameproduct = $result[1];
+                $query->closeCursor();
+
+                // SQL Query to update the products stock if needed
+                if ($stockproduct !== null) {
+                    $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                    $new_stock = $stockproduct + $product_delete['amountproductorder'];
+
                     $query->bindParam(':codproduct', $product_delete['codproduct'], PDO::PARAM_INT);
-                    $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
+                    $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
 
                     $query->execute();
                     $query->closeCursor();
@@ -699,6 +808,35 @@ function delete_order($codorder)
         // Transaction to completely delete an order
         $connection = create_pdo_object();
         $connection->beginTransaction();
+
+        // SQL Query to delete the order products data
+        $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . ORDERS_CONTAIN . ".amountproductorder, " . PRODUCTS . ".stockproduct FROM " .
+            ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS .
+            ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD .
+            ".codorder WHERE " . ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
+
+        // Parameters binding and execution
+        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        $query->execute();
+        $products = $query->fetchAll(PDO::FETCH_ASSOC);
+        $query->closeCursor();
+
+        foreach ($products as $product) {
+            // SQL Query to update the products stock if needed
+            if ($product['stockproduct'] !== null) {
+                $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                $new_stock = $product['stockproduct'] + $product['amountproductorder'];
+
+                $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);
+                $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+            }
+        }
 
         // SQL Query to delete the order products
         $query = $connection->prepare("DELETE " . ORDERS_CONTAIN . " FROM " . ORDERS_CONTAIN . " JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " .
