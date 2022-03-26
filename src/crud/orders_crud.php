@@ -45,7 +45,7 @@ function obtain_active_orders($requirements)
         // If there is a customer name to search, the clause is added
         $tel_name_clause = '';
         $requirements['telnamecustomer'] = trim($requirements['telnamecustomer']);
-        if ($requirements['telnamecustomer'] != '' && $requirements['today'] == 1)
+        if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1)
             $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS . ".telcustomer REGEXP :telnamecustomer))";
 
         // SQL Query to search active orders
@@ -59,7 +59,7 @@ function obtain_active_orders($requirements)
         $query->bindParam(':begin', $begin, PDO::PARAM_INT);
         $query->bindParam(':end', $end, PDO::PARAM_INT);
 
-        if ($requirements['telnamecustomer'] != '' && $requirements['today'] == 1) $query->bindParam(':telnamecustomer', $requirements['telnamecustomer'], PDO::PARAM_STR);
+        if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) $query->bindParam(':telnamecustomer', $requirements['telnamecustomer'], PDO::PARAM_STR);
 
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -92,6 +92,8 @@ function obtain_active_orders($requirements)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -147,6 +149,8 @@ function obtain_active_order($codorder)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -189,7 +193,7 @@ function obtain_sold_orders($requirements)
         // If there is a customer name or number phone to search, the clause is added
         $telname_clause = '';
         $requirements['nametelcustomer'] = trim($requirements['nametelcustomer']);
-        if ($requirements['nametelcustomer'] != '') $telname_clause = " AND (" . CUSTOMERS . ".namecustomer REGEXP :nametelcustomer OR " . CUSTOMERS . ".telcustomer REGEXP :nametelcustomer)";
+        if ($requirements['nametelcustomer'] !== '') $telname_clause = " AND (" . CUSTOMERS . ".namecustomer REGEXP :nametelcustomer OR " . CUSTOMERS . ".telcustomer REGEXP :nametelcustomer)";
 
         // Date clauses
         $datebegin_clause = '';
@@ -208,7 +212,7 @@ function obtain_sold_orders($requirements)
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
         $query->bindParam(':begin', $begin, PDO::PARAM_INT);
         $query->bindParam(':end', $end, PDO::PARAM_INT);
-        if ($requirements['nametelcustomer'] != '') $query->bindParam(':nametelcustomer', $requirements['nametelcustomer'], PDO::PARAM_STR);
+        if ($requirements['nametelcustomer'] !== '') $query->bindParam(':nametelcustomer', $requirements['nametelcustomer'], PDO::PARAM_STR);
         if (array_key_exists('datebegin', $requirements)) $query->bindParam(':datebegin', $requirements['datebegin'], PDO::PARAM_STR);
         if (array_key_exists('dateend', $requirements)) $query->bindParam(':dateend', $requirements['dateend'], PDO::PARAM_STR);
 
@@ -223,6 +227,8 @@ function obtain_sold_orders($requirements)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -279,6 +285,8 @@ function obtain_sold_order($codordersold)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -327,29 +335,40 @@ function add_order($coddraft)
             if ($result) {
                 $draft['draft'][0]['products'] = $result;
             } else {
-                $query->closeCursor();
+                clear_query_data($query, $connection);
                 return array('message' => 'An order cannot be empty');
             }
         } else {
+            clear_query_data($query, $connection);
             return array('message' => 'There is no coincident draft');
         }
 
         $query->closeCursor();
 
-        if ($draft['draft'][0]['namecustomertmp'] == null && $draft['draft'][0]['telcustomertmp'] == null && $draft['draft'][0]['codcustomer'] == null)
+        if ($draft['draft'][0]['namecustomertmp'] === null && $draft['draft'][0]['telcustomertmp'] === null && $draft['draft'][0]['codcustomer'] === null) {
+            $connection = null;
             return array('message' => 'An order must have a customer');
+        }
 
-        if ($draft['draft'][0]['codcustomer'] == null && $draft['draft'][0]['namecustomertmp'] == null && $draft['draft'][0]['telcustomertmp'] != null)
+        if ($draft['draft'][0]['codcustomer'] === null && $draft['draft'][0]['namecustomertmp'] === null && $draft['draft'][0]['telcustomertmp'] !== null) {
+            $connection = null;
             return array('message' => 'An customer must have a name');
+        }
 
-        if ($draft['draft'][0]['codcustomer'] == null && $draft['draft'][0]['namecustomertmp'] != null && $draft['draft'][0]['telcustomertmp'] == null)
+        if ($draft['draft'][0]['codcustomer'] === null && $draft['draft'][0]['namecustomertmp'] !== null && $draft['draft'][0]['telcustomertmp'] === null) {
+            $connection = null;
             return array('message' => 'An order must have a phone number');
+        }
 
-        if ($draft['draft'][0]['telcustomertmp'] != null && !preg_match('#^[6-9]([0-9]){8}$#', $draft['draft'][0]['telcustomertmp']))
+        if ($draft['draft'][0]['telcustomertmp'] !== null && !preg_match('#^[6-9]([0-9]){8}$#', $draft['draft'][0]['telcustomertmp'])) {
+            $connection = null;
             return array('message' => 'The phone number is not valid');
+        }
 
-        if ($draft['draft'][0]['namecustomertmp'] != null && trim($draft['draft'][0]['namecustomertmp']) == '')
+        if ($draft['draft'][0]['namecustomertmp'] !== null && trim($draft['draft'][0]['namecustomertmp']) === '') {
+            $connection = null;
             return array('message' => 'The customer name is not valid');
+        }
 
         // SQL Query to search a new primary key 
         $query = $connection->prepare("SELECT max(codorder) FROM " . ORDERS);
@@ -358,7 +377,10 @@ function add_order($coddraft)
         $query->closeCursor();
         $codorder = $codorder + 1;
 
-        if ($codorder > 9223372036854775808) return array('overflow' => 'The order list is full. Contact the administrator');
+        if ($codorder > 9223372036854775808) {
+            $connection = null;
+            return array('overflow' => 'The order list is full. Contact the administrator');
+        }
 
         $query = $connection->prepare("SELECT max(" . ORDERS . ".numdayorder) FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " .
             CUSTOMERS . ".codcustomer WHERE " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS . ".dateorder = (CURDATE())");
@@ -368,7 +390,10 @@ function add_order($coddraft)
         $query->closeCursor();
         $numdayorder = $numdayorder + 1;
 
-        if ($numdayorder > 8388607) return array('overflow' => 'The order list is full for today. Contact the administrator');
+        if ($numdayorder > 8388607) {
+            $connection = null;
+            return array('overflow' => 'The order list is full for today. Contact the administrator');
+        }
 
         if ($draft['draft'][0]['codcustomer'] == null) {
             $query = $connection->prepare("SELECT max(codcustomer) FROM " . CUSTOMERS);
@@ -377,15 +402,20 @@ function add_order($coddraft)
             $query->closeCursor();
             $codcustomer = $codcustomer + 1;
 
-            if ($codcustomer > 9223372036854775808) return array('overflow' => 'The customer list is full. Contact the administrator');
+            if ($codcustomer > 9223372036854775808) {
+                $connection = null;
+                return array('overflow' => 'The customer list is full. Contact the administrator');
+            }
         }
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
     $connection->beginTransaction();
     try {
-        if ($draft['draft'][0]['codcustomer'] == null) {
+        if ($draft['draft'][0]['codcustomer'] === null) {
             // SQL Query to insert a customer
             $query = $connection->prepare("INSERT INTO " . CUSTOMERS . " (codcustomer, namecustomer, telcustomer, coduser) VALUES " .
                 "(:codcustomer, :namecustomer, :telcustomer, :coduser)");
@@ -406,7 +436,7 @@ function add_order($coddraft)
         $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
         $query->bindParam(':numdayorder', $numdayorder, PDO::PARAM_INT);
 
-        if ($draft['draft'][0]['codcustomer'] == null) {
+        if ($draft['draft'][0]['codcustomer'] === null) {
             $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
         } else {
             $query->bindParam(':codcustomer', $draft['draft'][0]['codcustomer'], PDO::PARAM_INT);
@@ -472,6 +502,8 @@ function add_order($coddraft)
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -551,10 +583,15 @@ function edit_order($input_data)
 
             $query->execute();
             $result = $query->fetch(PDO::FETCH_ASSOC);
-            if (!$result) return array('message' => 'The customer does not exists');
             $query->closeCursor();
+            if (!$result) {
+                $connection = null;
+                return array('message' => 'The customer does not exists');
+            }
         }
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -571,7 +608,10 @@ function edit_order($input_data)
             $query->closeCursor();
             $codcustomer = $codcustomer + 1;
 
-            if ($codcustomer > 9223372036854775808) return array('overflow' => 'The customer list is full. Contact the administrator');
+            if ($codcustomer > 9223372036854775808) {
+                $connection = null;
+                return array('overflow' => 'The customer list is full. Contact the administrator');
+            }
 
             // SQL Query to insert a customer
             $query = $connection->prepare("INSERT INTO " . CUSTOMERS . " (codcustomer, namecustomer, telcustomer, coduser) VALUES " .
@@ -786,6 +826,8 @@ function edit_order($input_data)
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -861,12 +903,17 @@ function delete_order($codorder)
         $query->execute();
         $rows_affected = $query->rowCount();
         if ($rows_affected == 0) {
+            $query->closeCursor();
+            $connection = null;
             return array('message' => 'There is no coincident order');
         }
 
+        $query->closeCursor();
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -890,14 +937,14 @@ function sell_order($codorder, $moneyreceived)
     $moneyreceived = round($moneyreceived, 2);
 
     try {
-        $connection = create_pdo_object();
-
         // Check if the money received is enough
         $order = obtain_active_order($codorder);
         if (array_key_exists('message', $order)) return $order;
         $total_price = 0;
         foreach ($order['order'][0]['products'] as $product) $total_price += ($product['priceproduct'] * $product['amountproductorder']);
         if ($total_price > $moneyreceived) return array('message' => 'The money received is less than the price of the order');
+
+        $connection = create_pdo_object();
 
         // SQL Query to search for a primary key
         $query = $connection->prepare("SELECT max(codordersold) FROM " . ORDERS_SOLD);
@@ -906,7 +953,10 @@ function sell_order($codorder, $moneyreceived)
         $query->closeCursor();
         $codordersold = $codordersold + 1;
 
-        if ($codordersold > 9223372036854775808) return array('overflow' => 'The orders sold list is full. Contact the administrator');
+        if ($codordersold > 9223372036854775808) {
+            $connection = null;
+            return array('overflow' => 'The orders sold list is full. Contact the administrator');
+        }
 
         // SQL Query to search for a unique id
         $query = $connection->prepare("SELECT max(cast(idordersold AS SIGNED)) FROM " . ORDERS_SOLD);
@@ -915,7 +965,10 @@ function sell_order($codorder, $moneyreceived)
         $query->closeCursor();
         $idordersold = $idordersold + 1;
 
-        if ($codordersold > 999999) return array('overflow' => 'The orders sold id list is full. Contact the administrator');
+        if ($codordersold > 999999) {
+            $connection = null;
+            return array('overflow' => 'The orders sold id list is full. Contact the administrator');
+        }
         $idordersold = str_pad($idordersold, 6, '0', STR_PAD_LEFT);
 
         // SQL Query to set an order as sold
@@ -928,9 +981,12 @@ function sell_order($codorder, $moneyreceived)
         $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
 
         $query->execute();
+        $query->closeCursor();
         $connection = null;
         return array('success_message' => 'The order has been marked as sold correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }

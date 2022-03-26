@@ -34,7 +34,7 @@ function obtain_products($requirements)
         // If there is a product name to search, the clause is added
         $name_clause = '';
         $requirements['name'] = trim($requirements['name']);
-        if ($requirements['name'] != '') $name_clause = " AND (nameproduct REGEXP :nameproduct)";
+        if ($requirements['name'] !== '') $name_clause = " AND (nameproduct REGEXP :nameproduct)";
 
         // SQL Query to search products in alphabetic order
         $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE productdeleted = 0 AND coduser = :coduser" . $name_clause .
@@ -45,7 +45,7 @@ function obtain_products($requirements)
         $query->bindParam(':begin', $begin, PDO::PARAM_INT);
         $query->bindParam(':end', $end, PDO::PARAM_INT);
 
-        if ($requirements['name'] != '') $query->bindParam(':nameproduct', $requirements['name'], PDO::PARAM_STR);
+        if ($requirements['name'] !== '') $query->bindParam(':nameproduct', $requirements['name'], PDO::PARAM_STR);
 
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -58,6 +58,8 @@ function obtain_products($requirements)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -94,6 +96,8 @@ function obtain_product($codproduct)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -107,7 +111,7 @@ function add_product($input_data)
 {
     // Requirements control
     $input_data['nameproduct'] = trim($input_data['nameproduct']);
-    if ($input_data['nameproduct'] == '') return array('message' => 'The product name is required');
+    if ($input_data['nameproduct'] === '') return array('message' => 'The product name is required');
     if (strlen($input_data['nameproduct']) > 240) return array('message' => 'The product name is invalid');
 
     if ((!is_numeric($input_data['priceproduct'])) || $input_data['priceproduct'] < 0 || round($input_data['priceproduct'], 2) > 999.99) return array('message' => 'The price is invalid');
@@ -129,7 +133,10 @@ function add_product($input_data)
         $query->closeCursor();
         $codproduct = $codproduct + 1;
 
-        if ($codproduct > 9223372036854775808) return array('overflow' => 'The product list is full. Contact the administrator');
+        if ($codproduct > 9223372036854775808) {
+            $connection = null;
+            return array('overflow' => 'The product list is full. Contact the administrator');
+        }
 
         // SQL Query to insert a product
         if (array_key_exists('stockproduct', $input_data)) {
@@ -149,9 +156,11 @@ function add_product($input_data)
 
         $query->execute();
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The product has been added correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -166,7 +175,7 @@ function edit_product($input_data)
     // Requirements control
     if (array_key_exists('nameproduct', $input_data)) {
         $input_data['nameproduct'] = trim($input_data['nameproduct']);
-        if ($input_data['nameproduct'] == '') return array('message' => 'The product name is required');
+        if ($input_data['nameproduct'] === '') return array('message' => 'The product name is required');
         if (strlen($input_data['nameproduct']) > 240) return array('message' => 'The product name is invalid');
     }
 
@@ -192,7 +201,7 @@ function edit_product($input_data)
     $equal = 0;
     foreach ($input_data as $element => $value) {
         foreach ($product_data['product'] as $product_attr => $product_value) {
-            if ($element == $product_attr && ($value == $product_value || ($value == 'null' && $product_value == null))) {
+            if ($element == $product_attr && ($value == $product_value || (($value === 'null' || $value === null) && $product_value === null))) {
                 $equal = $equal + 1;
             }
         }
@@ -209,7 +218,7 @@ function edit_product($input_data)
 
         $stockproduct_clause = '';
         if (array_key_exists('stockproduct', $input_data)) {
-            if ($nameproduct_clause != '') {
+            if ($nameproduct_clause !== '') {
                 $stockproduct_clause = ", stockproduct = :stockproduct";
             } else {
                 $stockproduct_clause = "stockproduct = :stockproduct";
@@ -218,7 +227,7 @@ function edit_product($input_data)
 
         $priceproduct_clause = '';
         if (array_key_exists('priceproduct', $input_data)) {
-            if ($stockproduct_clause != '' || $nameproduct_clause != '') {
+            if ($stockproduct_clause !== '' || $nameproduct_clause !== '') {
                 $priceproduct_clause = ", priceproduct = :priceproduct";
             } else {
                 $priceproduct_clause = "priceproduct = :priceproduct";
@@ -233,7 +242,7 @@ function edit_product($input_data)
         if (array_key_exists('nameproduct', $input_data)) $query->bindParam(':nameproduct', $input_data['nameproduct'], PDO::PARAM_STR);
         if (array_key_exists('priceproduct', $input_data)) $query->bindParam(':priceproduct', $input_data['priceproduct'], PDO::PARAM_STR);
         if (array_key_exists('stockproduct', $input_data)) {
-            if ($input_data['stockproduct'] == 'null') {
+            if ($input_data['stockproduct'] === 'null' || $input_data['stockproduct'] === null) {
                 $query->bindValue(':stockproduct', NULL, PDO::PARAM_NULL);
             } else {
                 $query->bindParam(':stockproduct', $input_data['stockproduct'], PDO::PARAM_INT);
@@ -243,9 +252,11 @@ function edit_product($input_data)
 
         $query->execute();
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The product has been edited correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -273,7 +284,10 @@ function delete_product($codproduct)
 
         $query->execute();
         $result = $query->fetch(PDO::FETCH_ASSOC);
-        if (!$result) return array('message' => 'There is no coincident product');
+        if (!$result) {
+            clear_query_data($query, $connection);
+            return array('message' => 'There is no coincident product');
+        }
         $query->closeCursor();
 
         // SQL Query search a product on orders and drafts
@@ -312,6 +326,8 @@ function delete_product($codproduct)
         clear_query_data($query, $connection);
         return array('success_message' => 'The product has been deleted correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -339,7 +355,10 @@ function restore_product($codproduct)
 
         $query->execute();
         $result = $query->fetch(PDO::FETCH_ASSOC);
-        if (!$result) return array('message' => 'There is no coincident deleted product');
+        if (!$result) {
+            clear_query_data($query, $connection);
+            return array('message' => 'There is no coincident deleted product');
+        }
         $query->closeCursor();
 
         // SQL Query to modify a product to not display as deleted
@@ -354,6 +373,8 @@ function restore_product($codproduct)
         clear_query_data($query, $connection);
         return array('success_message' => 'The product has been restored correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }

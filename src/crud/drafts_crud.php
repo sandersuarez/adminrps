@@ -28,6 +28,8 @@ function obtain_drafts()
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -81,6 +83,8 @@ function obtain_draft($coddraft)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -128,7 +132,10 @@ function add_draft($input_data)
 
             $query->execute();
             $result = $query->fetch(PDO::FETCH_ASSOC);
-            if (!$result) return array('message' => 'The customer does not exists');
+            if (!$result) {
+                clear_query_data($query, $connection);
+                return array('message' => 'The customer does not exists');
+            }
             $query->closeCursor();
         }
 
@@ -139,8 +146,13 @@ function add_draft($input_data)
         $query->closeCursor();
         $coddraft = $coddraft + 1;
 
-        if ($coddraft > 9223372036854775808) return array('overflow' => 'The draft list is full. Contact the administrator');
+        if ($coddraft > 9223372036854775808) {
+            $connection = null;
+            return array('overflow' => 'The draft list is full. Contact the administrator');
+        }
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -197,6 +209,8 @@ function add_draft($input_data)
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -226,12 +240,12 @@ function edit_draft($input_data)
         if (strlen($input_data['telcustomertmp']) > 9) return array('message' => 'The customer phone number is invalid');
     }
 
-    if ((((array_key_exists('namecustomertmp', $input_data) && $input_data['namecustomertmp'] != '') ||
-            (!array_key_exists('namecustomertmp', $input_data) && $draft_data['draft'][0]['namecustomertmp'] != null)) ||
-            ((array_key_exists('telcustomertmp', $input_data) && $input_data['telcustomertmp'] != '') ||
-                (!array_key_exists('telcustomertmp', $input_data) && $draft_data['draft'][0]['telcustomertmp'] != null))) &&
+    if ((((array_key_exists('namecustomertmp', $input_data) && $input_data['namecustomertmp'] !== '') ||
+            (!array_key_exists('namecustomertmp', $input_data) && $draft_data['draft'][0]['namecustomertmp'] !== null)) ||
+            ((array_key_exists('telcustomertmp', $input_data) && $input_data['telcustomertmp'] !== '') ||
+                (!array_key_exists('telcustomertmp', $input_data) && $draft_data['draft'][0]['telcustomertmp'] !== null))) &&
         ((array_key_exists('codcustomer', $input_data) && $input_data['codcustomer'] != 0) ||
-            (!array_key_exists('codcustomer', $input_data) && $draft_data['draft'][0]['codcustomer'] != null))
+            (!array_key_exists('codcustomer', $input_data) && $draft_data['draft'][0]['codcustomer'] !== null))
     )
         return array('message', 'The customer code and the customer data cannot be inserted at the same time');
 
@@ -251,7 +265,7 @@ function edit_draft($input_data)
     foreach ($input_data as $element => $value) {
         foreach ($draft_data['draft'][0] as $draft_attr => $draft_value) {
             if ($element == $draft_attr && $value == $draft_value) $equal = $equal + 1;
-            if ($element == 'codcustomer' && $draft_attr == 'codcustomer' && $value == 0 && $draft_value == null) $equal = $equal + 1;
+            if ($element == 'codcustomer' && $draft_attr == 'codcustomer' && $value == 0 && $draft_value === null) $equal = $equal + 1;
         }
     }
 
@@ -286,10 +300,15 @@ function edit_draft($input_data)
 
             $query->execute();
             $result = $query->fetch(PDO::FETCH_ASSOC);
-            if (!$result) return array('message' => 'The customer does not exists');
+            if (!$result) {
+                clear_query_data($query, $connection);
+                return array('message' => 'The customer does not exists');
+            }
             $query->closeCursor();
         }
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -304,7 +323,7 @@ function edit_draft($input_data)
 
             $telcustomertmp_clause = '';
             if (array_key_exists('telcustomertmp', $input_data)) {
-                if ($namecustomertmp_clause != '') {
+                if ($namecustomertmp_clause !== '') {
                     $telcustomertmp_clause = ", telcustomertmp = :telcustomertmp";
                 } else {
                     $telcustomertmp_clause = "telcustomertmp = :telcustomertmp";
@@ -313,7 +332,7 @@ function edit_draft($input_data)
 
             $codcustomer_clause = '';
             if (array_key_exists('codcustomer', $input_data)) {
-                if ($telcustomertmp_clause != '' || $namecustomertmp_clause != '') {
+                if ($telcustomertmp_clause !== '' || $namecustomertmp_clause !== '') {
                     $codcustomer_clause = ", codcustomer = :codcustomer";
                 } else {
                     $codcustomer_clause = "codcustomer = :codcustomer";
@@ -334,7 +353,7 @@ function edit_draft($input_data)
             }
 
             if (array_key_exists('namecustomertmp', $input_data)) {
-                if ($input_data['namecustomertmp'] == '') {
+                if ($input_data['namecustomertmp'] === '') {
                     $query->bindValue(':namecustomertmp', NULL, PDO::PARAM_NULL);
                 } else {
                     $query->bindParam(':namecustomertmp', $input_data['namecustomertmp'], PDO::PARAM_STR);
@@ -342,7 +361,7 @@ function edit_draft($input_data)
             }
 
             if (array_key_exists('telcustomertmp', $input_data)) {
-                if ($input_data['telcustomertmp'] == '') {
+                if ($input_data['telcustomertmp'] === '') {
                     $query->bindValue(':telcustomertmp', NULL, PDO::PARAM_NULL);
                 } else {
                     $query->bindParam(':telcustomertmp', $input_data['telcustomertmp'], PDO::PARAM_STR);
@@ -446,6 +465,8 @@ function edit_draft($input_data)
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -489,12 +510,16 @@ function delete_draft($coddraft)
         $query->execute();
         $rows_affected = $query->rowCount();
         if ($rows_affected == 0) {
+            clear_query_data($query, $connection);
             return array('message' => 'There is no coincident draft');
         }
 
+        $query->closeCursor();
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 
@@ -538,12 +563,15 @@ function delete_all_drafts()
                 $query->closeCursor();
             }
         } else {
+            $connection = null;
             return array('message' => 'There are no drafts');
         }
 
         $connection->commit();
     } catch (PDOException $e) {
         $connection->rollBack();
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 

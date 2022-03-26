@@ -17,11 +17,12 @@ function obtain_date_last_key()
 
         $query->execute();
         $result = $query->fetch(PDO::FETCH_ASSOC);
-        $answer = $result;
 
         clear_query_data($query, $connection);
-        return $answer;
+        return $result;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -51,9 +52,11 @@ function edit_user_iva($iva, $old_iva)
 
         $query->execute();
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The iva has been updated correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -84,9 +87,11 @@ function update_password($input_data)
 
         $query->execute();
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The password has been updated correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }

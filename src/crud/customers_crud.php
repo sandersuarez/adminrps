@@ -34,7 +34,7 @@ function obtain_customers($requirements)
         // If there is a customer name to search, the clause is added
         $tel_name_clause = '';
         $requirements['telname'] = trim($requirements['telname']);
-        if ($requirements['telname'] != '') $tel_name_clause = " AND ((namecustomer REGEXP :telnamecustomer) OR (telcustomer REGEXP :telnamecustomer))";
+        if ($requirements['telname'] !== '') $tel_name_clause = " AND ((namecustomer REGEXP :telnamecustomer) OR (telcustomer REGEXP :telnamecustomer))";
 
         // SQL Query to search customers in alphabetic order
         $query = $connection->prepare("SELECT codcustomer, namecustomer, telcustomer FROM " . CUSTOMERS . " WHERE coduser = :coduser" . $tel_name_clause .
@@ -58,6 +58,8 @@ function obtain_customers($requirements)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -93,6 +95,8 @@ function obtain_customer($codcustomer)
         clear_query_data($query, $connection);
         return $answer;
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -106,7 +110,7 @@ function add_customer($input_data)
 {
     // Requirements control
     $input_data['namecustomer'] = trim($input_data['namecustomer']);
-    if ($input_data['namecustomer'] == '') return array('message' => 'The customer name is required');
+    if ($input_data['namecustomer'] === '') return array('message' => 'The customer name is required');
     if (strlen($input_data['namecustomer']) > 60) return array('message' => 'The customer name is invalid');
 
     if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'The phone number is invalid');
@@ -120,7 +124,10 @@ function add_customer($input_data)
         $query->closeCursor();
         $codcustomer = $codcustomer + 1;
 
-        if ($codcustomer > 9223372036854775808) return array('overflow' => 'The customer list is full. Contact the administrator');
+        if ($codcustomer > 9223372036854775808) {
+            $connection = null;
+            return array('overflow' => 'The customer list is full. Contact the administrator');
+        }
 
         // SQL Query to insert a customer
         $query = $connection->prepare("INSERT INTO " . CUSTOMERS . " (codcustomer, namecustomer, telcustomer, coduser) VALUES " .
@@ -134,9 +141,11 @@ function add_customer($input_data)
 
         $query->execute();
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The customer has been added correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -152,7 +161,7 @@ function edit_customer($input_data)
     // Requirements control
     if (array_key_exists('namecustomer', $input_data)) {
         $input_data['namecustomer'] = trim($input_data['namecustomer']);
-        if ($input_data['namecustomer'] == '') return array('message' => 'The customer name is required');
+        if ($input_data['namecustomer'] === '') return array('message' => 'The customer name is required');
         if (strlen($input_data['namecustomer']) > 60) return array('message' => 'The customer name is invalid');
     }
 
@@ -169,7 +178,7 @@ function edit_customer($input_data)
     $equal = 0;
     foreach ($input_data as $element => $value) {
         foreach ($customer_data['customer'] as $customer_attr => $customer_value) {
-            if ($element == $customer_attr && ($value == $customer_value || ($value == 'null' && $customer_value == null))) {
+            if ($element == $customer_attr && ($value == $customer_value || (($value === 'null' || $value === null) && $customer_value === null))) {
                 $equal = $equal + 1;
             }
         }
@@ -203,9 +212,11 @@ function edit_customer($input_data)
 
         $query->execute();
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The customer has been edited correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
@@ -232,7 +243,10 @@ function delete_customer($codcustomer)
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
         $query->execute();
-        if (array_values($query->fetch(PDO::FETCH_ASSOC))[0]) return array('message' => 'The customer cannot be deleted because he has orders or drafts created in his name');
+        if (array_values($query->fetch(PDO::FETCH_ASSOC))[0]) {
+            clear_query_data($query, $connection);
+            return array('message' => 'The customer cannot be deleted because he has orders or drafts created in his name');
+        }
         $query->closeCursor();
 
         // SQL Query to delete a customer
@@ -245,12 +259,15 @@ function delete_customer($codcustomer)
         $query->execute();
         $rows_affected = $query->rowCount();
         if ($rows_affected == 0) {
+            clear_query_data($query, $connection);
             return array('message' => 'There is no coincident customer');
         }
 
-        $connection = null;
+        clear_query_data($query, $connection);
         return array('success_message' => 'The customer has been deleted correctly');
     } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
         return process_pdo_exception($e);
     }
 }
