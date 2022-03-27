@@ -2,6 +2,7 @@
     "require": {
         "slim/slim": "4.*",
         "slim/psr7": "^1.5",
-        "symfony/polyfill-uuid": "^1.24"
+        "symfony/polyfill-uuid": "^1.24",
+        "tecnickcom/tcpdf": "^6.4"
     }
 }
