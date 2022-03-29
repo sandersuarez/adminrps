@@ -17,11 +17,13 @@ $app->setBasePath('/rest');
 require __DIR__ . '/../../src/utilities/validate_order_product_list.php';
 require __DIR__ . '/../../src/utilities/validate_mysql_date.php';
 
+// Routes
 require __DIR__ . '/../../src/routes/session.php';
 require __DIR__ . '/../../src/routes/users.php';
 require __DIR__ . '/../../src/routes/products.php';
 require __DIR__ . '/../../src/routes/customers.php';
 require __DIR__ . '/../../src/routes/drafts.php';
 require __DIR__ . '/../../src/routes/orders.php';
+require __DIR__ . '/../../src/routes/data_pdf.php';
 
 $app->run();
