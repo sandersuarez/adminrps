@@ -36,7 +36,7 @@ function obtain_active_orders($requirements)
             if ($requirements['today']) {
                 $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".numdayorder";
             } else {
-                $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE())";
+                $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC";
             }
         } else {
             return array('message' => 'Select a valid order time segment');
