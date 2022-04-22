@@ -512,11 +512,80 @@ function add_order($coddraft)
 }
 
 /**
+ * Function to mark an order as sold
+ * @param integer $codorder
+ * @param float $moneyreceived
+ * @return array
+ */
+function sell_order($codorder, $moneyreceived)
+{
+    // Requirements control
+    if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+        return array('message' => 'The order code is invalid');
+
+    if ((!is_numeric($moneyreceived)) || $moneyreceived < 0 || round($moneyreceived, 2) > 999.99) return array('message' => 'The money received is invalid');
+    $moneyreceived = round($moneyreceived, 2);
+
+    try {
+        // Check if the money received is enough
+        $order = obtain_active_order($codorder);
+        if (array_key_exists('message', $order)) return $order;
+        $total_price = 0;
+        foreach ($order['order'][0]['products'] as $product) $total_price += ($product['priceproduct'] * $product['amountproductorder']);
+        if ($total_price > $moneyreceived) return array('message' => 'The money received is less than the price of the order');
+
+        $connection = create_pdo_object();
+
+        // SQL Query to search for a primary key
+        $query = $connection->prepare("SELECT max(codordersold) FROM " . ORDERS_SOLD);
+        $query->execute();
+        $codordersold = $query->fetch()[0];
+        $query->closeCursor();
+        $codordersold = $codordersold + 1;
+
+        if ($codordersold > 9223372036854775808) {
+            $connection = null;
+            return array('overflow' => 'The orders sold list is full. Contact the administrator');
+        }
+
+        // SQL Query to search for a unique id
+        $query = $connection->prepare("SELECT max(cast(idordersold AS SIGNED)) FROM " . ORDERS_SOLD);
+        $query->execute();
+        $idordersold = $query->fetch()[0];
+        $query->closeCursor();
+        $idordersold = $idordersold + 1;
+
+        if ($codordersold > 999999) {
+            $connection = null;
+            return array('overflow' => 'The orders sold id list is full. Contact the administrator');
+        }
+        $idordersold = str_pad($idordersold, 6, '0', STR_PAD_LEFT);
+
+        // SQL Query to set an order as sold
+        $query = $connection->prepare("INSERT INTO " . ORDERS_SOLD . " (codordersold, idordersold, moneyreceived, codorder) VALUES (:codordersold, :idordersold, :moneyreceived, :codorder)");
+
+        // Parameters binding and execution
+        $query->bindParam(':codordersold', $codordersold, PDO::PARAM_INT);
+        $query->bindParam(':idordersold', $idordersold, PDO::PARAM_STR_CHAR);
+        $query->bindParam(':moneyreceived', $moneyreceived, PDO::PARAM_STR);
+        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+
+        $query->execute();
+        $query->closeCursor();
+        $connection = null;
+        return array('success_message' => 'The order has been marked as sold correctly');
+    } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
+        return process_pdo_exception($e);
+    }
+}
+
+/**
  * Function to edit an order added by a user
  * @param array $input_data
  * @return array
  */
-
 function edit_order($input_data)
 {
     // Obtain the order data
@@ -922,71 +991,97 @@ function delete_order($codorder)
 }
 
 /**
- * Function to mark an order as sold
- * @param integer $codorder
- * @param float $moneyreceived
+ * Function to delete all the unclaimed orders of a user
  * @return array
  */
-function sell_order($codorder, $moneyreceived)
+function delete_all_unclaimed_orders()
 {
-    // Requirements control
-    if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The order code is invalid');
-
-    if ((!is_numeric($moneyreceived)) || $moneyreceived < 0 || round($moneyreceived, 2) > 999.99) return array('message' => 'The money received is invalid');
-    $moneyreceived = round($moneyreceived, 2);
-
     try {
-        // Check if the money received is enough
-        $order = obtain_active_order($codorder);
-        if (array_key_exists('message', $order)) return $order;
-        $total_price = 0;
-        foreach ($order['order'][0]['products'] as $product) $total_price += ($product['priceproduct'] * $product['amountproductorder']);
-        if ($total_price > $moneyreceived) return array('message' => 'The money received is less than the price of the order');
-
+        // Transaction to completely delete an order
         $connection = create_pdo_object();
+        $connection->beginTransaction();
 
-        // SQL Query to search for a primary key
-        $query = $connection->prepare("SELECT max(codordersold) FROM " . ORDERS_SOLD);
-        $query->execute();
-        $codordersold = $query->fetch()[0];
-        $query->closeCursor();
-        $codordersold = $codordersold + 1;
-
-        if ($codordersold > 9223372036854775808) {
-            $connection = null;
-            return array('overflow' => 'The orders sold list is full. Contact the administrator');
-        }
-
-        // SQL Query to search for a unique id
-        $query = $connection->prepare("SELECT max(cast(idordersold AS SIGNED)) FROM " . ORDERS_SOLD);
-        $query->execute();
-        $idordersold = $query->fetch()[0];
-        $query->closeCursor();
-        $idordersold = $idordersold + 1;
-
-        if ($codordersold > 999999) {
-            $connection = null;
-            return array('overflow' => 'The orders sold id list is full. Contact the administrator');
-        }
-        $idordersold = str_pad($idordersold, 6, '0', STR_PAD_LEFT);
-
-        // SQL Query to set an order as sold
-        $query = $connection->prepare("INSERT INTO " . ORDERS_SOLD . " (codordersold, idordersold, moneyreceived, codorder) VALUES (:codordersold, :idordersold, :moneyreceived, :codorder)");
+        // SQL Query to search unclaimed active orders
+        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
+            ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
+            ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
+            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC");
 
         // Parameters binding and execution
-        $query->bindParam(':codordersold', $codordersold, PDO::PARAM_INT);
-        $query->bindParam(':idordersold', $idordersold, PDO::PARAM_STR_CHAR);
-        $query->bindParam(':moneyreceived', $moneyreceived, PDO::PARAM_STR);
-        $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
         $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
         $query->closeCursor();
-        $connection = null;
-        return array('success_message' => 'The order has been marked as sold correctly');
+
+        if ($result) {
+            foreach ($result as $order) {
+
+                // SQL Query to delete the order products data
+                $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . ORDERS_CONTAIN . ".amountproductorder, " . PRODUCTS . ".stockproduct FROM " .
+                    ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS .
+                    ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD .
+                    ".codorder WHERE " . ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
+
+                // Parameters binding and execution
+                $query->bindParam(':codorder', $order['codorder'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $products = $query->fetchAll(PDO::FETCH_ASSOC);
+                $query->closeCursor();
+
+                foreach ($products as $product) {
+                    // SQL Query to update the products stock if needed
+                    if ($product['stockproduct'] !== null) {
+                        $query = $connection->prepare("UPDATE " . PRODUCTS . " SET stockproduct = :stockproduct WHERE codproduct = :codproduct");
+
+                        $new_stock = $product['stockproduct'] + $product['amountproductorder'];
+
+                        $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);
+                        $query->bindParam(':stockproduct', $new_stock, PDO::PARAM_INT);
+
+                        $query->execute();
+                        $query->closeCursor();
+                    }
+                }
+
+                // SQL Query to delete the order products
+                $query = $connection->prepare("DELETE " . ORDERS_CONTAIN . " FROM " . ORDERS_CONTAIN . " JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " .
+                    CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
+                    ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
+
+                $query->bindParam(':codorder', $order['codorder'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+
+                // SQL Query to delete an order
+                $query = $connection->prepare("DELETE " . ORDERS . " FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " .
+                    ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " . ORDERS . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " .
+                    ORDERS_SOLD . ".codordersold IS NULL");
+
+                // Parameters binding and execution
+                $query->bindParam(':codorder', $order['codorder'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $query->closeCursor();
+            }
+        } else {
+            $connection = null;
+            return array('message' => 'There are no unclaimed orders');
+        }
+
+        $connection->commit();
     } catch (PDOException $e) {
+        $connection->rollBack();
         if ($query !== null) $query->closeCursor();
         $connection = null;
         return process_pdo_exception($e);
     }
+
+    $connection = null;
+    return array('success_message' => 'The order has been deleted correctly');
 }
