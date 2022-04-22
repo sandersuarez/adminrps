@@ -15,7 +15,7 @@ $app->setBasePath('/rest');
 
 // Utilities
 require __DIR__ . '/../../src/utilities/validate_order_product_list.php';
-require __DIR__ . '/../../src/utilities/validate_mysql_date.php';
+require __DIR__ . '/../../src/utilities/validate_mysql_datetime.php';
 
 // Routes
 require __DIR__ . '/../../src/routes/session.php';

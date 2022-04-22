@@ -10,8 +10,8 @@ function obtain_drafts()
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".codcustomer, " . CUSTOMERS .
-            ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . DRAFTS . " LEFT JOIN " . CUSTOMERS . " ON " . DRAFTS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " .
+        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".pickuptime, " . DRAFTS . ".codcustomer, " .
+            CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . DRAFTS . " LEFT JOIN " . CUSTOMERS . " ON " . DRAFTS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " .
             DRAFTS . ".coduser = :coduser ORDER BY " . DRAFTS . ".coddraft DESC");
 
         // Parameters binding and execution
@@ -49,7 +49,7 @@ function obtain_draft($coddraft)
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".codcustomer, "
+        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".pickuptime, " . DRAFTS . ".codcustomer, "
             . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . DRAFTS . " LEFT JOIN " . CUSTOMERS . " ON " . DRAFTS . ".codcustomer = "
             . CUSTOMERS . ".codcustomer WHERE " . DRAFTS . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
 
@@ -120,6 +120,8 @@ function add_draft($input_data)
         if (strlen($input_data['telcustomertmp']) > 9) return array('message' => 'The customer phone number is invalid');
     }
 
+    if (array_key_exists('pickuptime', $input_data) && !validateTime($input_data['pickuptime'])) return array('message' => 'The pick up time is invalid');
+
     try {
         $connection = create_pdo_object();
         if (array_key_exists('codcustomer', $input_data)) {
@@ -178,14 +180,21 @@ function add_draft($input_data)
             $telcustomertmp_clause[1] = ", :telcustomertmp";
         }
 
-        $query = $connection->prepare("INSERT INTO " . DRAFTS . " (coddraft" . $codcustomer_clause[0] . $namecustomertmp_clause[0] . $telcustomertmp_clause[0] .
-            ", coduser) VALUES (:coddraft" . $codcustomer_clause[1] . $namecustomertmp_clause[1] . $telcustomertmp_clause[1] . ", :coduser)");
+        $pickuptime_clause = array("", "");
+        if (array_key_exists('pickuptime', $input_data)) {
+            $pickuptime_clause[0] = ", pickuptime";
+            $pickuptime_clause[1] = ", :pickuptime";
+        }
+
+        $query = $connection->prepare("INSERT INTO " . DRAFTS . " (coddraft" . $codcustomer_clause[0] . $namecustomertmp_clause[0] . $telcustomertmp_clause[0] . $pickuptime_clause[0] .
+            ", coduser) VALUES (:coddraft" . $codcustomer_clause[1] . $namecustomertmp_clause[1] . $telcustomertmp_clause[1] . $pickuptime_clause[1] . ", :coduser)");
 
         // Parameters binding and execution
         $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
         if (array_key_exists('codcustomer', $input_data)) $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
         if (array_key_exists('namecustomertmp', $input_data)) $query->bindParam(':namecustomertmp', $input_data['namecustomertmp'], PDO::PARAM_STR);
         if (array_key_exists('telcustomertmp', $input_data)) $query->bindParam(':telcustomertmp', $input_data['telcustomertmp'], PDO::PARAM_STR);
+        if (array_key_exists('pickuptime', $input_data)) $query->bindParam(':pickuptime', $input_data['pickuptime'], PDO::PARAM_STR);
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
         $query->execute();
@@ -261,11 +270,17 @@ function edit_draft($input_data)
         if (array_key_exists('message', $validation)) return $validation;
     }
 
+    if (array_key_exists('pickuptime', $input_data)) {
+        $input_data['pickuptime'] = trim($input_data['pickuptime']);
+        if ((!validateTime($input_data['pickuptime'])) && $input_data['pickuptime'] != '') return array('message' => 'The pick up time is invalid');
+    }
+
     $equal = 0;
     foreach ($input_data as $element => $value) {
         foreach ($draft_data['draft'][0] as $draft_attr => $draft_value) {
             if ($element == $draft_attr && $value == $draft_value) $equal = $equal + 1;
             if ($element == 'codcustomer' && $draft_attr == 'codcustomer' && $value == 0 && $draft_value === null) $equal = $equal + 1;
+            if ($element == 'pickuptime' && $value != '' && $draft_attr == 'pickuptime' && $value . ':00' == $draft_value) $equal = $equal + 1;
         }
     }
 
@@ -316,7 +331,10 @@ function edit_draft($input_data)
     try {
 
         // SQL Query to edit the draft
-        if (array_key_exists('namecustomertmp', $input_data) || array_key_exists('telcustomertmp', $input_data) || array_key_exists('codcustomer', $input_data)) {
+        if (
+            array_key_exists('namecustomertmp', $input_data) || array_key_exists('telcustomertmp', $input_data) || array_key_exists('codcustomer', $input_data) ||
+            array_key_exists('pickuptime', $input_data)
+        ) {
 
             $namecustomertmp_clause = '';
             if (array_key_exists('namecustomertmp', $input_data)) $namecustomertmp_clause = "namecustomertmp = :namecustomertmp";
@@ -339,7 +357,17 @@ function edit_draft($input_data)
                 }
             }
 
-            $query = $connection->prepare("UPDATE " . DRAFTS . " SET " . $namecustomertmp_clause . $telcustomertmp_clause . $codcustomer_clause . " WHERE coddraft = :coddraft");
+            $pickuptime_clause = '';
+            if (array_key_exists('pickuptime', $input_data)) {
+                if ($telcustomertmp_clause !== '' || $namecustomertmp_clause !== '' || $codcustomer_clause !== '') {
+                    $pickuptime_clause = ", pickuptime = :pickuptime";
+                } else {
+                    $pickuptime_clause = "pickuptime = :pickuptime";
+                }
+            }
+
+            $query = $connection->prepare("UPDATE " . DRAFTS . " SET " . $namecustomertmp_clause . $telcustomertmp_clause . $codcustomer_clause . $pickuptime_clause .
+                " WHERE coddraft = :coddraft");
 
             // Parameters binding and execution
             $query->bindParam(':coddraft', $input_data['coddraft'], PDO::PARAM_INT);
@@ -365,6 +393,14 @@ function edit_draft($input_data)
                     $query->bindValue(':telcustomertmp', NULL, PDO::PARAM_NULL);
                 } else {
                     $query->bindParam(':telcustomertmp', $input_data['telcustomertmp'], PDO::PARAM_STR);
+                }
+            }
+
+            if (array_key_exists('pickuptime', $input_data)) {
+                if ($input_data['pickuptime'] === '') {
+                    $query->bindValue(':pickuptime', NULL, PDO::PARAM_NULL);
+                } else {
+                    $query->bindParam(':pickuptime', $input_data['pickuptime'], PDO::PARAM_STR);
                 }
             }
 

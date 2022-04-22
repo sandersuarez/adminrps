@@ -34,7 +34,7 @@ function obtain_active_orders($requirements)
         $today_clause = '';
         if ($requirements['today'] == 1 || $requirements['today'] == 0) {
             if ($requirements['today']) {
-                $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".numdayorder";
+                $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".pickuptime, " . ORDERS . ".numdayorder";
             } else {
                 $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC";
             }
@@ -49,7 +49,7 @@ function obtain_active_orders($requirements)
             $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS . ".telcustomer REGEXP :telnamecustomer))";
 
         // SQL Query to search active orders
-        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
+        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " .
             ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
             ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
             CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $tel_name_clause . $today_clause . " LIMIT :begin, :end");
@@ -113,7 +113,7 @@ function obtain_active_order($codorder)
         $connection = create_pdo_object();
 
         // SQL Query to search active orders
-        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " .
+        $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " .
             ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
             ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
             ORDERS . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
@@ -249,7 +249,7 @@ function obtain_sold_order($codordersold)
 
         // SQL Query to search active orders
         $query = $connection->prepare("SELECT " . ORDERS_SOLD . ".codordersold, " . ORDERS_SOLD . ".idordersold, " . ORDERS_SOLD . ".dateordersold, " . ORDERS_SOLD . ".moneyreceived, " .
-            ORDERS_SOLD . ".hourordersold, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . CUSTOMERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS .
+            ORDERS_SOLD . ".hourordersold, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " . CUSTOMERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS .
             ".telcustomer FROM " . ORDERS_SOLD . " JOIN " . ORDERS . " ON " . ORDERS_SOLD . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " .
             CUSTOMERS . ".codcustomer WHERE " . ORDERS_SOLD . ".codordersold = :codordersold AND " . CUSTOMERS . ".coduser = :coduser");
 
@@ -306,7 +306,7 @@ function add_order($coddraft)
         $connection = create_pdo_object();
 
         // SQL Query to search customers in alphabetic order
-        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".codcustomer, "
+        $query = $connection->prepare("SELECT " . DRAFTS . ".coddraft, " . DRAFTS . ".namecustomertmp, " . DRAFTS . ".telcustomertmp, " . DRAFTS . ".pickuptime, " . DRAFTS . ".codcustomer, "
             . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . DRAFTS . " LEFT JOIN " . CUSTOMERS . " ON " . DRAFTS . ".codcustomer = "
             . CUSTOMERS . ".codcustomer WHERE " . DRAFTS . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
 
@@ -430,8 +430,14 @@ function add_order($coddraft)
             $query->closeCursor();
         }
 
-        $query = $connection->prepare("INSERT INTO " . ORDERS . " (codorder, numdayorder, codcustomer) VALUES " .
-            "(:codorder, :numdayorder, :codcustomer)");
+        $pickuptime_clause = array("", "");
+        if ($draft['draft'][0]['pickuptime'] !== null) {
+            $pickuptime_clause[0] = ", pickuptime";
+            $pickuptime_clause[1] = ", :pickuptime";
+        }
+
+        $query = $connection->prepare("INSERT INTO " . ORDERS . " (codorder, numdayorder" . $pickuptime_clause[0] . ", codcustomer) VALUES " .
+            "(:codorder, :numdayorder" . $pickuptime_clause[1] . ", :codcustomer)");
 
         $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
         $query->bindParam(':numdayorder', $numdayorder, PDO::PARAM_INT);
@@ -441,6 +447,8 @@ function add_order($coddraft)
         } else {
             $query->bindParam(':codcustomer', $draft['draft'][0]['codcustomer'], PDO::PARAM_INT);
         }
+
+        if ($draft['draft'][0]['pickuptime'] !== null) $query->bindParam(':pickuptime', $draft['draft'][0]['pickuptime'], PDO::PARAM_STR);
 
         $query->execute();
         $query->closeCursor();
@@ -609,6 +617,11 @@ function edit_order($input_data)
         if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'The customer phone number is invalid');
     }
 
+    if (array_key_exists('pickuptime', $input_data)) {
+        $input_data['pickuptime'] = trim($input_data['pickuptime']);
+        if ((!validateTime($input_data['pickuptime'])) && $input_data['pickuptime'] != '') return array('message' => 'The pick up time is invalid');
+    }
+
     if (array_key_exists('codcustomer', $input_data) && !filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
         return array('message' => 'The customer code is invalid');
 
@@ -625,6 +638,7 @@ function edit_order($input_data)
     foreach ($input_data as $element => $value) {
         foreach ($order_data['order'][0] as $order_attr => $order_value) {
             if ($element == $order_attr && $value == $order_value) $equal = $equal + 1;
+            if ($element == 'pickuptime' && $value != '' && $order_attr == 'pickuptime' && $value . ':00' == $order_value) $equal = $equal + 1;
         }
     }
 
@@ -641,6 +655,7 @@ function edit_order($input_data)
 
     try {
         $connection = create_pdo_object();
+        $connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
         if (array_key_exists('codcustomer', $input_data) && $input_data['codcustomer'] != 0) {
             // SQL Query to check if the customer exists
@@ -697,17 +712,43 @@ function edit_order($input_data)
         }
 
         // SQL Query to edit the order
-        if (array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data) || array_key_exists('codcustomer', $input_data)) {
+        if (
+            array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data) || array_key_exists('codcustomer', $input_data) ||
+            array_key_exists('pickuptime', $input_data)
+        ) {
 
-            $query = $connection->prepare("UPDATE " . ORDERS . " SET codcustomer = :codcustomer WHERE codorder = :codorder");
+            $codcustomer_clause = '';
+            if (array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data) || array_key_exists('codcustomer', $input_data))
+                $codcustomer_clause = "codcustomer = :codcustomer";
+
+            $pickuptime_clause = '';
+            if (array_key_exists('pickuptime', $input_data)) {
+                if ($codcustomer_clause !== '') {
+                    $pickuptime_clause = ", pickuptime = :pickuptime";
+                } else {
+                    $pickuptime_clause = "pickuptime = :pickuptime";
+                }
+            }
+
+            $query = $connection->prepare("UPDATE " . ORDERS . " SET " . $codcustomer_clause . $pickuptime_clause . " WHERE codorder = :codorder");
 
             // Parameters binding and execution
             $query->bindParam(':codorder', $input_data['codorder'], PDO::PARAM_INT);
 
-            if (array_key_exists('codcustomer', $input_data)) {
-                $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
-            } else {
-                $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
+            if (array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data) || array_key_exists('codcustomer', $input_data)) {
+                if (array_key_exists('codcustomer', $input_data)) {
+                    $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
+                } else {
+                    $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
+                }
+            }
+
+            if (array_key_exists('pickuptime', $input_data)) {
+                if ($input_data['pickuptime'] === '') {
+                    $query->bindValue(':pickuptime', NULL, PDO::PARAM_NULL);
+                } else {
+                    $query->bindParam(':pickuptime', $input_data['pickuptime'], PDO::PARAM_STR);
+                }
             }
 
             $query->execute();
@@ -1083,5 +1124,5 @@ function delete_all_unclaimed_orders()
     }
 
     $connection = null;
-    return array('success_message' => 'The order has been deleted correctly');
+    return array('success_message' => 'The orders have been deleted correctly');
 }

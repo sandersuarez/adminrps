@@ -221,6 +221,7 @@ $app->put('/edit_order', function (Request $request, Response $response) {
                 if (array_key_exists('codcustomer', $params)) $input_data['codcustomer'] = $params['codcustomer'];
                 if (array_key_exists('namecustomer', $params)) $input_data['namecustomer'] = $params['namecustomer'];
                 if (array_key_exists('telcustomer', $params)) $input_data['telcustomer'] = $params['telcustomer'];
+                if (array_key_exists('pickuptime', $params)) $input_data['pickuptime'] = $params['pickuptime'];
 
                 $response_content = json_encode(edit_order($input_data), JSON_UNESCAPED_UNICODE);
             } else {
