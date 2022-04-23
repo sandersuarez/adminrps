@@ -36,6 +36,8 @@ function obtain_products($requirements)
         $requirements['name'] = trim($requirements['name']);
         if ($requirements['name'] !== '') $name_clause = " AND (nameproduct REGEXP :nameproduct)";
 
+
+
         // SQL Query to search products in alphabetic order
         $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS . " WHERE productdeleted = :productdeleted AND coduser = :coduser" .
             $name_clause . " ORDER BY nameproduct LIMIT :begin, :end");
@@ -52,6 +54,31 @@ function obtain_products($requirements)
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         if ($result) {
             $answer = array('products' => $result);
+            $query->closeCursor();
+
+            if ($requirements['deleted']) {
+                for ($i = 0; sizeof($answer['products']) > $i; $i++) {
+
+                    // SQL Query search a product on orders and drafts
+                    $query = $connection->prepare("SELECT EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . ORDERS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " .
+                        ORDERS_CONTAIN . ".codproduct WHERE " . PRODUCTS . ".productdeleted = 1 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS .
+                        ".coduser = :coduser) OR EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . DRAFTS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " . DRAFTS_CONTAIN .
+                        ".codproduct WHERE " . PRODUCTS . ".productdeleted = 0 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS . ".coduser = :coduser)");
+
+                    // Parameters binding and execution
+                    $query->bindParam(':codproduct', $answer['products'][$i]['codproduct'], PDO::PARAM_INT);
+                    $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                    $query->execute();
+                    $result = array_values($query->fetch(PDO::FETCH_ASSOC))[0];
+                    $query->closeCursor();
+                    if ($result) {
+                        $answer['products'][$i]['canbedeleted'] = 0;
+                    } else {
+                        $answer['products'][$i]['canbedeleted'] = 1;
+                    }
+                }
+            }
         } else {
             $answer = array('message' => 'There are no coincident products');
         }
@@ -79,8 +106,8 @@ function obtain_product($codproduct)
     try {
         // SQL Query to search the product
         $connection = create_pdo_object();
-        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " . PRODUCTS .
-            " WHERE productdeleted = 0 AND coduser = :coduser AND codproduct = :codproduct");
+        $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct, productdeleted FROM " . PRODUCTS .
+            " WHERE coduser = :coduser AND codproduct = :codproduct");
 
         // Parameters binding and execution
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
@@ -90,6 +117,27 @@ function obtain_product($codproduct)
         $result = $query->fetch(PDO::FETCH_ASSOC);
         if ($result) {
             $answer = array('product' => $result);
+
+            if ($answer['product']['productdeleted'] == 1) {
+                // SQL Query search a product on orders and drafts
+                $query = $connection->prepare("SELECT EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . ORDERS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " .
+                    ORDERS_CONTAIN . ".codproduct WHERE " . PRODUCTS . ".productdeleted = 1 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS .
+                    ".coduser = :coduser) OR EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . DRAFTS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " . DRAFTS_CONTAIN .
+                    ".codproduct WHERE " . PRODUCTS . ".productdeleted = 0 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS . ".coduser = :coduser)");
+
+                // Parameters binding and execution
+                $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                $result = array_values($query->fetch(PDO::FETCH_ASSOC))[0];
+                $query->closeCursor();
+                if ($result) {
+                    $answer['product']['canbedeleted'] = 0;
+                } else {
+                    $answer['product']['canbedeleted'] = 1;
+                }
+            }
         } else {
             $answer = array('message' => 'There is no coincident product');
         }
@@ -386,7 +434,7 @@ function delete_product($codproduct)
 
         // SQL Query search a product on orders and drafts
         $query = $connection->prepare("SELECT EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . ORDERS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " .
-            ORDERS_CONTAIN . ".codproduct WHERE " . PRODUCTS . ".productdeleted = 0 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS .
+            ORDERS_CONTAIN . ".codproduct WHERE " . PRODUCTS . ".productdeleted = 1 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS .
             ".coduser = :coduser) OR EXISTS (SELECT " . PRODUCTS . ".codproduct FROM " . PRODUCTS . " JOIN " . DRAFTS_CONTAIN . " ON " . PRODUCTS . ".codproduct = " . DRAFTS_CONTAIN .
             ".codproduct WHERE " . PRODUCTS . ".productdeleted = 0 AND " . PRODUCTS . ".codproduct = :codproduct AND " . PRODUCTS . ".coduser = :coduser)");
 
