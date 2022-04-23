@@ -51,6 +51,26 @@ function obtain_customers($requirements)
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
         if ($result) {
             $answer = array('customers' => $result);
+            $query->closeCursor();
+
+            for ($i = 0; sizeof($answer['customers']) > $i; $i++) {
+
+                // SQL Query search a customer on orders and drafts
+                $query = $connection->prepare("SELECT EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . ORDERS . " ON " . CUSTOMERS . ".codcustomer = " . ORDERS .
+                    ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser) OR EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS .
+                    " JOIN " . DRAFTS . " ON " . CUSTOMERS . ".codcustomer = " . DRAFTS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser)");
+
+                // Parameters binding and execution
+                $query->bindParam(':codcustomer', $answer['customers'][$i]['codcustomer'], PDO::PARAM_INT);
+                $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+                $query->execute();
+                if (array_values($query->fetch(PDO::FETCH_ASSOC))[0] == 1) {
+                    $answer['customers'][$i]['canbedeleted'] = 0;
+                } else {
+                    $answer['customers'][$i]['canbedeleted'] = 1;
+                }
+            }
         } else {
             $answer = array('message' => 'There are no coincident customers');
         }
@@ -88,6 +108,22 @@ function obtain_customer($codcustomer)
         $result = $query->fetch(PDO::FETCH_ASSOC);
         if ($result) {
             $answer = array('customer' => $result);
+
+            // SQL Query search a customer on orders and drafts
+            $query = $connection->prepare("SELECT EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . ORDERS . " ON " . CUSTOMERS . ".codcustomer = " . ORDERS .
+                ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser) OR EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS .
+                " JOIN " . DRAFTS . " ON " . CUSTOMERS . ".codcustomer = " . DRAFTS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser)");
+
+            // Parameters binding and execution
+            $query->bindParam(':codcustomer', $answer['customer']['codcustomer'], PDO::PARAM_INT);
+            $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+            $query->execute();
+            if (array_values($query->fetch(PDO::FETCH_ASSOC))[0] == 1) {
+                $answer['customer']['canbedeleted'] = 0;
+            } else {
+                $answer['customer']['canbedeleted'] = 1;
+            }
         } else {
             $answer = array('message' => 'There is no coincident customer');
         }
@@ -236,14 +272,16 @@ function delete_customer($codcustomer)
         $connection = create_pdo_object();
 
         // SQL Query search a customer on orders and drafts
-        $query = $connection->prepare("SELECT EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . ORDERS . " ON " . CUSTOMERS . ".codcustomer = " . ORDERS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser) OR EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . DRAFTS . " ON " . CUSTOMERS . ".codcustomer = " . DRAFTS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser)");
+        $query = $connection->prepare("SELECT EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS . " JOIN " . ORDERS . " ON " . CUSTOMERS . ".codcustomer = " . ORDERS .
+            ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser) OR EXISTS (SELECT " . CUSTOMERS . ".codcustomer FROM " . CUSTOMERS .
+            " JOIN " . DRAFTS . " ON " . CUSTOMERS . ".codcustomer = " . DRAFTS . ".codcustomer WHERE " . CUSTOMERS . ".codcustomer = :codcustomer AND " . CUSTOMERS . ".coduser = :coduser)");
 
         // Parameters binding and execution
         $query->bindParam(':codcustomer', $codcustomer, PDO::PARAM_INT);
         $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
         $query->execute();
-        if (array_values($query->fetch(PDO::FETCH_ASSOC))[0]) {
+        if (array_values($query->fetch(PDO::FETCH_ASSOC))[0] == 1) {
             clear_query_data($query, $connection);
             return array('message' => 'The customer cannot be deleted because he has orders or drafts created in his name');
         }
