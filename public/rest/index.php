@@ -6,7 +6,7 @@ session_start();
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../../vendor/autoload.php';
-require __DIR__ . '/../../config/settings.php';
+require __DIR__ . '/../../config/db_connection_config.php';
 
 $app = AppFactory::create();
 
