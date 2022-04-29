@@ -1,0 +1,99 @@
+/* Cellphone version */
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+form h2 {
+    margin: 0 0 5px 0;
+    padding: 0;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 25px;
+}
+
+form > label:not(:first-child), 
+form > button[type="submit"]:not(:first-child) {
+    margin-top: 10px;
+}
+
+form label {
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: text;
+}
+
+form input {
+    display: block;
+    height: 35px;
+    padding-left: 10px;
+    max-width: 512px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    background: #FFFFFF;
+    border: 1px solid #0377BD;
+    font-size: 16px;
+}
+
+form input:focus {
+    outline: none;
+    -webkit-box-shadow: none;   
+    box-shadow: none;
+}
+
+form input[type="password"]::-ms-reveal,
+main form input[type="password"]::-ms-clear {
+    display: none;
+}
+
+form ul.error-list {
+    display: none;
+}
+
+form#login-form {
+    max-width: 512px;
+    margin: auto;
+    padding-top: calc(((100vh - 30px) / 2) - 122px);
+}
+
+form#login-form > button[type="submit"] {
+    margin-top: 15px;
+}
+
+/* Tablet version */
+
+@media only screen and (min-width: 700px) {
+
+    form h2 {
+        font-size: 22px;
+    }
+
+    form input {
+        height: 45px;
+        padding-left: 15px;
+        font-size: 19px;
+    }
+
+    form label {
+        font-size: 19px;
+    }
+
+    form > label:not(:first-child), 
+    form > button[type="submit"]:not(:first-child) {
+        margin-top: 15px;
+    }
+
+    form#login-form {
+        padding-top: calc(((100vh - 30px) / 2) - 143px);
+    }
+
+    form#login-form > button[type="submit"] {
+        margin-top: 20px;
+    }
+}

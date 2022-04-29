@@ -13,7 +13,14 @@
     <meta name="author" content="Sander Suárez">
 
     <!-- FAVICON -->
-    <link rel="icon" href="../logo.svg">
+    <link rel="icon" href="../assets/logo.svg">
+
+    <!-- STYLESHEETS -->
+    <link rel="stylesheet" href="../assets/css/fonts.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/header.css">
+    <link rel="stylesheet" href="../assets/css/forms.css">
+    <link rel="stylesheet" href="../assets/css/buttons.css">
 
     <!-- JQUERY -->
     <script src="../assets/scripts/jquery/jquery_3.6.0.js"></script>
@@ -26,7 +33,36 @@
 </head>
 
 <body>
-    <h1>Inicio de sesión</h1>
+
+    <!-- HEADER -->
+    <header>
+        <!-- WEBSITE TITLE -->
+        <h1>AdminRPS</h1>
+    </header>
+
+    <!-- BODY -->
+    <main>
+
+        <!-- LOG IN FORM -->
+        <form id="login-form" method="post">
+            <!-- LOG IN TITLE -->
+            <h2>Inicio de sesión</h2>
+
+            <!-- USER INPUT -->
+            <label for="login-username">Usuario:</label>
+            <input id="login-username" type="text" maxlength="60">
+
+            <!-- PASSWORD INPUT -->
+            <label for="login-password">Contraseña:</label>
+            <input id="login-password" type="password" maxlength="8">
+
+            <!-- ERROR LIST -->
+            <ul id="login-error-list" class="error-list"></ul>
+
+            <!-- LOG IN SUBMIT BUTTON -->
+            <button id="login-submit-button" type="submit">Iniciar sesión</button>
+        </form>
+    </main>
 </body>
 
 </html>

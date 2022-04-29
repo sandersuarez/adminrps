@@ -1,0 +1,22 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+body, button, input, input::placeholder {
+    font-family: 'NotoSans', sans-serif;
+}
+
+main {
+    min-height: calc(100vh - 30px);
+    padding: 0 10px;
+}
+
+@media only screen and (min-width: 700px) {
+    main {
+        min-height: calc(100vh - 35px);
+    }
+}

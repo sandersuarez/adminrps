@@ -1,0 +1,37 @@
+/* Cellphone version */
+
+header {
+    margin: 0;
+    padding: 4px 10px;
+    background-color: #0377BD;
+}
+
+header h1 {
+    margin: 0;
+    padding: 0;
+    height: 22px;
+    line-height: 21.79px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: default;
+}
+
+header h1::selection {
+    background-color: #00000000;
+}
+
+/* Tablet and desktop version */
+
+@media only screen and (min-width: 700px) {
+
+    header {
+        padding: 4.5px 15px;
+    }
+    
+    header h1 {
+        height: 26px;
+        line-height: 25.87px;
+        font-size: 19px;
+    }
+}
