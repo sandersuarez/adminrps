@@ -7,14 +7,14 @@ require __DIR__ . '/../../src/sessions/login.php';
 
 $app->post('/login', function (Request $request, Response $response) {
 
-    $response_content = '';
+    /*$response_content = '';
 
     // Security check
     $security = security();
     if (!is_array($security)) {
 
         // Check for required parameters
-        $params = $request->getQueryParams();
+        $params = $request->getParsedBody();
 
         if (array_key_exists('username', $params) && array_key_exists('key', $params)) {
             $input_data['username'] = $params['username'];
@@ -24,12 +24,18 @@ $app->post('/login', function (Request $request, Response $response) {
             // Parameters required error notification
             $response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
         }
+        $response_content = json_encode(array('message' => $request->getParsedBody()), JSON_UNESCAPED_UNICODE);
     } else {
         $response_content = json_encode(array('error' => 'There is already an open session'), JSON_UNESCAPED_UNICODE);
     }
 
     $response->getBody()->write($response_content);
-    return $response;
+    return $response;*/
+    $json = json_encode($request->getParsedBody());
+        $response->getBody()->write($json);
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(201);
 });
 
 $app->get('/session_status', function (Request $request, Response $response) {

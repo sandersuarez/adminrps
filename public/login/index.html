@@ -27,9 +27,11 @@
 
     <!-- SCRIPTS -->
     <script src="../assets/scripts/config.js"></script>
+    <script src="../assets/scripts/render.js"></script>
     <script src="../assets/scripts/validation.js"></script>
     <script src="../assets/scripts/ajax/ajaxSession.js"></script>
     <script src="../assets/scripts/setup.js"></script>
+    <script src="../assets/scripts/handlers/loginHandler.js"></script>
 </head>
 
 <body>
@@ -44,7 +46,7 @@
     <main>
 
         <!-- LOG IN FORM -->
-        <form id="login-form" method="post">
+        <form id="login-form" method="post" onsubmit="loginHandler(event)">
             <!-- LOG IN TITLE -->
             <h2>Inicio de sesión</h2>
 
@@ -58,6 +60,9 @@
 
             <!-- ERROR LIST -->
             <ul id="login-error-list" class="error-list"></ul>
+
+            <!-- SERVER ERROR LAYER -->
+            <div id="login-server-error-layer" class="server-error-layer"></div>
 
             <!-- LOG IN SUBMIT BUTTON -->
             <button id="login-submit-button" type="submit">Iniciar sesión</button>

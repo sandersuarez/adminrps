@@ -13,15 +13,56 @@ class Validation {
                 let temp = parameter.split('=');
                 if (temp[0] == 'reason') {
                     if (decodeURI(temp[1]) == '"tiempo_exp"') {
-                        showServerMessage('Su tiempo de sesión ha expirado. Por favor, loguéese de nuevo.');
+                        showServerMessage('#login-server-error', 'Su tiempo de sesión ha expirado. Por favor, loguéese de nuevo.');
                     } else if (decodeURI(temp[1]) == '"no_regis"') {
-                        showServerMessage('Usted no se encuentra actualmente registrado en el sistema. Por favor, regístrese o loguéese de nuevo.');
+                        showServerMessage('#login-server-error', 'Usted no se encuentra actualmente registrado en el sistema. Por favor, regístrese o loguéese de nuevo.');
                     }
 
                     // Clear the header
                     window.history.replaceState({}, null, 'login/');
                 }
             });
+        }
+    }
+
+    /**
+     * Static method that validates a login attempt
+     * @returns {mixed} user
+     */
+    static validateLogin() {
+
+        // Input location
+        let userInput = $('#login-username');
+        let passwordInput = $('#login-password');
+
+        // Every time the validation is done the error container is emptied
+        let errorContainer = $('#login-error-list');
+        if (errorContainer.length) errorContainer.empty().attr({ style: '' });
+
+        // If the inputs exist the execution continues
+        if (userInput.length && passwordInput.length) {
+
+            // Data recovery
+            let user = userInput.val();
+            let password = passwordInput.val();
+
+            // Space clean
+            user = user.trim();
+
+            let errors = [];
+
+            // Check that the fields are not empty
+            if (user == '') errors.push('El nombre de usuario es un campo requerido');
+            if (password == '') errors.push('La contraseña es un campo requerido');
+
+            // If there are errors, they are notified. If there are no errors, the data is returned 
+            if (errors.length > 0) {
+                showErrors('#login-error-list', errors);
+            } else {
+                return { 'username': user, 'key': password };
+            }
+        } else {
+            return null;
         }
     }
 }

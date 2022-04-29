@@ -15,7 +15,9 @@ form h2 {
 }
 
 form > label:not(:first-child), 
-form > button[type="submit"]:not(:first-child) {
+form > button[type="submit"]:not(:first-child),
+form > ul.error-list:not(:first-child),
+form > div.server-error-layer:not(:first-child) {
     margin-top: 10px;
 }
 
@@ -54,12 +56,22 @@ main form input[type="password"]::-ms-clear {
 
 form ul.error-list {
     display: none;
+    padding: 0;
+    list-style-type: none;
+    margin: 0;
+    font-size: 16px;
+    color: #915724;
+}
+
+form div.server-error-layer {
+    display: none;
+    background-color: #63C8DD;
 }
 
 form#login-form {
     max-width: 512px;
     margin: auto;
-    padding-top: calc(((100vh - 30px) / 2) - 122px);
+    padding-top: calc(((100vh - 30px) / 2) - 172px);
 }
 
 form#login-form > button[type="submit"] {
@@ -85,12 +97,18 @@ form#login-form > button[type="submit"] {
     }
 
     form > label:not(:first-child), 
-    form > button[type="submit"]:not(:first-child) {
+    form > button[type="submit"]:not(:first-child),
+    form > ul.error-list:not(:first-child),
+    form > div.server-error-layer:not(:first-child) {
         margin-top: 15px;
     }
 
+    form ul.error-list {
+        font-size: 19px;
+    }
+
     form#login-form {
-        padding-top: calc(((100vh - 30px) / 2) - 143px);
+        padding-top: calc(((100vh - 30px) / 2) - 193px);
     }
 
     form#login-form > button[type="submit"] {

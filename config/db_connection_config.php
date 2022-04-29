@@ -4,7 +4,7 @@
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'adminrps');
 define('DB_USER', 'adminrpsuser');
-define('DB_KEY', 'Msthf.23mh8');
+define('DB_KEY', '');
 define('DB_CHARSET', 'utf8mb4');
 
 // Data Entities

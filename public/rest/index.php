@@ -10,6 +10,11 @@ require __DIR__ . '/../../config/db_connection_config.php';
 
 $app = AppFactory::create();
 
+// Parsing middleware
+$app->addBodyParsingMiddleware();
+$app->addRoutingMiddleware();
+$app->addErrorMiddleware(true, true, true);
+
 // Application path
 $app->setBasePath('/rest');
 
