@@ -1,6 +1,5 @@
 <?php
 
-use TCPDF;
 
 /**
  * Class that defines a document that displays the sold orders between two dates
