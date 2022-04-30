@@ -115,7 +115,7 @@ class AjaxSession {
 
         var request = new Request(this.url + 'login', {
             method: 'POST',
-            body: { 'username': 'user', 'key': 'password' },
+            body: JSON.stringify({ 'username': 'user', 'key': 'password' }),
             headers: new Headers({
                 'Content-Type': 'application/json'
             })
