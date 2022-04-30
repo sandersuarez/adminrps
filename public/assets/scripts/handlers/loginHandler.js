@@ -1,3 +1,7 @@
+/**
+ * Function that tries to send a login request succesfully
+ * @param {Event} event 
+ */
 function loginHandler(event) {
     event.preventDefault();
 

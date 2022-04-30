@@ -40,7 +40,7 @@ class AjaxSession {
                 } else {
                     reason = '?reason="no_regis"';
                 }
-                self.closeSession('login/index.html' + reason);
+                self.closeSession('http://localhost/login/index.html' + reason);
             }
         }).fail(function (jqXHR, textStatus, errorThrown) {
             // If there has been an error in the process the user is notified
@@ -52,23 +52,17 @@ class AjaxSession {
      * Method that closes the user session and redirects him
      * @param {string} url 
      */
-    closeSession(url) {
-        $.getJSON(this.url + 'logout').done(function (data) {
-            window.location.href = url;
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            // If there has been an error in the process the user is notified
-            window.location.href = 'http://localhost/not_err.html?razon="' + textStatus + '"';
-        });
-    }
-
-    /**
-     * Method that closes the user session
-     */
-    closeSessionQuietly() {
-        $.getJSON(this.url + 'logout').done(function (data) { }).fail(function (jqXHR, textStatus, errorThrown) {
-            // If there has been an error in the process the user is notified
-            window.location.href = 'http://localhost/not_err.html?razon="' + textStatus + '"';
-        });
+    closeSession(url = null) {
+        fetch(this.url + 'logout')
+            .then(function (response) {
+                if (!response.ok) throw new Error('Error: ' + response.statusText + '. Status code: ' + response.status);
+                if (url != null) window.location.href = url;
+            })
+            .catch(function (error) {
+                // If there has been an error in the process the user is notified
+                if (console && console.error) console.error(error.message);
+                window.location.href = 'http://localhost/not_err.html?reason="' + error.message + '"';
+            });
     }
 
     /**
@@ -88,7 +82,7 @@ class AjaxSession {
         fetch(request)
             .then(function (response) {
                 if (!response.ok) throw new Error('Error: ' + response.statusText + '. Status code: ' + response.status);
-                return response.json()
+                return response.json();
             })
             .then(function (response) {
                 if (response.message) showErrors('#login-error-list', [response.message]); // If there is an error message, the user is notified
@@ -106,6 +100,7 @@ class AjaxSession {
                     loginButton.attr('disabled', false);
             })
             .catch(function (error) {
+                // If there has been an error in the process the user is notified
                 if (console && console.error) console.error(error.message);
                 window.location.href = 'http://localhost/not_err.html?reason="' + error.message + '"';
             });

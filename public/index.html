@@ -30,6 +30,7 @@
     <script src="assets/scripts/validation.js"></script>
     <script src="assets/scripts/ajax/ajaxSession.js"></script>
     <script src="assets/scripts/setup.js"></script>
+    <script src="assets/scripts/handlers/closeSessionHandler.js"></script>
 </head>
 
 <body>
@@ -43,7 +44,7 @@
     <main>
         <div id="session-management">
             <p>Bienvenido, </p>
-            <button>Cerrar sesión</button>
+            <button id="close-session-button" onclick="closeSessionHandler(event)">Cerrar sesión</button>
         </div>
         <h2>Pedidos en elaboración</h2>
     </main>
