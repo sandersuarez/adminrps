@@ -12,7 +12,7 @@ class Validation {
             parameters.forEach(parameter => {
                 let temp = parameter.split('=');
                 if (temp[0] == 'reason') {
-                    if (decodeURI(temp[1]) == '"tiempo_exp"') {
+                    if (decodeURI(temp[1]) == '"time_exp"') {
                         showServerMessage('#login-server-error', 'Su tiempo de sesión ha expirado. Por favor, loguéese de nuevo.');
                     } else if (decodeURI(temp[1]) == '"no_regis"') {
                         showServerMessage('#login-server-error', 'Usted no se encuentra actualmente registrado en el sistema. Por favor, regístrese o loguéese de nuevo.');
@@ -27,7 +27,7 @@ class Validation {
 
     /**
      * Static method that validates a login attempt
-     * @returns {mixed} user
+     * @returns {mixed}
      */
     static validateLogin() {
 

@@ -4,7 +4,6 @@
  * @param {string} message 
  */
 function showServerMessage(id, message) {
-    console.log(message);
     let container = $(id);
 
     // If the container exists it is shown and updated

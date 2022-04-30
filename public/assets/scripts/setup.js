@@ -19,7 +19,7 @@ function checkDirectories(data) {
             }
         } else if (directory == 'login') {
             if (data.user) {
-                window.location.href = '';
+                window.location.href = 'http://localhost';
             }
         }
     }

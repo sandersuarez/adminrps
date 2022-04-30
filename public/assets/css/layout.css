@@ -15,8 +15,25 @@ main {
     padding: 0 10px;
 }
 
+main h2 {
+    margin: 10px 0 0 0;
+    padding: 0;
+    font-size: 18px;
+    line-height: 25px;
+}
+
+.underline-title {
+    border-bottom: 1px solid #000000;
+}
+
 @media only screen and (min-width: 700px) {
     main {
         min-height: calc(100vh - 35px);
+        padding: 0 30px;
+    }
+
+    main h2 {
+        margin: 15px 0 0 0;
+        font-size: 22px;
     }
 }

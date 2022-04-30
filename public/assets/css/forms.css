@@ -10,7 +10,6 @@ form h2 {
     margin: 0 0 5px 0;
     padding: 0;
     font-size: 18px;
-    font-weight: bold;
     line-height: 25px;
 }
 
@@ -61,11 +60,6 @@ form ul.error-list {
     margin: 0;
     font-size: 16px;
     color: #915724;
-}
-
-form div.server-error-layer {
-    display: none;
-    background-color: #63C8DD;
 }
 
 form#login-form {
