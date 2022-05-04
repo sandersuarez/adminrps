@@ -13,13 +13,13 @@ class Validation {
                 let temp = parameter.split('=');
                 if (temp[0] == 'reason') {
                     if (decodeURI(temp[1]) == '"time_exp"') {
-                        showServerMessage('#login-server-error', 'Su tiempo de sesión ha expirado. Por favor, loguéese de nuevo.');
+                        showServerMessage('#login-server-error-layer', 'Su tiempo de sesión ha expirado. Por favor, inicie sesión de nuevo.');
                     } else if (decodeURI(temp[1]) == '"no_regis"') {
-                        showServerMessage('#login-server-error', 'Usted no se encuentra actualmente registrado en el sistema. Por favor, regístrese o loguéese de nuevo.');
+                        showServerMessage('#login-server-error-layer', 'Usted no se encuentra actualmente registrado en el sistema. Por favor, regístrese o inicie sesión de nuevo.');
                     }
 
                     // Clear the header
-                    window.history.replaceState({}, null, 'login/');
+                    history.replaceState({}, null, '/login/');
                 }
             });
         }

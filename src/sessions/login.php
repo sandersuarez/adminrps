@@ -76,8 +76,8 @@ function login($input_data)
 {
     // Input data control
     $input_data['username'] = trim($input_data['username']);
-    if ($input_data['username'] == '') return array('message' => 'The username is required');
-    if (strlen($input_data['username']) > 60 || strlen($input_data['key']) > 255) return array('message' => 'The user is not registered');
+    if ($input_data['username'] == '') return array('message' => 'El nombre de usuario es un campo requerido');
+    if (strlen($input_data['username']) > 60 || strlen($input_data['key']) > 255) return array('message' => 'El usuario no está registrado');
 
     try {
         // SQL query to search for matching users
@@ -100,10 +100,10 @@ function login($input_data)
                 $_SESSION['last_access'] = time();
                 $_SESSION['inactive_time'] = SESSION_TIME;
             } else {
-                $answer = array('message' => 'The password is incorrect');
+                $answer = array('message' => 'La contraseña es incorrecta');
             }
         } else {
-            $answer = array('message' => 'The user is not registered');
+            $answer = array('message' => 'El usuario no está registrado');
         }
 
         clear_query_data($query, $connection);

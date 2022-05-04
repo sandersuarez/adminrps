@@ -4,5 +4,5 @@
  */
 function closeSessionHandler(event) {
     event.preventDefault();
-    ajaxSession.closeSession('http://localhost/login');
+    session.closeSession('http://localhost/login');
 }

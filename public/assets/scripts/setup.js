@@ -1,5 +1,5 @@
 // Every time the site is loaded, the session is checked
-ajaxSession.checkSession();
+session.checkSession();
 
 $(document).ready(function () {
     Validation.checkforReason();
@@ -13,14 +13,10 @@ function checkDirectories(data) {
     if (data) {
         let temp = window.location.pathname.split('/');
         let directory = temp[temp.length - 2];
-        if (directory == '') {
-            if (data.no_logged) {
-                window.location.href = 'http://localhost/login/';
-            }
-        } else if (directory == 'login') {
-            if (data.user) {
-                window.location.href = 'http://localhost';
-            }
+        if (directory == 'login') {
+            if (data.user) window.location.href = 'http://localhost';
+        } else {
+            if (data.no_logged) window.location.href = 'http://localhost/login/';
         }
     }
 }

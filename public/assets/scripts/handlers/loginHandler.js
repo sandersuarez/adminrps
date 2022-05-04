@@ -14,6 +14,6 @@ function loginHandler(event) {
     if (parameters != null) {
         let loginButton = $('#login-submit-button');
         if (loginButton.length) loginButton.attr('disabled', true);
-        ajaxSession.userLogin(parameters);
+        session.userLogin(parameters);
     }
 }

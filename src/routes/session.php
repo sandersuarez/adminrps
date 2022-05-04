@@ -22,7 +22,7 @@ $app->post('/login', function (Request $request, Response $response) {
             $response_content = json_encode(login($input_data), JSON_UNESCAPED_UNICODE);
         } else {
             // Parameters required error notification
-            $response_content = json_encode(array('message' => 'Required field missing'), JSON_UNESCAPED_UNICODE);
+            $response_content = json_encode(array('message' => 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
         }
     } else {
         $response_content = json_encode(array('error' => 'There is already an open session'), JSON_UNESCAPED_UNICODE);

@@ -1,7 +1,7 @@
 /**
- * Class that makes Ajax calls to consume the API rest services related to sessions
+ * Class that makes fetch calls to consume the API rest services related to sessions
  */
-class AjaxSession {
+class Session {
 
     /**
      * @param {string} url 
@@ -15,37 +15,32 @@ class AjaxSession {
      */
     checkSession() {
         let self = this;
-        $.ajax(
-            {
-                url: this.url + 'session_status',
-                type: 'GET',
-                dataType: 'json'
-            }
-        ).done(function (data) {
-            if (data.user) {
-                // The session is active
-                checkDirectories(data);
-            } else if (data.error) {
+
+        fetch(this.url + 'session_status')
+            .then(function (response) {
+                if (!response.ok) throw new Error('Error: ' + response.statusText + '. Status code: ' + response.status);
+                return response.json();
+            })
+            .then(function (response) {
+                // If session is active or inactive the directory is checked
+                if (response.user || response.no_logged) checkDirectories(response);
+
                 // If there has been an error in the process the user is notified
-                window.location.href = 'http://localhost/not_err.html?reason="' + data.error + '"';
-            } else if (data.no_logged) {
-                // There is no active session
-                checkDirectories(data);
-            } else {
-                /* If the session has expired the user is redirected to the login page
-                with a message */
-                let reason = '';
-                if (data.time) {
-                    reason = '?reason="time_exp"';
-                } else {
-                    reason = '?reason="no_regis"';
+                if (response.error) window.location.href = 'http://localhost/not_err.html?reason="' + response.error + '"';
+
+                // If the session has expired the user is redirected to the login page with a message
+                if (response.time || response.forbidden) {
+                    let reason = '';
+                    if (response.time) reason = '?reason="time_exp"';
+                    if (response.forbidden) reason = '?reason="no_regis"';
+                    self.closeSession('http://localhost/login/index.html' + reason);
                 }
-                self.closeSession('http://localhost/login/index.html' + reason);
-            }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            // If there has been an error in the process the user is notified
-            window.location.href = 'http://localhost/not_err.html?reason="' + textStatus + '"';
-        });
+            })
+            .catch(function (error) {
+                // If there has been an error in the process the user is notified
+                if (console && console.error) console.error(error.message);
+                window.location.href = 'http://localhost/not_err.html?reason="' + error.message + '"';
+            });
     }
 
     /**
@@ -107,4 +102,4 @@ class AjaxSession {
     }
 }
 
-var ajaxSession = new AjaxSession(dir);
+var session = new Session(dir);
