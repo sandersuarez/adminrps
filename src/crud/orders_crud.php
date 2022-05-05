@@ -39,7 +39,7 @@ function obtain_active_orders($requirements)
                 $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC";
             }
         } else {
-            return array('message' => 'Select a valid order time segment');
+            return array('message' => 'Selecciona un espacio de tiempo válido');
         }
 
         // If there is a customer name to search, the clause is added
@@ -86,7 +86,11 @@ function obtain_active_orders($requirements)
                 $query->closeCursor();
             }
         } else {
-            $answer = array('message' => 'There is no coincident orders');
+            if ($requirements['today']) {
+                $answer = array('message' => 'No hay pedidos en elaboración');
+            } else {
+                $answer = array('message' => 'No hay pedidos sin reclamar');
+            }
         }
 
         clear_query_data($query, $connection);
@@ -107,7 +111,7 @@ function obtain_active_order($codorder)
 {
     // Requirements control
     if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The order code is invalid');
+        return array('message' => 'El código de pedido es inválido');
 
     try {
         $connection = create_pdo_object();
@@ -143,7 +147,7 @@ function obtain_active_order($codorder)
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
             if ($result) $answer['order'][0]['products'] = $result;
         } else {
-            $answer = array('message' => 'There is no coincident order');
+            $answer = array('message' => 'El pedido no existe');
         }
 
         clear_query_data($query, $connection);
@@ -163,8 +167,8 @@ function obtain_active_order($codorder)
 function obtain_sold_orders($requirements)
 {
     // Requirements control
-    if (array_key_exists('datebegin', $requirements) && !validateDate($requirements['datebegin'])) return array('message' => 'The minimum date is invalid');
-    if (array_key_exists('dateend', $requirements) && !validateDate($requirements['dateend'])) return array('message' => 'The maximum date is invalid');
+    if (array_key_exists('datebegin', $requirements) && !validateDate($requirements['datebegin'])) return array('message' => 'La fecha mínima es inválida');
+    if (array_key_exists('dateend', $requirements) && !validateDate($requirements['dateend'])) return array('message' => 'La fecha máxima es inválida');
 
     // If the page number is invalid its value will be the default
     if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
@@ -221,7 +225,7 @@ function obtain_sold_orders($requirements)
         if ($result) {
             $answer = array('sold_orders' => $result);
         } else {
-            $answer = array('message' => 'There are no coincident sold orders');
+            $answer = array('message' => 'No hay pedidos vendidos coincidentes');
         }
 
         clear_query_data($query, $connection);
@@ -242,7 +246,7 @@ function obtain_sold_order($codordersold)
 {
     // Requirements control
     if (!filter_var($codordersold, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The order sold code is invalid');
+        return array('message' => 'El código de pedido es inválido');
 
     try {
         $connection = create_pdo_object();
@@ -279,7 +283,7 @@ function obtain_sold_order($codordersold)
             $result = $query->fetchAll(PDO::FETCH_ASSOC);
             if ($result) $answer['order_sold'][0]['products'] = $result;
         } else {
-            $answer = array('message' => 'There is no coincident sold order');
+            $answer = array('message' => 'El pedido vendido no existe');
         }
 
         clear_query_data($query, $connection);
@@ -300,7 +304,7 @@ function add_order($coddraft)
 {
     // Requirements control
     if (!filter_var($coddraft, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The draft code is invalid');
+        return array('message' => 'El código de borrador es inválido');
 
     try {
         $connection = create_pdo_object();
@@ -336,38 +340,38 @@ function add_order($coddraft)
                 $draft['draft'][0]['products'] = $result;
             } else {
                 clear_query_data($query, $connection);
-                return array('message' => 'An order cannot be empty');
+                return array('message' => 'Un pedido no puede estar vacío');
             }
         } else {
             clear_query_data($query, $connection);
-            return array('message' => 'There is no coincident draft');
+            return array('message' => 'El borrador no existe');
         }
 
         $query->closeCursor();
 
         if ($draft['draft'][0]['namecustomertmp'] === null && $draft['draft'][0]['telcustomertmp'] === null && $draft['draft'][0]['codcustomer'] === null) {
             $connection = null;
-            return array('message' => 'An order must have a customer');
+            return array('message' => 'Un pedido debe pertenecer a un cliente');
         }
 
         if ($draft['draft'][0]['codcustomer'] === null && $draft['draft'][0]['namecustomertmp'] === null && $draft['draft'][0]['telcustomertmp'] !== null) {
             $connection = null;
-            return array('message' => 'An customer must have a name');
+            return array('message' => 'Un cliente debe tener un nombre');
         }
 
         if ($draft['draft'][0]['codcustomer'] === null && $draft['draft'][0]['namecustomertmp'] !== null && $draft['draft'][0]['telcustomertmp'] === null) {
             $connection = null;
-            return array('message' => 'An order must have a phone number');
+            return array('message' => 'Un cliente debe tener un número de teléfono');
         }
 
         if ($draft['draft'][0]['telcustomertmp'] !== null && !preg_match('#^[6-9]([0-9]){8}$#', $draft['draft'][0]['telcustomertmp'])) {
             $connection = null;
-            return array('message' => 'The phone number is not valid');
+            return array('message' => 'El número de teléfono no es válido');
         }
 
         if ($draft['draft'][0]['namecustomertmp'] !== null && trim($draft['draft'][0]['namecustomertmp']) === '') {
             $connection = null;
-            return array('message' => 'The customer name is not valid');
+            return array('message' => 'El nombre del cliente no es válido');
         }
 
         // SQL Query to search a new primary key 
@@ -476,7 +480,7 @@ function add_order($coddraft)
                     } else {
                         $connection->rollBack();
                         $connection = null;
-                        return array('message' => 'The product ' . $draft_product['nameproduct'] . ' has not enough stock');
+                        return array('message' => 'El producto ' . $draft_product['nameproduct'] . ' no tiene suficiente stock');
                     }
 
                     $query->bindParam(':codproduct', $draft_product['codproduct'], PDO::PARAM_INT);
@@ -529,7 +533,7 @@ function sell_order($codorder, $moneyreceived)
 {
     // Requirements control
     if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The order code is invalid');
+        return array('message' => 'El código de pedido es inválido');
 
     if ((!is_numeric($moneyreceived)) || $moneyreceived < 0 || round($moneyreceived, 2) > 999.99) return array('message' => 'The money received is invalid');
     $moneyreceived = round($moneyreceived, 2);
@@ -540,7 +544,7 @@ function sell_order($codorder, $moneyreceived)
         if (array_key_exists('message', $order)) return $order;
         $total_price = 0;
         foreach ($order['order'][0]['products'] as $product) $total_price += ($product['priceproduct'] * $product['amountproductorder']);
-        if ($total_price > $moneyreceived) return array('message' => 'The money received is less than the price of the order');
+        if ($total_price > $moneyreceived) return array('message' => 'El dinero recibido es insuficiente');
 
         $connection = create_pdo_object();
 
@@ -602,34 +606,34 @@ function edit_order($input_data)
 
     // Requirements control
     if (!filter_var($input_data['codorder'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The order code is invalid');
+        return array('message' => 'El código de pedido es inválido');
 
     if ((array_key_exists('namecustomer', $input_data) || array_key_exists('telcustomer', $input_data)) && array_key_exists('codcustomer', $input_data))
-        return array('message', 'The customer code and the customer data cannot be inserted at the same time');
+        return array('message', 'El código de cliente no se puede insertar a la vez que los datos para añadir uno nuevo');
 
     if (array_key_exists('namecustomer', $input_data)) {
         $input_data['namecustomer'] = trim($input_data['namecustomer']);
-        if (strlen($input_data['namecustomer']) > 60 || strlen($input_data['namecustomer']) == 0) return array('message' => 'The customer name is invalid');
+        if (strlen($input_data['namecustomer']) > 60 || strlen($input_data['namecustomer']) == 0) return array('message' => 'El nombre de cliente no es válido');
     }
 
     if (array_key_exists('telcustomer', $input_data)) {
         $input_data['telcustomer'] = trim($input_data['telcustomer']);
-        if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'The customer phone number is invalid');
+        if (!preg_match('#^[6-9]([0-9]){8}$#', $input_data['telcustomer'])) return array('message' => 'El número de teléfono no es válido');
     }
 
     if (array_key_exists('pickuptime', $input_data)) {
         $input_data['pickuptime'] = trim($input_data['pickuptime']);
-        if ((!validateTime($input_data['pickuptime'])) && $input_data['pickuptime'] != '') return array('message' => 'The pick up time is invalid');
+        if ((!validateTime($input_data['pickuptime'])) && $input_data['pickuptime'] != '') return array('message' => 'La hora de recogida no es válida');
     }
 
     if (array_key_exists('codcustomer', $input_data) && !filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The customer code is invalid');
+        return array('message' => 'El código de cliente es inválido');
 
     if (!array_key_exists('codcustomer', $input_data) && !array_key_exists('namecustomer', $input_data) && array_key_exists('telcustomer', $input_data))
-        return array('message' => 'An customer must have a name');
+        return array('message' => 'Un cliente debe tener un nombre');
 
     if (!array_key_exists('codcustomer', $input_data) && array_key_exists('namecustomer', $input_data) && !array_key_exists('telcustomer', $input_data))
-        return array('message' => 'An order must have a phone number');
+        return array('message' => 'Un cliente debe tener un número de teléfono');
 
     $validation = validate_order_product_list($input_data['products']);
     if (array_key_exists('message', $validation)) return $validation;
@@ -651,7 +655,7 @@ function edit_order($input_data)
     }
     if ($equal_products == max(count($input_data['products']), count($order_data['order'][0]['products']))) $equal = $equal + 1;
 
-    if ($equal == count($input_data)) return array('message' => 'There is nothing to change');
+    if ($equal == count($input_data)) return array('message' => 'No hay nada que cambiar');
 
     try {
         $connection = create_pdo_object();
@@ -670,7 +674,7 @@ function edit_order($input_data)
             $query->closeCursor();
             if (!$result) {
                 $connection = null;
-                return array('message' => 'The customer does not exists');
+                return array('message' => 'El cliente no existe');
             }
         }
     } catch (PDOException $e) {
@@ -810,7 +814,7 @@ function edit_order($input_data)
                                     } else {
                                         $connection->rollBack();
                                         $connection = null;
-                                        return array('message' => 'The product ' . $nameproduct . ' has not enough stock');
+                                        return array('message' => 'El producto ' . $nameproduct . ' no tiene suficiente stock');
                                     }
 
                                     $query->bindParam(':codproduct', $order_product['codproduct'], PDO::PARAM_INT);
@@ -882,7 +886,7 @@ function edit_order($input_data)
                     } else {
                         $connection->rollBack();
                         $connection = null;
-                        return array('message' => 'The product ' . $nameproduct . ' has not enough stock');
+                        return array('message' => 'El producto ' . $nameproduct . ' no tiene suficiente stock');
                     }
 
                     $query->bindParam(':codproduct', $product_insert['codproduct'], PDO::PARAM_INT);
@@ -954,7 +958,7 @@ function delete_order($codorder)
 {
     // Requirements control
     if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The order code is invalid');
+        return array('message' => 'El código de pedido es inválido');
 
     try {
         // Transaction to completely delete an order
@@ -1015,7 +1019,7 @@ function delete_order($codorder)
         if ($rows_affected == 0) {
             $query->closeCursor();
             $connection = null;
-            return array('message' => 'There is no coincident order');
+            return array('message' => 'El pedido no existe');
         }
 
         $query->closeCursor();
@@ -1112,7 +1116,7 @@ function delete_all_unclaimed_orders()
             }
         } else {
             $connection = null;
-            return array('message' => 'There are no unclaimed orders');
+            return array('message' => 'No hay pedidos sin reclamar');
         }
 
         $connection->commit();

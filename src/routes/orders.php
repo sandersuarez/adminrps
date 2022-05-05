@@ -36,7 +36,7 @@ $app->get('/obtain_active_orders', function (Request $request, Response $respons
 
                 $response_content = json_encode(obtain_active_orders($requirements), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -46,7 +46,9 @@ $app->get('/obtain_active_orders', function (Request $request, Response $respons
     }
 
     $response->getBody()->write($response_content);
-    return $response;
+    return $response
+        ->withHeader('Content-Type', 'application/json')
+        ->withStatus(200);
 });
 
 $app->get('/obtain_active_order', function (Request $request, Response $response) {
@@ -64,7 +66,7 @@ $app->get('/obtain_active_order', function (Request $request, Response $response
             if (array_key_exists('codorder', $params)) {
                 $response_content = json_encode(obtain_active_order($params['codorder']), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -74,7 +76,9 @@ $app->get('/obtain_active_order', function (Request $request, Response $response
     }
 
     $response->getBody()->write($response_content);
-    return $response;
+    return $response
+        ->withHeader('Content-Type', 'application/json')
+        ->withStatus(200);
 });
 
 $app->get('/obtain_sold_orders', function (Request $request, Response $response) {
@@ -105,7 +109,7 @@ $app->get('/obtain_sold_orders', function (Request $request, Response $response)
 
                 $response_content = json_encode(obtain_sold_orders($requirements), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -115,7 +119,9 @@ $app->get('/obtain_sold_orders', function (Request $request, Response $response)
     }
 
     $response->getBody()->write($response_content);
-    return $response;
+    return $response
+        ->withHeader('Content-Type', 'application/json')
+        ->withStatus(200);
 });
 
 $app->get('/obtain_sold_order', function (Request $request, Response $response) {
@@ -133,7 +139,7 @@ $app->get('/obtain_sold_order', function (Request $request, Response $response) 
             if (array_key_exists('codordersold', $params)) {
                 $response_content = json_encode(obtain_sold_order($params['codordersold']), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -143,7 +149,9 @@ $app->get('/obtain_sold_order', function (Request $request, Response $response) 
     }
 
     $response->getBody()->write($response_content);
-    return $response;
+    return $response
+        ->withHeader('Content-Type', 'application/json')
+        ->withStatus(200);
 });
 
 $app->post('/add_order', function (Request $request, Response $response) {
@@ -161,7 +169,7 @@ $app->post('/add_order', function (Request $request, Response $response) {
             if (array_key_exists('coddraft', $params)) {
                 $response_content = json_encode(add_order($params['coddraft']), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -189,7 +197,7 @@ $app->post('/sell_order', function (Request $request, Response $response) {
             if (array_key_exists('codorder', $params) && array_key_exists('moneyreceived', $params)) {
                 $response_content = json_encode(sell_order($params['codorder'], $params['moneyreceived']), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -225,7 +233,7 @@ $app->put('/edit_order', function (Request $request, Response $response) {
 
                 $response_content = json_encode(edit_order($input_data), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
@@ -253,7 +261,7 @@ $app->delete('/delete_order', function (Request $request, Response $response) {
             if (array_key_exists('codorder', $params)) {
                 $response_content = json_encode(delete_order($params['codorder']), JSON_UNESCAPED_UNICODE);
             } else {
-                $response_content = json_encode(array('message', 'Required field missing'), JSON_UNESCAPED_UNICODE);
+                $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
             }
         } else {
             $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
