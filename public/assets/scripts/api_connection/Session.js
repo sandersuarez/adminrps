@@ -23,23 +23,23 @@ class Session {
             })
             .then(function (response) {
                 // If session is active or inactive the directory is checked
-                if (response.user || response.no_logged) checkDirectories(response);
+                if (response.user || response.no_logged) checkPath(response);
 
                 // If there has been an error in the process the user is notified
-                if (response.error) window.location.href = 'http://localhost/not_err.html?reason="' + response.error + '"';
+                if (response.error) window.location.href = hostPath + 'not_err.html?reason="' + response.error + '"';
 
                 // If the session has expired the user is redirected to the login page with a message
                 if (response.time || response.forbidden) {
                     let reason = '';
                     if (response.time) reason = '?reason="time_exp"';
                     if (response.forbidden) reason = '?reason="no_regis"';
-                    self.closeSession('http://localhost/login/index.html' + reason);
+                    self.closeSession(hostPath + 'login/index.html' + reason);
                 }
             })
             .catch(function (error) {
                 // If there has been an error in the process the user is notified
                 if (console && console.error) console.error(error.message);
-                window.location.href = 'http://localhost/not_err.html?reason="' + error.message + '"';
+                window.location.href = hostPath + 'not_err.html?reason="' + error.message + '"';
             });
     }
 
@@ -56,7 +56,7 @@ class Session {
             .catch(function (error) {
                 // If there has been an error in the process the user is notified
                 if (console && console.error) console.error(error.message);
-                window.location.href = 'http://localhost/not_err.html?reason="' + error.message + '"';
+                window.location.href = hostPath + 'not_err.html?reason="' + error.message + '"';
             });
     }
 
@@ -81,7 +81,7 @@ class Session {
             })
             .then(function (response) {
                 if (response.message) showErrors('#login-error-list', [response.message]); // If there is an error message, the user is notified
-                if (response.user) window.location.href = 'http://localhost'; // If the user is logged, he is redirected to the home page
+                if (response.user) window.location.href = hostPath; // If the user is logged, he is redirected to the home page
 
                 // If the server returns an error, the user is notified
                 if (response.error) {
@@ -97,9 +97,9 @@ class Session {
             .catch(function (error) {
                 // If there has been an error in the process the user is notified
                 if (console && console.error) console.error(error.message);
-                window.location.href = 'http://localhost/not_err.html?reason="' + error.message + '"';
+                window.location.href = hostPath + 'not_err.html?reason="' + error.message + '"';
             });
     }
 }
 
-var session = new Session(dir);
+const session = new Session(serverPath);

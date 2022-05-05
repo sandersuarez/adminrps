@@ -11,7 +11,7 @@ $(document).ready(function () {
                 if (console && console.error) console.error(errorMessage);
                 $('#server-error-message').text(errorMessage);
             } else {
-                window.location.href = 'http://localhost';
+                window.location.href = hostPath;
             }
         });
     }

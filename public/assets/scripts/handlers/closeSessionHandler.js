@@ -4,5 +4,5 @@
  */
 function closeSessionHandler(event) {
     event.preventDefault();
-    session.closeSession('http://localhost/login');
+    session.closeSession(hostPath + 'login');
 }
