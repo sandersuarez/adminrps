@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Function to obtain an order added by a user according to paging
+ * Function to obtain the active orders added by a user according to paging
  * @param array $requirements
  * @return array
  */
@@ -85,6 +85,64 @@ function obtain_active_orders($requirements)
                 if ($result) $answer['orders'][$i]['products'] = $result;
                 $query->closeCursor();
             }
+        } else {
+            if ($requirements['today']) {
+                $answer = array('message' => 'No hay pedidos en elaboración');
+            } else {
+                $answer = array('message' => 'No hay pedidos sin reclamar');
+            }
+        }
+
+        clear_query_data($query, $connection);
+        return $answer;
+    } catch (PDOException $e) {
+        if ($query !== null) $query->closeCursor();
+        $connection = null;
+        return process_pdo_exception($e);
+    }
+}
+
+/**
+ * Function to obtain the number of active orders added by a user according to paging
+ * @param array $requirements
+ * @return array
+ */
+function obtain_active_orders_number($requirements)
+{
+    try {
+        $connection = create_pdo_object();
+
+        $today_clause = '';
+        if ($requirements['today'] == 1 || $requirements['today'] == 0) {
+            if ($requirements['today']) {
+                $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".pickuptime, " . ORDERS . ".numdayorder";
+            } else {
+                $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC";
+            }
+        } else {
+            return array('message' => 'Selecciona un espacio de tiempo válido');
+        }
+
+        // If there is a customer name to search, the clause is added
+        $tel_name_clause = '';
+        $requirements['telnamecustomer'] = trim($requirements['telnamecustomer']);
+        if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1)
+            $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS . ".telcustomer REGEXP :telnamecustomer))";
+
+        // SQL Query to search active orders
+        $query = $connection->prepare("SELECT count(" . ORDERS . ".codorder) FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
+            ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
+            CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $tel_name_clause . $today_clause);
+
+        // Parameters binding and execution
+        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+        if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) $query->bindParam(':telnamecustomer', $requirements['telnamecustomer'], PDO::PARAM_STR);
+
+        $query->execute();
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+        if ($result) {
+            $answer = array('num_orders' => $result[0]['count(orders.codorder)']);
         } else {
             if ($requirements['today']) {
                 $answer = array('message' => 'No hay pedidos en elaboración');
