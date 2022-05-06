@@ -1,6 +1,10 @@
 /* Cellphone version */
 
 header {
+    top: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
     margin: 0;
     padding: 4px 10px;
     background-color: #0377BD;

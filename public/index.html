@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="../assets/css/fonts.css">
     <link rel="stylesheet" href="../assets/css/layout.css">
     <link rel="stylesheet" href="../assets/css/header.css">
+    <link rel="stylesheet" href="../assets/css/menu.css">
     <link rel="stylesheet" href="../assets/css/errors.css">
     <link rel="stylesheet" href="../assets/css/buttons.css">
 
@@ -28,9 +29,11 @@
     <!-- SCRIPTS -->
     <script src="assets/scripts/config.js"></script>
     <script src="assets/scripts/validation.js"></script>
+    <script src="assets/scripts/render.js"></script>
     <script src="../assets/scripts/api_connection/Session.js"></script>
     <script src="assets/scripts/setup.js"></script>
     <script src="assets/scripts/handlers/closeSessionHandler.js"></script>
+    <script src="assets/scripts/api_connection/Orders.js"></script>
 </head>
 
 <body>
@@ -40,13 +43,24 @@
         <h1>AdminRPS</h1>
     </header>
 
-    <!-- BODY -->
+    <!-- MAIN -->
     <main>
-        <div id="session-management">
-            <p>Bienvenido, </p>
-            <button id="close-session-button" onclick="closeSessionHandler(event)">Cerrar sesión</button>
+
+        <!-- MENU -->
+        <nav id="main-menu"></nav>
+
+        <!-- MAIN ACTION LAYER -->
+        <div id="bottom-action-layer">
+            <div id="session-management">
+                <p>Bienvenido, </p>
+                <button id="close-session-button" onclick="closeSessionHandler(event)">Cerrar sesión</button>
+            </div>
+            <h2 class="underline-title">Pedidos en elaboración</h2>
+            <div>
+                <div id="active-orders-error-layer" class="server-error-layer"></div>
+                <div id="active-orders-container"></div>
+            </div>
         </div>
-        <h2 class="underline-title">Pedidos en elaboración</h2>
     </main>
 </body>
 

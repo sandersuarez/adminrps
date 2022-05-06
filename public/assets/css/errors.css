@@ -1,6 +1,7 @@
 /* Cellphone version */
 
 .server-error-layer {
+    margin: 15px 0 0 0;
     display: none;
     background-color: #63C8DD;
     padding: 10px;

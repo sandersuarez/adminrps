@@ -11,13 +11,17 @@ body, button, input, input::placeholder {
 }
 
 main {
-    min-height: calc(100vh - 30px);
-    padding: 0 10px;
+    margin: 30px 0 65px 0;
+    height: calc(100vh - 30px - 65px);
+}
+
+main.no-menu-margin {
+    margin: 30px 0 0 0;
+    height: calc(100vh - 30px);
 }
 
 main h2 {
-    margin: 10px 0 0 0;
-    padding: 0;
+    padding: 10px 0 0 0;
     font-size: 18px;
     line-height: 25px;
 }
@@ -27,12 +31,16 @@ main p {
     font-size: 16px;
 }
 
+main > div {
+    padding: 0 10px;
+}
+
 div#session-management {
     display: flex;
     flex-flow: row;
     justify-content: space-between;
     align-items: center;
-    margin: 10px 0 0 0;
+    padding: 10px 0 0 0;
 }
 
 .underline-title {
@@ -41,12 +49,18 @@ div#session-management {
 
 @media only screen and (min-width: 700px) {
     main {
-        min-height: calc(100vh - 35px);
-        padding: 0 15px;
+        margin: 35px 0 0 0;
+        height: calc(100vh - 35px - 65px);
+    }
+
+    main.no-menu-margin {
+        margin: 35px 0 0 0;
+        height: calc(100vh - 35px);
     }
 
     main h2 {
-        margin: 20px 0 0 0;
+        margin: 0;
+        padding: 20px 0 0 0;
         font-size: 22px;
     }
 
@@ -55,14 +69,28 @@ div#session-management {
         font-size: 19px;
     }
 
+    main > div {
+        padding: 0 15px;
+    }
+
     div#session-management {
-        margin: 15px 0 0 0;
+        padding: 15px 0 0 0;
         justify-content: flex-start;
     }
 }
 
 @media only screen and (min-width: 992px) {
     main {
+        margin: 35px 0 0 65px;
+        height: calc(100vh - 35px);
+    }
+
+    main.no-menu-margin {
+        margin: 35px 0 0 0;
+        height: calc(100vh - 35px);
+    }
+
+    main > div {
         padding: 0 30px;
     }
 }

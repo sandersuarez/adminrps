@@ -1,0 +1,18 @@
+/* Cellphone version */
+nav#main-menu {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: fixed;
+    background-color: #EEEEEE;
+    height: 65px;
+}
+
+/* Desktop version */
+@media only screen and (min-width: 992px) {
+    nav#main-menu {
+        right: auto;
+        width: 65px;
+        height: calc(100% - 35px);
+    }
+}
