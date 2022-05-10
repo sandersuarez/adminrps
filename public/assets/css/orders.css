@@ -1,0 +1,207 @@
+/* Cellphone version */
+
+div.orders-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+div.orders-container div.order {
+    position: relative;
+    margin: 10px 0 0 0;
+    padding: 0 5px 5px 5px;
+    background-color: #63C8DD;
+    flex: 0 calc(50% - 5px);
+}
+
+div.product-table {
+    display: none;
+}
+
+div.orders-container div.order h3 {
+    padding: 0;
+    margin: 3px 0 5px 0;
+    font-size: 22px;
+    line-height: 29.96px;
+}
+
+div.orders-container div.order p.pick-up-time {
+    position: absolute;
+    top: 3px;
+    right: 9px;
+}
+
+@media only screen and (min-width: 500px) {
+    div.orders-container {
+        justify-content: flex-start;
+    }
+
+    div.orders-container div.order {
+        flex: 0 calc(33.33% - 6.66px);
+    }
+
+    div.orders-container div.order:not(:nth-child(3n)) {
+        margin: 10px 10px 0 0;
+    }
+}
+
+/* Tablet version */
+
+@media only screen and (min-width: 700px) {
+    div.orders-container div.order {
+        margin: 15px 0 0 0;
+        padding: 0 15px 15px 15px;
+        flex: 0 calc(33.33% - 13.33px);
+    }
+
+    div.orders-container div.order:not(:nth-child(3n)) {
+        margin: 15px 20px 0 0;
+    }
+
+    div.orders-container > div.order h3 {
+        font-size: 32px;
+        line-height: 44px;
+        margin: 10px 0 10px 0;
+    }
+
+    div.orders-container > div.order p.pick-up-time {
+        top: 10px;
+        right: 15px;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    div#main-active-orders-container > div.order:nth-child(1),
+    div#main-active-orders-container > div.order:nth-child(2),
+    div#main-active-orders-container > div.order:nth-child(3),
+    div#main-active-orders-container > div.order:nth-child(4) {
+        margin: 15px 0 0 0;
+        flex: 0 calc(50% - 10px);
+    }
+
+    div#main-active-orders-container > div.order:nth-child(1),
+    div#main-active-orders-container > div.order:nth-child(3) {
+        margin: 15px 20px 0 0;
+    }
+
+    div.orders-container > div.order:not(:nth-child(3n)) {
+        margin: 15px 20px 0 0;
+    }
+    
+    div.product-table {
+        display: block;
+        background-color: #FFFFFF;
+        padding: 10px;
+        margin: 10px 0 0 0;
+        max-height: 200px;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    div.product-table::-webkit-scrollbar {
+        display: none;
+    }
+
+    div.product-table > div {
+        display: flex;
+        flex-flow: row nowrap;
+        min-height: 35px;
+    }
+
+    div.product-table > div > div {
+        display: flex;
+        align-items: center;
+        padding: 4px 4px 4px 0;
+    }
+
+    div.product-table > div:first-child,
+    div.product-table > div:nth-last-child(2) {
+        border-bottom: 1px solid #000000;
+    }
+
+    div.product-table > div > div:nth-child(1) {
+        flex-flow: row wrap;
+        flex: 1;
+    }
+
+    div.product-table > div > div:nth-child(1) > p:first-child {
+        margin: 0 7px 0 0;
+    }
+
+    div.product-table > div > div:nth-child(2) {
+        flex: 0 0 100px;
+        border-left: 1px solid #000000;
+    }
+
+    div.product-table > div > div:nth-child(3) {
+        flex: 0 0 90px;
+        border-left: 1px solid #000000;
+    }
+
+    div.product-table > div > div.product-table-title {
+        justify-content: center;
+    }
+
+    div.product-table > div > div:nth-child(2),
+    div.product-table > div > div:nth-child(3),
+    div.product-table > div > div.product-table-resume:nth-child(3) {
+        justify-content: flex-end;
+        padding: 4px;
+    }
+
+    div.product-table > div > div.product-table-resume {
+        justify-content: center;
+        font-weight: bold;
+    }
+}
+
+/* Desktop version */
+
+@media only screen and (min-width: 1400px) {
+
+    div.orders-container div.order {
+        flex: 0 calc(25% - 15px);
+    }
+
+    div.orders-container > div.order:not(:nth-child(3n)) {
+        margin: 15px 0 0 0;
+    }
+
+    div.orders-container > div.order:not(:nth-child(4n)) {
+        margin: 15px 20px 0 0;
+    }
+
+    section#active-orders > div {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    div#aux-active-orders-container {
+        flex: 1;
+        align-items: flex-start;
+        align-content: flex-start;
+    }
+
+    div#aux-active-orders-container div.order {
+        margin: 15px 0 0 20px;
+        padding: 0 15px 15px 15px;
+        flex: 1 100%;
+    }
+
+    div#main-active-orders-container {
+        flex: 0 0 1000px;
+    }
+
+    div#secondary-active-orders-container {
+        flex: 1 100%;
+        margin: 15px 0 0 0;
+    }
+}
+
+@media only screen and (min-width: 1600px) {
+
+    div#aux-active-orders-container div.order {
+        flex: 0 calc(50% - 20px);
+    }
+}

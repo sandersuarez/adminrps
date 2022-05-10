@@ -66,6 +66,8 @@ form#login-form {
     max-width: 512px;
     margin: auto;
     padding-top: calc(((100vh - 30px) / 2) - 172px);
+    padding-left: 10px;
+        padding-right: 10px;
 }
 
 form#login-form > button[type="submit"] {

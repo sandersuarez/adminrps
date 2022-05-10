@@ -8,6 +8,7 @@ header {
     margin: 0;
     padding: 4px 10px;
     background-color: #0377BD;
+    z-index: 1;
 }
 
 header h1 {
