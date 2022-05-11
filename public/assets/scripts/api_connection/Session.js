@@ -23,7 +23,16 @@ class Session {
             })
             .then(function (response) {
                 // If session is active or inactive the directory is checked
-                if (response.user || response.no_logged) checkPath(response);
+                if (response.user || response.no_logged) {
+                    checkPath(response);
+
+                    // If the label to show the user name exists, the user name is shown
+                    let nameUserSlot = $('#name-user-slot');
+                    if (nameUserSlot.length) {
+                        nameUserSlot.empty();
+                        nameUserSlot.text(response.user['nameuser']);
+                    }
+                }
 
                 // If there has been an error in the process the user is notified
                 if (response.error) window.location.href = hostPath + 'not_err.html?reason="' + response.error + '"';
