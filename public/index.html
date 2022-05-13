@@ -16,26 +16,32 @@
     <link rel="icon" href="assets/logo.svg">
 
     <!-- STYLESHEETS -->
-    <link rel="stylesheet" href="../assets/css/fonts.css">
-    <link rel="stylesheet" href="../assets/css/layout.css">
-    <link rel="stylesheet" href="../assets/css/header.css">
-    <link rel="stylesheet" href="../assets/css/menu.css">
-    <link rel="stylesheet" href="../assets/css/errors.css">
-    <link rel="stylesheet" href="../assets/css/buttons.css">
-    <link rel="stylesheet" href="../assets/css/orders.css">
+    <link rel="stylesheet" href="/assets/css/fonts.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/header.css">
+    <link rel="stylesheet" href="/assets/css/menu.css">
+    <link rel="stylesheet" href="/assets/css/errors.css">
+    <link rel="stylesheet" href="/assets/css/buttons.css">
+    <link rel="stylesheet" href="/assets/css/orders.css">
+    <link rel="stylesheet" href="/assets/css/forms.css">
+    <link rel="stylesheet" href="/assets/css/searcher.css">
+    <link rel="stylesheet" href="/assets/css/paging.css">
+
 
     <!-- JQUERY -->
-    <script src="assets/scripts/jquery/jquery_3.6.0.js"></script>
+    <script src="/assets/scripts/jquery/jquery_3.6.0.js"></script>
 
     <!-- SCRIPTS -->
-    <script src="assets/scripts/config.js"></script>
-    <script src="assets/scripts/validation.js"></script>
-    <script src="assets/scripts/render.js"></script>
-    <script src="../assets/scripts/api_connection/Session.js"></script>
-    <script src="assets/scripts/setup.js"></script>
-    <script src="assets/scripts/handlers/closeSessionHandler.js"></script>
-    <script src="assets/scripts/api_connection/Orders.js"></script>
-    <script src="assets/scripts/handlers/resizeActiveOrdersContainer.js"></script>
+    <script src="/assets/scripts/config.js"></script>
+    <script src="/assets/scripts/validation.js"></script>
+    <script src="/assets/scripts/render.js"></script>
+    <script src="/assets/scripts/api_connection/Session.js"></script>
+    <script src="/assets/scripts/setup.js"></script>
+    <script src="/assets/scripts/handlers/closeSessionHandler.js"></script>
+    <script src="/assets/scripts/api_connection/Orders.js"></script>
+    <script src="/assets/scripts/handlers/resizeActiveOrdersContainer.js"></script>
+    <script src="/assets/scripts/handlers/changePageHandlers.js"></script>
+    <script src="/assets/scripts/handlers/searchActiveOrdersHandler.js"></script>
 </head>
 
 <body>
@@ -54,17 +60,121 @@
         <!-- MAIN ACTION LAYER -->
         <div id="bottom-action-layer">
             <div id="session-management">
-                <p>Bienvenido, <span id="name-user-slot"></span></p>
-                <button id="close-session-button" onclick="closeSessionHandler(event)">Cerrar sesión</button>
+                <p>Bienvenido, <span id="name-user-slot"></span>.</p>
+                <button id="close-session-button" onclick="closeSessionHandler(event)" title="Cerrar sesión">Cerrar sesión</button>
             </div>
             <section id="active-orders">
                 <h2 class="underline-title">Pedidos en elaboración</h2>
+                <form id="active-orders-searcher-layer" class="searcher-layer" method="get" onsubmit="searchActiveOrdersHandler(event)">
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <svg enable-background="new 0 0 330 330" version="1.1" viewBox="0 0 330 330" xml:space="preserve"
+                        xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                        xmlns:dc="http://purl.org/dc/elements/1.1/"
+                        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                        <path
+                            d="m325.61 304.39-102.28-102.28c16.707-21.256 26.683-48.041 26.683-77.111 0-68.929-56.077-125.01-125.01-125.01-68.928 0-125 56.077-125 125.01 0 68.927 56.077 125 125 125 29.07 0 55.855-9.975 77.11-26.681l102.28 102.28c2.929 2.93 6.768 4.394 10.607 4.394s7.678-1.464 10.606-4.394c5.859-5.857 5.859-15.355 0-21.212zm-295.61-179.39c0-52.387 42.619-95.006 95.005-95.006 52.387 0 95.006 42.619 95.006 95.005s-42.619 95.004-95.006 95.004c-52.386 1e-3 -95.005-42.618-95.005-95.003z" />
+                    </svg>
+                    <input type="text" maxlength="300">
+                </form>
                 <div>
                     <div id="active-orders-error-layer" class="server-error-layer"></div>
                     <div id="main-active-orders-container" class="orders-container"></div>
                     <div id="aux-active-orders-container" class="orders-container"></div>
                     <div id="secondary-active-orders-container" class="orders-container"></div>
                 </div>
+                <form id="active-orders-paging" class="paging-layer" novalidate onsubmit="changePageHandler(event)">
+                    <p></p>
+                    <div>
+                        <button type="button" title="Primera página" onclick="firstPageHandler(event)">
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <svg width="15" height="8" version="1.1" viewBox="0 0 501 276.01" xml:space="preserve"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <g transform="translate(-10.926 -143.34)">
+                                    <path
+                                        d="m260.24 143.36c-6.9124 0.28895-13.559 3.6064-18.154 8.7434-74.807 74.811-149.62 149.62-224.41 224.44-6.7436 7.1506-8.677 18.387-4.6851 27.374 3.6356 8.5686 12.278 14.799 21.595 15.355 7.6534 0.55614 15.493-2.5204 20.654-8.2153 68.741-68.708 137.45-137.44 206.18-206.16 69.238 69.235 138.47 138.48 207.73 207.69 7.1962 6.7841 18.526 8.68 27.538 4.5985 8.4464-3.6686 14.582-12.206 15.168-21.422 0.5976-7.7059-2.5104-15.606-8.2481-20.797-74.954-74.972-149.91-149.94-224.9-224.88-4.9378-4.5801-11.736-7.0476-18.461-6.7324z"
+                                        color="#000000" color-rendering="auto" dominant-baseline="auto"
+                                        image-rendering="auto" shape-rendering="auto" solid-color="#000000"
+                                        stop-color="#000000"
+                                        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" />
+                                </g>
+                            </svg>
+                            <svg width="15" height="8" version="1.1" viewBox="0 0 501 276.01" xml:space="preserve"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <g transform="translate(-10.926 -143.34)">
+                                    <path
+                                        d="m260.24 143.36c-6.9124 0.28895-13.559 3.6064-18.154 8.7434-74.807 74.811-149.62 149.62-224.41 224.44-6.7436 7.1506-8.677 18.387-4.6851 27.374 3.6356 8.5686 12.278 14.799 21.595 15.355 7.6534 0.55614 15.493-2.5204 20.654-8.2153 68.741-68.708 137.45-137.44 206.18-206.16 69.238 69.235 138.47 138.48 207.73 207.69 7.1962 6.7841 18.526 8.68 27.538 4.5985 8.4464-3.6686 14.582-12.206 15.168-21.422 0.5976-7.7059-2.5104-15.606-8.2481-20.797-74.954-74.972-149.91-149.94-224.9-224.88-4.9378-4.5801-11.736-7.0476-18.461-6.7324z"
+                                        color="#000000" color-rendering="auto" dominant-baseline="auto"
+                                        image-rendering="auto" shape-rendering="auto" solid-color="#000000"
+                                        stop-color="#000000"
+                                        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" />
+                                </g>
+                            </svg>
+                        </button>
+                        <button type="button" title="Anterior página" onclick="previousPageHandler(event)">
+                            <svg width="15" height="8" version="1.1" viewBox="0 0 501 276.01" xml:space="preserve"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <g transform="translate(-10.926 -143.34)">
+                                    <path
+                                        d="m260.24 143.36c-6.9124 0.28895-13.559 3.6064-18.154 8.7434-74.807 74.811-149.62 149.62-224.41 224.44-6.7436 7.1506-8.677 18.387-4.6851 27.374 3.6356 8.5686 12.278 14.799 21.595 15.355 7.6534 0.55614 15.493-2.5204 20.654-8.2153 68.741-68.708 137.45-137.44 206.18-206.16 69.238 69.235 138.47 138.48 207.73 207.69 7.1962 6.7841 18.526 8.68 27.538 4.5985 8.4464-3.6686 14.582-12.206 15.168-21.422 0.5976-7.7059-2.5104-15.606-8.2481-20.797-74.954-74.972-149.91-149.94-224.9-224.88-4.9378-4.5801-11.736-7.0476-18.461-6.7324z"
+                                        color="#000000" color-rendering="auto" dominant-baseline="auto"
+                                        image-rendering="auto" shape-rendering="auto" solid-color="#000000"
+                                        stop-color="#000000"
+                                        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" />
+                                </g>
+                            </svg>
+                        </button>
+                        <input type="number" value="1" title="Número de página" min="1" onblur="changePageHandler(event)">
+                        <button type="button" title="Siguiente página" onclick="nextPageHandler(event)">
+                            <svg width="15" height="8" version="1.1" viewBox="0 0 501 276.01" xml:space="preserve"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <g transform="translate(-10.926 -143.34)">
+                                    <path
+                                        d="m260.24 143.36c-6.9124 0.28895-13.559 3.6064-18.154 8.7434-74.807 74.811-149.62 149.62-224.41 224.44-6.7436 7.1506-8.677 18.387-4.6851 27.374 3.6356 8.5686 12.278 14.799 21.595 15.355 7.6534 0.55614 15.493-2.5204 20.654-8.2153 68.741-68.708 137.45-137.44 206.18-206.16 69.238 69.235 138.47 138.48 207.73 207.69 7.1962 6.7841 18.526 8.68 27.538 4.5985 8.4464-3.6686 14.582-12.206 15.168-21.422 0.5976-7.7059-2.5104-15.606-8.2481-20.797-74.954-74.972-149.91-149.94-224.9-224.88-4.9378-4.5801-11.736-7.0476-18.461-6.7324z"
+                                        color="#000000" color-rendering="auto" dominant-baseline="auto"
+                                        image-rendering="auto" shape-rendering="auto" solid-color="#000000"
+                                        stop-color="#000000"
+                                        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" />
+                                </g>
+                            </svg>
+                        </button>
+                        <button type="button" title="Última página" onclick="lastPageHandler(event)">
+                            <svg width="15" height="8" version="1.1" viewBox="0 0 501 276.01" xml:space="preserve"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <g transform="translate(-10.926 -143.34)">
+                                    <path
+                                        d="m260.24 143.36c-6.9124 0.28895-13.559 3.6064-18.154 8.7434-74.807 74.811-149.62 149.62-224.41 224.44-6.7436 7.1506-8.677 18.387-4.6851 27.374 3.6356 8.5686 12.278 14.799 21.595 15.355 7.6534 0.55614 15.493-2.5204 20.654-8.2153 68.741-68.708 137.45-137.44 206.18-206.16 69.238 69.235 138.47 138.48 207.73 207.69 7.1962 6.7841 18.526 8.68 27.538 4.5985 8.4464-3.6686 14.582-12.206 15.168-21.422 0.5976-7.7059-2.5104-15.606-8.2481-20.797-74.954-74.972-149.91-149.94-224.9-224.88-4.9378-4.5801-11.736-7.0476-18.461-6.7324z"
+                                        color="#000000" color-rendering="auto" dominant-baseline="auto"
+                                        image-rendering="auto" shape-rendering="auto" solid-color="#000000"
+                                        stop-color="#000000"
+                                        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" />
+                                </g>
+                            </svg>
+                            <svg width="15" height="8" version="1.1" viewBox="0 0 501 276.01" xml:space="preserve"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+                                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                                <g transform="translate(-10.926 -143.34)">
+                                    <path
+                                        d="m260.24 143.36c-6.9124 0.28895-13.559 3.6064-18.154 8.7434-74.807 74.811-149.62 149.62-224.41 224.44-6.7436 7.1506-8.677 18.387-4.6851 27.374 3.6356 8.5686 12.278 14.799 21.595 15.355 7.6534 0.55614 15.493-2.5204 20.654-8.2153 68.741-68.708 137.45-137.44 206.18-206.16 69.238 69.235 138.47 138.48 207.73 207.69 7.1962 6.7841 18.526 8.68 27.538 4.5985 8.4464-3.6686 14.582-12.206 15.168-21.422 0.5976-7.7059-2.5104-15.606-8.2481-20.797-74.954-74.972-149.91-149.94-224.9-224.88-4.9378-4.5801-11.736-7.0476-18.461-6.7324z"
+                                        color="#000000" color-rendering="auto" dominant-baseline="auto"
+                                        image-rendering="auto" shape-rendering="auto" solid-color="#000000"
+                                        stop-color="#000000"
+                                        style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" />
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
             </section>
         </div>
     </main>

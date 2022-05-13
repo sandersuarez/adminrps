@@ -1,7 +1,7 @@
 /**
  * Function that shows a message from the server
- * @param {string} id 
- * @param {string} message 
+ * @param {String} id 
+ * @param {String} message 
  */
 function showServerMessage(id, message) {
     let container = $(id);
@@ -16,7 +16,7 @@ function showServerMessage(id, message) {
 
 /**
  * Function that shows a message with errors
- * @param {string} id 
+ * @param {String} id 
  * @param {Array} errorMessages 
  */
 function showErrors(id, errorMessages) {
@@ -64,7 +64,7 @@ function showActiveOrders(orders) {
 
                 if (window.matchMedia('(min-width: 1400px)').matches) {
                     let auxContainerHeight = auxContainer.outerHeight();
-                    
+
                     if (window.matchMedia('(min-width: 1600px)').matches) {
                         ordersInAuxNumber += Math.floor(auxContainerHeight / 146) * 2;
                     } else {
@@ -72,10 +72,11 @@ function showActiveOrders(orders) {
                     }
                 }
 
-                if (index < 4) {
+                let pagingInput = $('#active-orders-paging').find('div > input').first();
+                if (index < 4 && pagingInput.val() == pagingInput.attr('min')) {
                     appendProductsTable(order, orderLayer);
                     mainContainer.append(orderLayer);
-                } else if (index < ordersInAuxNumber) {
+                } else if (index < ordersInAuxNumber && pagingInput.val() == pagingInput.attr('min')) {
                     auxContainer.append(orderLayer);
                 } else {
                     secondaryContainer.append(orderLayer);
@@ -117,4 +118,27 @@ function appendProductsTable(order, orderLayer) {
     productsTable.append(resumeRow);
 
     orderLayer.append(productsTable);
+}
+
+/**
+ * Function that updates the available page number in pagination
+ * @param {String} id
+ * @param {Number} ordersNumber 
+ * @param {Number} ordersPerPage 
+ */
+function updatePageNumber(id, ordersNumber, ordersPerPage) {
+
+    let pagesAvailable = Math.ceil(ordersNumber / ordersPerPage);
+
+    // If the number of pages is more than 1, the paging layer is shown
+    if (pagesAvailable > 1) {
+        $(id).attr('style', 'display: flex');
+    } else {
+        $(id).hide();
+    }
+    
+    let pageInput = $(id).find('div > input').first();
+    pageInput.attr('max', pagesAvailable);
+    let curPage = pageInput.val();
+    $(id).children('p').first().empty().text('Página ' + curPage + ' de ' + pagesAvailable);
 }

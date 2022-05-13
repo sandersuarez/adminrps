@@ -65,4 +65,28 @@ class Validation {
             return null;
         }
     }
+
+    /**
+     * Static method that validates a page number
+     * @param {String} id 
+     * @returns {Boolean}
+     */
+    static validatePage(id) {
+        let input = $(id).find('div > input').first();
+        let curVal = input.val();
+
+        if (curVal < input.attr('min')) {
+            input.val(input.attr('min'));
+            orders.obtainActiveOrders();
+            return false;
+        }
+
+        if (curVal > input.attr('max')) {
+            input.val(input.attr('max'));
+            orders.obtainActiveOrders();
+            return false;
+        }
+
+        return true;
+    }
 }
