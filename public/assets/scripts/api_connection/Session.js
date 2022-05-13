@@ -27,10 +27,12 @@ class Session {
                     checkPath(response);
 
                     // If the label to show the user name exists, the user name is shown
-                    let nameUserSlot = $('#name-user-slot');
-                    if (nameUserSlot.length) {
-                        nameUserSlot.empty();
-                        nameUserSlot.text(response.user['nameuser']);
+                    if (response.user) {
+                        let nameUserSlot = $('#name-user-slot');
+                        if (nameUserSlot.length) {
+                            nameUserSlot.empty();
+                            nameUserSlot.text(response.user['nameuser']);
+                        }
                     }
                 }
 
