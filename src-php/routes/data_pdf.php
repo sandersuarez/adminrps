@@ -3,7 +3,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-require __DIR__ . '/../../src/pdf_generation/sold_orders_pdf.php';
+require __DIR__ . '/../../src-php/pdf_generation/sold_orders_pdf.php';
 
 $app->get('/obtain_sold_orders_pdf', function (Request $request, Response $response) {
 

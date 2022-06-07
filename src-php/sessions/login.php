@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../../src/pdo/pdo_factory.php';
+require __DIR__ . '/../../src-php/pdo/pdo_factory.php';
 
 /**
  * Security function to protect services

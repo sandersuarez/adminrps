@@ -3,7 +3,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-require __DIR__ . '/../../src/crud/customers_crud.php';
+require __DIR__ . '/../../src-php/crud/customers_crud.php';
 
 $app->get('/obtain_customers', function (Request $request, Response $response) {
 

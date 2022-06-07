@@ -3,7 +3,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-require __DIR__ . '/../../src/sessions/login.php';
+require __DIR__ . '/../../src-php/sessions/login.php';
 
 $app->post('/login', function (Request $request, Response $response) {
 

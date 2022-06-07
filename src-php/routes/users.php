@@ -3,7 +3,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-require __DIR__ . '/../../src/crud/users_crud.php';
+require __DIR__ . '/../../src-php/crud/users_crud.php';
 
 $app->get('/obtain_fec_last_key', function (Request $request, Response $response) {
 

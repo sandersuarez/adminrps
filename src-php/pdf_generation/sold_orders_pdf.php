@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../../src/pdf_generation/templates/SoldOrdersPDFTemplate.php';
+require __DIR__ . '/../../src-php/pdf_generation/templates/SoldOrdersPDFTemplate.php';
 
 /**
  * Function that generates a pdf with the sold orders information
