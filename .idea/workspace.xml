@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a261d3cc-76f9-4586-b569-20c6c61a37fc" name="Renaming" comment="Renaming src to src-php" />
-    <list id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/adminrps.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    <list id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Basic react implementation">
       <change afterPath="$PROJECT_DIR$/src-js/components/svg/add.svg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/svg/archive.svg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/svg/bin.svg" afterDir="false" />
@@ -28,11 +17,7 @@
       <change afterPath="$PROJECT_DIR$/src-js/components/svg/search.svg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/svg/settings.svg" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/svg/up-down.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src-js/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src-js/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/svg/users.svg" afterDir="false" />
     </list>
     <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Changes by Sander Suárez" />
     <option name="SHOW_DIALOG" value="false" />
@@ -143,7 +128,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1654583314230</updated>
-      <workItem from="1654583315947" duration="6737000" />
+      <workItem from="1654583315947" duration="7038000" />
     </task>
     <task id="LOCAL-00001" summary="Renaming src to src-php">
       <created>1654590813372</created>
@@ -152,7 +137,28 @@
       <option name="project" value="LOCAL" />
       <updated>1654590813372</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added react config">
+      <created>1654591162739</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1654591162739</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Project files">
+      <created>1654591169657</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1654591169657</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Basic react implementation">
+      <created>1654591182571</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1654591182571</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -172,7 +178,10 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Renaming src to src-php" />
-    <option name="LAST_COMMIT_MESSAGE" value="Renaming src to src-php" />
+    <MESSAGE value="Added react config" />
+    <MESSAGE value="Project files" />
+    <MESSAGE value="Basic react implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Basic react implementation" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
