@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Added @emotion/react package">
+    <list default="true" id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Configured emotion js">
       <change afterPath="$PROJECT_DIR$/src-js/App.tsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/Alert.tsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/Layout.tsx" afterDir="false" />
@@ -12,12 +12,6 @@
       <change afterPath="$PROJECT_DIR$/src-js/components/Main.tsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/components/Navbar.tsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src-js/shapes/Sections.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.babelrc" beforeDir="false" afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Changes by Sander Suárez">
       <change beforePath="$PROJECT_DIR$/src-js/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/index.html" afterDir="false" />
@@ -74,26 +68,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/home/nand/Proyectos/adminrps",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.TypeScript",
-    "ts.external.directory.path": "/home/nand/Proyectos/adminrps/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/nand/Proyectos/adminrps&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.TypeScript&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/nand/Proyectos/adminrps/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -129,7 +123,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1654583314230</updated>
-      <workItem from="1654583315947" duration="16297000" />
+      <workItem from="1654583315947" duration="17749000" />
     </task>
     <task id="LOCAL-00001" summary="Renaming src to src-php">
       <created>1654590813372</created>
@@ -173,7 +167,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654591927099</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Configured emotion js">
+      <created>1654601621966</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1654601621966</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +199,8 @@
     <MESSAGE value="Basic react implementation" />
     <MESSAGE value="Added SVGs" />
     <MESSAGE value="Added @emotion/react package" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added @emotion/react package" />
+    <MESSAGE value="Configured emotion js" />
+    <option name="LAST_COMMIT_MESSAGE" value="Configured emotion js" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
