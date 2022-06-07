@@ -4,18 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a261d3cc-76f9-4586-b569-20c6c61a37fc" name="Renaming" comment="Added SVGs" />
-    <list id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Basic react implementation" />
-    <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Changes by Sander Suárez" />
+    <list default="true" id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Added @emotion/react package">
+      <change afterPath="$PROJECT_DIR$/src-js/App.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/Alert.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/Layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/Login.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/Main.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/Navbar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/shapes/Sections.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.babelrc" beforeDir="false" afterPath="$PROJECT_DIR$/.babelrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+    </list>
+    <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Changes by Sander Suárez">
+      <change beforePath="$PROJECT_DIR$/src-js/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="ChangesViewManager">
-    <option name="groupingKeys">
-      <option value="directory" />
-    </option>
   </component>
   <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
@@ -26,8 +36,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript JSX File" />
         <option value="HTML File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -79,7 +89,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "preferences.sourceCode.TypeScript",
     "ts.external.directory.path": "/home/nand/Proyectos/adminrps/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
@@ -114,12 +124,12 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="" />
-      <changelist id="a261d3cc-76f9-4586-b569-20c6c61a37fc" name="Renaming" comment="" />
+      <changelist id="" name="Renaming" comment="" />
       <created>1654583314230</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1654583314230</updated>
-      <workItem from="1654583315947" duration="7523000" />
+      <workItem from="1654583315947" duration="16297000" />
     </task>
     <task id="LOCAL-00001" summary="Renaming src to src-php">
       <created>1654590813372</created>
@@ -156,7 +166,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654591789863</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added @emotion/react package">
+      <created>1654591927099</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1654591927099</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,7 +197,8 @@
     <MESSAGE value="Project files" />
     <MESSAGE value="Basic react implementation" />
     <MESSAGE value="Added SVGs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added SVGs" />
+    <MESSAGE value="Added @emotion/react package" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added @emotion/react package" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
