@@ -4,8 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Added new components" />
-    <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Changes by Sander Suárez" />
+    <list default="true" id="c895aeed-b91a-440f-a7e3-caac823b8375" name="iCONS+" comment="Renamed SVG components to have the Icon- prefix">
+      <change afterPath="$PROJECT_DIR$/src-js/components/CustomersSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/svg/IconClose.tsx" afterDir="false" />
+    </list>
+    <list id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Removed not required dependency">
+      <change afterPath="$PROJECT_DIR$/src-js/components/Home.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/components/ProductsSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/styles/colors.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/styles/fonts.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/components/Alert.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/components/Alert.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/components/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/components/Main.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/index.tsx" afterDir="false" />
+    </list>
+    <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Changes by Sander Suárez">
+      <change beforePath="$PROJECT_DIR$/src-js/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/components/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,12 +40,32 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="TypeScript File" />
         <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/src-js/components/Layout.tsx">
+      <ranges>
+        <range start1="0" end1="1" start2="0" end2="1" changelist="fa251df8-7e08-45dc-a893-aa9a526e1541" />
+        <range start1="3" end1="5" start2="3" end2="3" changelist="fa251df8-7e08-45dc-a893-aa9a526e1541" />
+        <range start1="6" end1="7" start2="4" end2="5" changelist="fa251df8-7e08-45dc-a893-aa9a526e1541" />
+        <range start1="9" end1="10" start2="7" end2="8" changelist="fa251df8-7e08-45dc-a893-aa9a526e1541" />
+        <range start1="12" end1="13" start2="10" end2="11" changelist="fa251df8-7e08-45dc-a893-aa9a526e1541" />
+        <range start1="14" end1="18" start2="12" end2="14" changelist="6a21026e-be62-47b7-9864-a670a8c287fe" />
+      </ranges>
+    </file>
+    <file path="$PROJECT_DIR$/src-js/App.tsx">
+      <ranges>
+        <range start1="2" end1="2" start2="2" end2="3" changelist="6a21026e-be62-47b7-9864-a670a8c287fe" />
+        <range start1="5" end1="6" start2="6" end2="9" changelist="fa251df8-7e08-45dc-a893-aa9a526e1541" />
+      </ranges>
+    </file>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -108,12 +147,14 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="" />
+      <changelist id="c895aeed-b91a-440f-a7e3-caac823b8375" name="iCONS+" comment="" />
       <created>1654583314230</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1654583314230</updated>
       <workItem from="1654583315947" duration="17749000" />
       <workItem from="1654621400822" duration="226000" />
+      <workItem from="1654787427915" duration="2574000" />
     </task>
     <task id="LOCAL-00001" summary="Renaming src to src-php">
       <created>1654590813372</created>
@@ -171,7 +212,21 @@
       <option name="project" value="LOCAL" />
       <updated>1654621528271</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Removed not required dependency">
+      <created>1654787755960</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1654787755960</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Renamed SVG components to have the Icon- prefix">
+      <created>1654789761058</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1654789761058</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,7 +253,9 @@
     <MESSAGE value="Added @emotion/react package" />
     <MESSAGE value="Configured emotion js" />
     <MESSAGE value="Added new components" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added new components" />
+    <MESSAGE value="Removed not required dependency" />
+    <MESSAGE value="Renamed SVG components to have the Icon- prefix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Renamed SVG components to have the Icon- prefix" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
