@@ -1,21 +1,17 @@
-import React from 'react'
+import React, { FC, ReactNode } from 'react'
 import Navbar from './Navbar'
 import Sections from '../shapes/Sections'
-import Main from './Main'
-import { css } from '@emotion/css'
 
-const Layout = () => {
+const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <div>
-      <header className={css({ color: 'red' })}>
+      <header>
         <h1>AdminRPS</h1>
       </header>
-      <div>
+      <main>
         <Navbar selected={Sections.Products}/>
-        <Main>
-          <p>Hola</p>
-        </Main>
-      </div>
+        {children}
+      </main>
     </div>
   )
 }
