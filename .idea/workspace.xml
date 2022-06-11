@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Added higher order components">
+    <list default="true" id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="Added global">
       <change afterPath="$PROJECT_DIR$/src-js/components/Button.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src-js/components/ProductsSection.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src-js/styles/global.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src-js/components/Alert.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/components/Alert.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-js/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src-js/components/Layout.tsx" afterDir="false" />
     </list>
     <list id="6a21026e-be62-47b7-9864-a670a8c287fe" name="Changes by Sander Suárez" comment="Added higher order components" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,8 +28,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
-        <option value="TypeScript File" />
         <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -80,9 +82,14 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.TypeScript&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.CSS&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/home/nand/Proyectos/adminrps/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;HTML&quot;
+    ]
   }
 }</component>
   <component name="RecentsManager">
@@ -115,7 +122,6 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="fa251df8-7e08-45dc-a893-aa9a526e1541" name="Changes" comment="" />
-      <changelist id="" name="iCONS+" comment="" />
       <created>1654583314230</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -123,6 +129,7 @@
       <workItem from="1654583315947" duration="17749000" />
       <workItem from="1654621400822" duration="226000" />
       <workItem from="1654787427915" duration="3429000" />
+      <workItem from="1654948069933" duration="6338000" />
     </task>
     <task id="LOCAL-00001" summary="Renaming src to src-php">
       <created>1654590813372</created>
@@ -257,7 +264,21 @@
       <option name="project" value="LOCAL" />
       <updated>1654790476052</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Added higher order components">
+      <created>1654948117287</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1654948117287</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Added higher order components">
+      <created>1654948121611</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1654948121611</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
