@@ -16,7 +16,7 @@ $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 
 // Application path
-$app->setBasePath('/rest');
+$app->setBasePath('/api');
 
 // Utilities
 require __DIR__ . '/../../src-php/utilities/validate_order_product_list.php';
