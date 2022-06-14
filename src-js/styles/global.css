@@ -5,11 +5,4 @@ html {
 
 body {
   font-size: 1.6rem;
-  font-family: 'Noto Sans', sans-serif;
-}
-
-nav > ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
