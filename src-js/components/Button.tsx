@@ -2,6 +2,8 @@ import React from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 
+export type ButtonProps = typeof Button.propTypes
+
 const Button = styled.button<{ customType: 'secondary' | 'danger' }>(
   {
     // reset styling

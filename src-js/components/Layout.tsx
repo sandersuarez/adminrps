@@ -5,7 +5,12 @@ import styled from '@emotion/styled'
 import fonts from '../styles/fonts'
 
 const Container = styled.div(
-  fonts.body
+  fonts.body,
+  {
+    h1: {
+      fontFamily: 'monospace',
+    }
+  },
 )
 
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {

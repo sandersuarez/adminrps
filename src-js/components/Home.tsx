@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <section>
       <p>Home</p>
-      <Button.Secondary>Hello</Button.Secondary>
+      <Button customType='danger'>Hello</Button>
     </section>
   )
 }

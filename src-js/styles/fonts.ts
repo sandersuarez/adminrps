@@ -2,6 +2,13 @@ import { css } from '@emotion/css'
 import breakpoints from './breakpoints'
 
 const fonts = {
+  titleBar: css({
+    fontSize: '1.6rem',
+    color: '#FFFFFF',
+    [breakpoints.tablet]: {
+      fontSize: '1.9rem',
+    }
+  }),
   body: css({
     fontSize: '1.6rem',
     [breakpoints.tablet]: {
@@ -27,9 +34,5 @@ const fonts = {
     }
   })
 }
-
-/*css`
-  ${ fonts.body }
-`*/
 
 export default fonts
