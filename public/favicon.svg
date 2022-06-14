@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="170.34mm" height="170.34mm" version="1.1" viewBox="0 0 170.34 170.34" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="85.169" cy="85.169" rx="85.169" ry="85.169" fill="#0377bd" opacity=".999"/>
+  <g transform="scale(1.0216 .97885)" fill="#fff"
+     style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal"
+     aria-label="A">
+    <path
+        d="m116.59 131.08-12.641-32.536h-41.658l-12.497 32.536h-13.359l41.011-105.44h11.923l40.94 105.44zm-16.591-44.243-11.779-31.818-5.0277-15.729q-2.1547 8.6188-4.5249 15.729l-11.923 31.818z"
+        fill="#fff" stroke-width="3.6774"
+        style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal"/>
+  </g>
+</svg>
