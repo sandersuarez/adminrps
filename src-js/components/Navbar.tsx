@@ -8,7 +8,7 @@ interface IProps {
   selected: Sections
 }
 
-const NavBarStyles = styled.nav(
+const Container = styled.nav(
   {
     bottom: 0,
     left: 0,
@@ -27,9 +27,8 @@ const NavBarStyles = styled.nav(
 
 const Navbar: FC<IProps> = () => {
   return (
-    <NavBarStyles>
-      <p>Menu</p>
-    </NavBarStyles>
+    <Container>
+    </Container>
   )
 }
 
