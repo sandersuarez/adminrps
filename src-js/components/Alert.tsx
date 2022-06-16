@@ -1,36 +1,43 @@
-import React, { FC, ReactElement } from 'react'
+import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
-import Button, { ButtonProps } from './Button'
-import IconClose from './svg/IconClose'
+import breakpoints from '../styles/breakpoints'
 
-const Container = styled.article({ background: colors.section })
 
-const TopBar = styled.div({
-  height: '3.3rem',
-  background: colors.primary
-})
-
-const CloseButton = styled.button({
-  width: '3.3rem',
-  height: '3.3rem',
-  display: 'flex',
-
-  '& > svg': {
-    margin: 'auto',
-    width: '2rem',
-  }
-})
-
-export interface AlertProps {
-  onClose: () => void
+interface IProps {
   message: string
-  leftButton: ReactElement<ButtonProps>
-  rightButton: ReactElement<ButtonProps>
+  type?: 'normal' | 'error'
 }
 
-const Alert: FC<AlertProps> = () => {
+const Container = styled.article<{ type?: 'normal' | 'error' }>(
+  {
+    margin: '1rem 0 0 0',
+    background: colors.section,
+    padding: '1rem',
+    p: {
+      margin: 0,
+    },
+    [breakpoints.tablet]: {
+      margin: '2rem 0 0 0',
+      padding: '1.5rem',
+    },
+  },
+  ({ type }) => {
+    if (type === 'error')
+      return {
+        p: {
+          color: colors.danger,
+        },
+      }
+  },
+)
 
+const Alert: FC<IProps> = ({ message, type }) => {
+  return (
+    <Container type={ type! }>
+      <p>{ message }</p>
+    </Container>
+  )
 }
 
 export default Alert
