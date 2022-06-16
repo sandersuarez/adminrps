@@ -29,7 +29,6 @@ const Container = styled.div(
       },
       main: {
         margin: '3rem 0 6.5rem 0',
-        padding: '0 0 1rem 0',
         height: 'calc(100vh - 3rem - 6.5rem)',
         [breakpoints.tablet]: {
           margin: '3.5rem 0 6.5rem 0',
@@ -38,6 +37,16 @@ const Container = styled.div(
         [breakpoints.desktop]: {
           margin: '3.5rem 0 0 6.5rem',
           height: 'calc(100vh - 3.5rem)',
+        },
+      },
+      'main > section': {
+        padding: '1rem',
+        minHeight: '100%',
+        [breakpoints.tablet]: {
+          padding: '1.5rem',
+        },
+        [breakpoints.desktop]: {
+          padding: '1.5rem 3rem',
         },
       },
       h1: [
@@ -50,6 +59,14 @@ const Container = styled.div(
       'h1::selection': {
         background: 'transparent',
       },
+      h2: [
+        {
+          margin: 0,
+          borderBottom: '1px solid',
+          borderColor: colors.text,
+        },
+        fonts.title,
+      ],
     },
   ],
 )
