@@ -20,12 +20,6 @@ const fonts = {
       fontSize: '2.2rem',
     }
   },
-  subtitle: {
-    fontSize: '1.8rem',
-    [breakpoints.tablet]: {
-      fontSize: '2rem',
-    }
-  },
   orderNumber: {
     fontSize: '2.2rem',
     [breakpoints.tablet]: {
