@@ -67,6 +67,9 @@ const Container = styled.div(
         },
         fonts.title,
       ],
+      h3: {
+        margin: 0,
+      },
     },
   ],
 )
