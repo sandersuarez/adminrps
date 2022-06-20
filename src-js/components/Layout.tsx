@@ -7,83 +7,84 @@ import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 
 const Container = styled.div(
-  [
-    fonts.body,
-    {
-      header: {
-        display: 'flex',
-        alignItems: 'center',
-        background: colors.primary,
-        padding: '0 0 0 1rem',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '3rem',
-        position: 'fixed',
+  fonts.body,
+  {
+    h2: [
+      {
         margin: 0,
-        zIndex: 1,
-        [breakpoints.tablet]: {
-          padding: '0 0 0 1.5rem',
-          height: '3.5rem',
-        },
+        borderBottom: '1px solid',
+        borderColor: colors.text,
       },
-      main: {
-        margin: '3rem 0 6.5rem 0',
-        height: 'calc(100vh - 3rem - 6.5rem)',
-        [breakpoints.tablet]: {
-          margin: '3.5rem 0 6.5rem 0',
-          height: 'calc(100vh - 3.5rem - 6.5rem)',
-        },
-        [breakpoints.desktop]: {
-          margin: '3.5rem 0 0 6.5rem',
-          height: 'calc(100vh - 3.5rem)',
-        },
-      },
-      'main > section': {
-        padding: '1rem',
-        minHeight: '100%',
-        [breakpoints.tablet]: {
-          padding: '1.5rem',
-        },
-        [breakpoints.desktop]: {
-          padding: '1.5rem 3rem',
-        },
-      },
-      h1: [
-        {
-          margin: 0,
-          cursor: 'default',
-        },
-        fonts.titleBar,
-      ],
-      'h1::selection': {
-        background: 'transparent',
-      },
-      h2: [
-        {
-          margin: 0,
-          borderBottom: '1px solid',
-          borderColor: colors.text,
-        },
-        fonts.title,
-      ],
-      h3: {
-        margin: 0,
-      },
+      fonts.title,
+    ],
+    h3: {
+      margin: 0,
     },
-  ],
+  },
+)
+
+const Header = styled.header({
+  display: 'flex',
+  alignItems: 'center',
+  background: colors.primary,
+  padding: '0 0 0 1rem',
+  top: 0,
+  left: 0,
+  right: 0,
+  height: '3rem',
+  position: 'fixed',
+  margin: 0,
+  zIndex: 1,
+  [breakpoints.tablet]: {
+    padding: '0 0 0 1.5rem',
+    height: '3.5rem',
+  },
+})
+
+const Main = styled.main({
+  margin: '3rem 0 6.5rem 0',
+  height: 'calc(100vh - 3rem - 6.5rem)',
+  [breakpoints.tablet]: {
+    margin: '3.5rem 0 6.5rem 0',
+    height: 'calc(100vh - 3.5rem - 6.5rem)',
+  },
+  [breakpoints.desktop]: {
+    margin: '3.5rem 0 0 6.5rem',
+    height: 'calc(100vh - 3.5rem)',
+  },
+  '& > section': {
+    padding: '1rem',
+    minHeight: '100%',
+    [breakpoints.tablet]: {
+      padding: '1.5rem',
+    },
+    [breakpoints.desktop]: {
+      padding: '1.5rem 3rem',
+    },
+  },
+})
+
+const H1 = styled.h1(
+  fonts.titleBar,
+  {
+    margin: 0,
+    cursor: 'default',
+    '&::selection': {
+      background: 'transparent',
+    },
+  },
 )
 
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Container>
-      <header>
-        <h1>AdminRPS</h1>
-      </header>
-      <main>
+      <Header>
+        <H1>AdminRPS</H1>
+      </Header>
+      <Main>
         <Navbar selected={ Sections.Products } />
         { children }
-      </main>
+      </Main>
     </Container>
   )
 }
