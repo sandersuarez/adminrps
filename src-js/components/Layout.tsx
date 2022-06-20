@@ -6,6 +6,9 @@ import fonts from '../styles/fonts'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 
+/**
+ * Component that contains the layout styles.
+ */
 const Container = styled.div(
   fonts.body,
   {
@@ -23,6 +26,9 @@ const Container = styled.div(
   },
 )
 
+/**
+ * Component that contains the header styles.
+ */
 const Header = styled.header({
   display: 'flex',
   alignItems: 'center',
@@ -41,6 +47,9 @@ const Header = styled.header({
   },
 })
 
+/**
+ * Component that contains the section layer styles.
+ */
 const Main = styled.main({
   margin: '3rem 0 6.5rem 0',
   height: 'calc(100vh - 3rem - 6.5rem)',
@@ -64,6 +73,9 @@ const Main = styled.main({
   },
 })
 
+/**
+ * Component that contains the main title styles.
+ */
 const H1 = styled.h1(
   fonts.titleBar,
   {
@@ -75,6 +87,10 @@ const H1 = styled.h1(
   },
 )
 
+/**
+ * The component that defines the layout of the application. Contains the header, the navbar and the main sections,
+ * and contains the styles that make them responsive.
+ */
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <Container>

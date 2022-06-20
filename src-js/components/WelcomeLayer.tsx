@@ -22,6 +22,9 @@ const Container = styled.article({
   },
 })
 
+/**
+ * This component contains the welcome message for the user and the logout button.
+ */
 const WelcomeLayer: FC<IProps> = ({ userName }) => {
   return (
     <Container>

@@ -9,15 +9,21 @@ const NewOrderButton = styled(Button)({
   position: 'fixed',
   bottom: '7.5rem',
   right: '2rem',
+  zIndex: 1,
   [breakpoints.tablet]: {
     bottom: '8.5rem',
     right: '3rem',
   },
   [breakpoints.desktop]: {
     bottom: '2rem',
+    right: '4rem',
   },
 })
 
+/**
+ * This component is the main section of the application, the home page. It contains the welcome message for the user,
+ * the logout button, the active orders component and the drafts component.
+ */
 const Home = () => {
   return (
     <section>

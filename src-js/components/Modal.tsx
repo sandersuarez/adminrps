@@ -3,7 +3,19 @@ import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import { ButtonProps } from './Button'
 
-const Container = styled.article({ background: colors.section })
+const Wrapper = styled.div({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vw',
+  backgroundColor: 'rgba(255, 255, 255, .7)',
+})
+
+const Container = styled.article({
+  maxWidth: '40rem',
+  background: colors.section,
+})
 
 const TopBar = styled.div({
   position: 'relative',
@@ -45,8 +57,8 @@ export interface AlertProps {
 
 const Modal: FC<AlertProps> = (
   { onCloseClick, message, leftButton, rightButton },
-) => {
-  return (
+) => (
+  <Wrapper>
     <Container>
       <TopBar>
         <CloseButton onClick={ onCloseClick } />
@@ -57,7 +69,7 @@ const Modal: FC<AlertProps> = (
         { rightButton }
       </ButtonsContainer>
     </Container>
-  )
-}
+  </Wrapper>
+)
 
 export default Modal

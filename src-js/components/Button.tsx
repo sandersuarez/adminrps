@@ -9,6 +9,9 @@ interface IProps {
   customType: 'secondary' | 'flattened-secondary' | 'danger'
 }
 
+/**
+ * Component that defines a customized button to be reused across the application
+ */
 const Button = styled.button<IProps>(
   {
     // reset styling

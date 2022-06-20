@@ -1,16 +1,18 @@
-import React, { FC, ReactNode } from 'react'
+import React, { FC, Key, ReactNode } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import fonts from '../styles/fonts'
 import breakpoints from '../styles/breakpoints'
+import NoteType from '../shapes/NoteType'
 
-interface IProps {
-  noteType: 'activeOrder' | 'unclaimedOrder' | 'draft'
+export interface NoteProps {
+  key: Key
+  noteType: NoteType
   // todo: remove children prop and add order prop
   children?: ReactNode
 }
 
-const Container = styled.article(
+const Container = styled.article<{ noteType: NoteType }>(
   {
     position: 'relative',
     background: colors.section,
@@ -38,6 +40,9 @@ const Container = styled.article(
         },
       },
     },
+    [breakpoints.smallDesktop]: {
+      gridColumn: 'span 2',
+    }
   },
   ({ noteType }) => {
     switch (noteType) {
@@ -49,7 +54,7 @@ const Container = styled.article(
   },
 )
 
-const Note: FC<IProps> = ({ noteType, children }) => {
+const Note: FC<NoteProps> = ({ noteType, children }) => {
   // todo: render elements depending on an order prop
   return (
     <Container noteType={ noteType }>

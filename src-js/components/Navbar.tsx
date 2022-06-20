@@ -25,6 +25,9 @@ const Container = styled.nav(
   },
 )
 
+/**
+ * The main menu component. This will be the main navigation layer for the application to switch between sections.
+ */
 const Navbar: FC<IProps> = () => {
   return (
     <Container>
