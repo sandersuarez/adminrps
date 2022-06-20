@@ -1,6 +1,7 @@
 import breakpoints from './breakpoints'
+import { CSSInterpolation } from '@emotion/serialize'
 
-const fonts = {
+const fonts: { [k: string]: NonNullable<CSSInterpolation> } = {
   titleBar: {
     fontSize: '1.6rem',
     color: '#FFFFFF',
