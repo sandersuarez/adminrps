@@ -7,22 +7,20 @@ interface IProps {
   userName: string
 }
 
-const Container = styled.article(
-  {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+const Container = styled.article({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  p: {
+    margin: 0,
+  },
+  [breakpoints.smallTablet]: {
+    justifyContent: 'flex-start',
     p: {
-      margin: 0,
-    },
-    [breakpoints.smallTablet]: {
-      justifyContent: 'flex-start',
-      p: {
-        margin: '0 4rem 0 0',
-      },
+      margin: '0 4rem 0 0',
     },
   },
-)
+})
 
 const WelcomeLayer: FC<IProps> = ({ userName }) => {
   return (
