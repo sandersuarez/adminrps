@@ -5,31 +5,26 @@ import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import ActiveOrders from './ActiveOrders'
 
-const Container = styled.section(
-  {
-    'button.new-order-button': {
-      position: 'fixed',
-      bottom: '7.5rem',
-      right: '2rem',
-      [breakpoints.tablet]: {
-        bottom: '8.5rem',
-        right: '3rem',
-      },
-      [breakpoints.desktop]: {
-        bottom: '2rem',
-      },
-    },
-
+const NewOrderButton = styled(Button)({
+  position: 'fixed',
+  bottom: '7.5rem',
+  right: '2rem',
+  [breakpoints.tablet]: {
+    bottom: '8.5rem',
+    right: '3rem',
   },
-)
+  [breakpoints.desktop]: {
+    bottom: '2rem',
+  },
+})
 
 const Home = () => {
   return (
-    <Container>
+    <section>
       <WelcomeLayer userName={ 'sandy' } />
-      <Button className='new-order-button' customType={ 'secondary' }>Nuevo pedido</Button>
+      <NewOrderButton customType={ 'secondary' }>Nuevo pedido</NewOrderButton>
       <ActiveOrders />
-    </Container>
+    </section>
   )
 }
 
