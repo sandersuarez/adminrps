@@ -37,6 +37,9 @@ const Container = styled.article(
   },
 )
 
+/**
+ * Component that contains an input that accepts text to search elements.
+ */
 const SearchBar = () => {
   return (
     <Container>

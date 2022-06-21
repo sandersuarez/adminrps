@@ -3,6 +3,9 @@ import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 
+/**
+ * Component that defines a custom input to be reused across the application
+ */
 const Input = styled.input(
   {
     // reset styling

@@ -55,6 +55,9 @@ export interface AlertProps {
   rightButton: ReactElement<ButtonProps>
 }
 
+/**
+ * Component that defines a modal that shows to confirm an action.
+ */
 const Modal: FC<AlertProps> = (
   { onCloseClick, message, leftButton, rightButton },
 ) => (

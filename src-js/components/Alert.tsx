@@ -32,6 +32,9 @@ const Container = styled.article<{ type?: 'normal' | 'error' }>(
   },
 )
 
+/**
+ * Component that is used as a message for errors or warnings from the server or another module of the application.
+ */
 const Alert: FC<IProps> = ({ message, type }) => {
   return (
     <Container type={ type! }>

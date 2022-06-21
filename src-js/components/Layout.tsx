@@ -52,14 +52,14 @@ const Header = styled.header({
  */
 const Main = styled.main({
   margin: '3rem 0 6.5rem 0',
-  height: 'calc(100vh - 3rem - 6.5rem)',
+  minHeight: 'calc(100vh - 3rem - 6.5rem)',
   [breakpoints.tablet]: {
     margin: '3.5rem 0 6.5rem 0',
-    height: 'calc(100vh - 3.5rem - 6.5rem)',
+    minHeight: 'calc(100vh - 3.5rem - 6.5rem)',
   },
   [breakpoints.desktop]: {
     margin: '3.5rem 0 0 6.5rem',
-    height: 'calc(100vh - 3.5rem)',
+    minHeight: 'calc(100vh - 3.5rem)',
   },
   '& > section': {
     padding: '1rem',
@@ -99,7 +99,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       </Header>
       <Main>
         <Navbar selected={ Sections.Products } />
-        { children }
+          { children }
       </Main>
     </Container>
   )

@@ -7,6 +7,7 @@ import NoteType from '../shapes/NoteType'
 
 export interface NoteProps {
   key: Key
+  className?: string
   noteType: NoteType
   // todo: remove children prop and add order prop
   children?: ReactNode
@@ -22,27 +23,13 @@ const Container = styled.article<{ noteType: NoteType }>(
     },
     p: {
       margin: 0,
-      '&.pick-up-time': {
-        position: 'absolute',
-        top: 7,
-        right: 9,
-      },
     },
     [breakpoints.tablet]: {
-      padding: '1.4rem 1rem',
+      padding: '1.5rem',
       h3: {
         margin: '0 0 1.4rem 0',
       },
-      p: {
-        '&.pick-up-time': {
-          top: '1.3rem',
-          right: '1.6rem',
-        },
-      },
     },
-    [breakpoints.smallDesktop]: {
-      gridColumn: 'span 2',
-    }
   },
   ({ noteType }) => {
     switch (noteType) {
@@ -54,17 +41,30 @@ const Container = styled.article<{ noteType: NoteType }>(
   },
 )
 
-const Note: FC<NoteProps> = ({ noteType, children }) => {
+const PickUpTime = styled.p({
+  position: 'absolute',
+  top: 7,
+  right: 9,
+  [breakpoints.tablet]: {
+    top: '1.3rem',
+    right: '1.6rem',
+  },
+})
+
+/**
+ * Container that renders a layer as a card for an order or draft depending on its type.
+ */
+const Note: FC<NoteProps> = ({ className: className, noteType, children }) => {
   // todo: render elements depending on an order prop
   return (
-    <Container noteType={ noteType }>
+    <Container noteType={ noteType } className={ className }>
       <h3>{ 'NºX' }</h3>
       <p>{ 'Luisa Santos' }</p>
       <p>{ '640000000' }</p>
-      <p className={ 'pick-up-time' }>{ '12:35' }</p>
+      <PickUpTime>{ '12:35' }</PickUpTime>
       { children }
     </Container>
   )
 }
 
-export default Note
+export default styled(Note)({})
