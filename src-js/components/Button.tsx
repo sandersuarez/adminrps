@@ -6,7 +6,7 @@ import breakpoints from '../styles/breakpoints'
 export type ButtonProps = typeof Button.propTypes
 
 interface IProps {
-  customType: 'secondary' | 'flattened-secondary' | 'danger'
+  customType: 'secondary' | 'flattened-secondary' | 'danger' | 'paging'
 }
 
 /**
@@ -60,6 +60,11 @@ const Button = styled.button<IProps>(
             opacity: .3,
             color: '#000',
           },
+        }
+
+      case 'paging':
+        return {
+          background: colors.section,
         }
     }
   },
