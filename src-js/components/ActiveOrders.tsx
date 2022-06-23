@@ -32,9 +32,15 @@ const ActiveOrders = () => {
         <Note key={ 0 } noteType={ NoteType.activeOrder }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 1 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 2 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 3 } noteType={ NoteType.activeOrder } />,
+        <Note key={ 1 } noteType={ NoteType.activeOrder }>
+          <OrderProductsTable />
+        </Note>,
+        <Note key={ 2 } noteType={ NoteType.activeOrder }>
+          <OrderProductsTable />
+        </Note>,
+        <Note key={ 3 } noteType={ NoteType.activeOrder }>
+          <OrderProductsTable />
+        </Note>,
         <Note key={ 4 } noteType={ NoteType.activeOrder } />,
         <Note key={ 5 } noteType={ NoteType.activeOrder } />,
         <Note key={ 6 } noteType={ NoteType.activeOrder } />,

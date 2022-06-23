@@ -16,13 +16,22 @@ export interface NoteProps {
 const Container = styled.article<{ noteType: NoteType }>(
   {
     position: 'relative',
+    display: 'flex',
+    flexFlow: 'column',
     background: colors.section,
     padding: '0.7rem',
+    cursor: 'pointer',
     h3: {
       margin: '0 0 0.8rem 0',
     },
     p: {
       margin: 0,
+      '&:nth-of-type(1)': {
+        marginTop: 'auto',
+      },
+      '&:nth-of-type(2)': {
+        marginBottom: 'auto',
+      },
     },
     [breakpoints.tablet]: {
       padding: '1.5rem',

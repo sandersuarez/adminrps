@@ -14,7 +14,7 @@ const Container = styled.div({
   gap: '1rem',
   margin: '1rem 0 0 0',
 
-  [breakpoints.tablet]: {
+  [breakpoints.smallDesktop]: {
     gridTemplateColumns: 'repeat(6, 1fr)',
     columnGap: '2rem',
     rowGap: '1.5rem',
@@ -36,7 +36,7 @@ const Container = styled.div({
         gridRowEnd: 'span 2'
       },
       '&:nth-of-type(3), &:nth-of-type(4)': {
-        gridRow: '3',
+        gridRowStart: '3',
       }
     },
   }
