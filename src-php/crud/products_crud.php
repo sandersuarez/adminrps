@@ -10,7 +10,7 @@ function obtain_products($requirements)
     // If the page number is invalid its value will be the default
     if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
 
-    // Paging calculation
+    // Pagination calculation
     $begin = $requirements['page'] - 1;
     $end = 15;
 

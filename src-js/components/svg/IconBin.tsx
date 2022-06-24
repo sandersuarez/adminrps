@@ -3,8 +3,6 @@ import { SVGProps } from 'react';
 
 const SvgBin = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    width='1em'
-    height='1em'
     viewBox='0 0 400.92 483.63'
     xmlns='http://www.w3.org/2000/svg'
     {...props}

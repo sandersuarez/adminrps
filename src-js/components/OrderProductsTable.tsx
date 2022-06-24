@@ -53,7 +53,7 @@ const Table = styled.table({
   'tr:first-of-type td': {
     paddingTop: '1rem',
   },
-  'tr:nth-last-child(2) td': {
+  'tr:nth-last-of-type(2) td': {
     paddingBottom: '1rem',
   },
   span: {

@@ -3,8 +3,6 @@ import { SVGProps } from 'react';
 
 const SvgOrder = (props: SVGProps<SVGSVGElement>) => (
   <svg
-    width='1em'
-    height='1em'
     viewBox='0 0 484.98 485.02'
     xmlSpace='preserve'
     xmlns='http://www.w3.org/2000/svg'

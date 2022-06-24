@@ -7,7 +7,7 @@ import Alert from './Alert'
 import Note from './Note'
 import NoteType from '../shapes/NoteType'
 import OrderProductsTable from './OrderProductsTable'
-import Paging from './Paging'
+import Pagination from './Pagination'
 
 const Container = styled.article(
   {
@@ -76,7 +76,7 @@ const ActiveOrders = () => {
         <Note key={ 35 } noteType={ NoteType.activeOrder } />,
         <Note key={ 36 } noteType={ NoteType.activeOrder } />,
       ] } />
-      <Paging/>
+      <Pagination/>
     </Container>
   )
 }

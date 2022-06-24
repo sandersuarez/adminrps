@@ -2,7 +2,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import Alert from './Alert'
-import Paging from './Paging'
+import Pagination from './Pagination'
 import NoteContainer from './NoteContainer'
 import Note from './Note'
 import NoteType from '../shapes/NoteType'
@@ -34,7 +34,7 @@ const Drafts = () => {
         <Note key={ 9 } noteType={ NoteType.draft } />,
         <Note key={ 10 } noteType={ NoteType.draft } />,
       ] } />
-      <Paging />
+      <Pagination />
     </Container>
   )
 }

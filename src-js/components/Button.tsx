@@ -65,6 +65,9 @@ const Button = styled.button<IProps>(
       case 'paging':
         return {
           background: colors.section,
+          borderRadius: 0,
+          padding: 0,
+          height: 'unset',
         }
     }
   },
