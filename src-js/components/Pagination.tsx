@@ -55,7 +55,14 @@ const PageNumber = styled.div({
   },
 })
 
-const FirstPageButton = styled(Button)({
+const PaginationButton = styled(Button)`
+  background: ${ colors.section };
+  border-radius: 0;
+  padding: 0;
+  height: unset;
+`
+
+const FirstPageButton = styled(PaginationButton)({
   width: '5rem',
   margin: '0 1rem 0 0',
   svg: {
@@ -63,7 +70,7 @@ const FirstPageButton = styled(Button)({
   },
 })
 
-const PreviousPageButton = styled(Button)({
+const PreviousPageButton = styled(PaginationButton)({
   width: '3.5rem',
   margin: '0 1rem 0 0',
   svg: {
@@ -71,7 +78,7 @@ const PreviousPageButton = styled(Button)({
   },
 })
 
-const NextPageButton = styled(Button)({
+const NextPageButton = styled(PaginationButton)({
   width: '3.5rem',
   margin: '0 0 0 1rem',
   svg: {
@@ -79,7 +86,7 @@ const NextPageButton = styled(Button)({
   },
 })
 
-const LastPageButton = styled(Button)({
+const LastPageButton = styled(PaginationButton)({
   width: '5rem',
   margin: '0 0 0 1rem',
   svg: {
