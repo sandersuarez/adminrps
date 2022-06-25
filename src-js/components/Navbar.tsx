@@ -11,6 +11,7 @@ import IconSettings from './svg/IconSettings'
 import { css } from '@emotion/react'
 
 interface IProps {
+  className?: string
   selected: Sections
 }
 
@@ -33,29 +34,43 @@ const Wrapper = styled.nav`
 const Container = styled.div`
   display: flex;
   height: 100%;
+
+  ${ breakpoints.desktop } {
+    flex-direction: column;
+  }
 `
 
 const buttonStyles = {
-  div: css``,
+  div: css`
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+
+    ${ breakpoints.desktop } {
+      flex-grow: 0;
+      height: 6.5rem;
+    }
+  `,
   button: css`
+    flex-grow: 1;
+    max-width: 10rem;
     // reset styles
+    cursor: pointer;
     background: none;
     border: none;
     font: inherit;
     opacity: 1;
-    // custom styles
-    margin: auto;
-    flex-grow: 1;
 
     svg {
       fill: ${ colors.primary };
       height: 3rem;
+      max-width: 100%;
     }
   `,
 }
 
-const ThisButton: FC<{ icon: ReactElement }> = ({ icon }) => (
-  <div css={ buttonStyles.div }>
+const ThisButton: FC<{ className?: string, icon: ReactElement }> = ({ className, icon }) => (
+  <div className={ className } css={ buttonStyles.div }>
     <button css={ buttonStyles.button }>
       { icon }
     </button>
@@ -71,9 +86,9 @@ const Navbar: FC<IProps> = () => {
       <Container>
         <ThisButton icon={ <IconProducts /> } />
         <ThisButton icon={ <IconUsers /> } />
-        <ThisButton icon={ <IconHome /> } />
+        <ThisButton icon={ <IconHome /> } css={ css`${ breakpoints.desktop } { order: -1 }` } />
         <ThisButton icon={ <IconOrder /> } />
-        <ThisButton icon={ <IconSettings /> } />
+        <ThisButton icon={ <IconSettings /> } css={ css`${ breakpoints.desktop } { margin-top: auto; }` } />
       </Container>
     </Wrapper>
   )
