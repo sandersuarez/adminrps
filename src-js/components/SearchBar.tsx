@@ -44,7 +44,7 @@ const SearchBar = () => {
   return (
     <Container>
       <IconSearch />
-      <Input type='text' maxLength={ 300 } customType={ 'invisible' } />
+      <Input type='text' maxLength={ 300 } />
     </Container>
   )
 }
