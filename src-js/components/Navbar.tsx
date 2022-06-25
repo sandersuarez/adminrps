@@ -8,50 +8,55 @@ import IconUsers from './svg/IconUsers'
 import IconHome from './svg/IconHome'
 import IconOrder from './svg/IconOrder'
 import IconSettings from './svg/IconSettings'
+import { css } from '@emotion/react'
 
 interface IProps {
   selected: Sections
 }
 
-const Wrapper = styled.nav({
-  bottom: 0,
-  left: 0,
-  right: 0,
-  position: 'fixed',
-  backgroundColor: colors.menu,
-  height: '6.5rem',
-  zIndex: 1,
-  [breakpoints.desktop]: {
-    right: 'auto',
-    width: '6.5rem',
-    height: 'calc(100% - 3.5rem)',
-  },
-})
+const Wrapper = styled.nav`
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: fixed;
+  background-color: ${ colors.menu };
+  height: 6.5rem;
+  z-index: 1;
 
-const Container = styled.div({
-  display: 'flex',
-  height: '100%',
-})
+  ${ breakpoints.desktop } {
+    right: auto;
+    width: 6.5rem;
+    height: calc(100% - 3.5rem);
+  }
+`
 
-const ThisButton = styled.button({
-  svg: {
-    fill: colors.primary,
-    height: '3rem',
-  },
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+`
 
-  // reset the button styles
-  background: 'none',
-  border: 'none',
-  font: 'inherit',
-  opacity: 1,
+const buttonStyles = {
+  div: css``,
+  button: css`
+    // reset styles
+    background: none;
+    border: none;
+    font: inherit;
+    opacity: 1;
+    // custom styles
+    margin: auto;
+    flex-grow: 1;
 
-  margin: 'auto',
-  flexGrow: 1,
-})
+    svg {
+      fill: ${ colors.primary };
+      height: 3rem;
+    }
+  `,
+}
 
-const ThisButton2: FC<{ icon: ReactElement }> = ({ icon }) => (
-  <div>
-    <button>
+const ThisButton: FC<{ icon: ReactElement }> = ({ icon }) => (
+  <div css={ buttonStyles.div }>
+    <button css={ buttonStyles.button }>
       { icon }
     </button>
   </div>
@@ -63,23 +68,12 @@ const ThisButton2: FC<{ icon: ReactElement }> = ({ icon }) => (
 const Navbar: FC<IProps> = () => {
   return (
     <Wrapper>
-      <button css={ `svg { color: white }` }>??</button>
       <Container>
-        <ThisButton>
-          <IconProducts />
-        </ThisButton>
-        <ThisButton>
-          <IconUsers />
-        </ThisButton>
-        <ThisButton>
-          <IconHome />
-        </ThisButton>
-        <ThisButton>
-          <IconOrder />
-        </ThisButton>
-        <ThisButton>
-          <IconSettings />
-        </ThisButton>
+        <ThisButton icon={ <IconProducts /> } />
+        <ThisButton icon={ <IconUsers /> } />
+        <ThisButton icon={ <IconHome /> } />
+        <ThisButton icon={ <IconOrder /> } />
+        <ThisButton icon={ <IconSettings /> } />
       </Container>
     </Wrapper>
   )
