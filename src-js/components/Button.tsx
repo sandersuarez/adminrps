@@ -6,7 +6,7 @@ import breakpoints from '../styles/breakpoints'
 export type ButtonProps = typeof Button.propTypes
 
 interface IProps {
-  customType: 'secondary' | 'flattened-secondary' | 'danger' | 'paging'
+  customType: 'secondary' | 'flattened-secondary' | 'danger'
 }
 
 /**
