@@ -5,18 +5,42 @@ import SearchBar from './SearchBar'
 import NoteContainer from './NoteContainer'
 import Alert from './Alert'
 import Note from './Note'
-import NoteType from '../shapes/NoteType'
 import OrderProductsTable from './OrderProductsTable'
 import Pagination from './Pagination'
+import fonts from '../styles/fonts'
 
-const Container = styled.article(
-  {
-    margin: '1rem 0 0 0',
-    [breakpoints.tablet]: {
-      margin: '2rem 0 0 0',
-    },
-  },
-)
+const Container = styled.article`
+  margin: 1rem 0 0 0;
+
+  h3 {
+    ${ fonts.orderNumber }
+  }
+
+  ${ breakpoints.tablet } {
+    margin: 2rem 0 0 0;
+  }
+
+  ${ breakpoints.smallDesktop } {
+    ${ Note } {
+      &:not(:nth-of-type(n+5)) {
+        grid-column-end: span 3;
+      }
+    }
+  }
+
+  ${ breakpoints.smallDesktop } {
+    ${ Note } {
+      &:not(:nth-of-type(n+5)) {
+        grid-column-end: span 2;
+        grid-row-end: span 2;
+      }
+
+      &:nth-of-type(3), &:nth-of-type(4) {
+        grid-row-start: 3;
+      }
+    }
+  }
+`
 
 /**
  * Component that contains all the data to manage the active orders of the user. It lists them, and provides a search
@@ -30,53 +54,53 @@ const ActiveOrders = () => {
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />
       <NoteContainer noteList={ [
-        <Note key={ 0 } noteType={ NoteType.activeOrder }>
+        <Note key={ 0 }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 1 } noteType={ NoteType.activeOrder }>
+        <Note key={ 1 }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 2 } noteType={ NoteType.activeOrder }>
+        <Note key={ 2 }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 3 } noteType={ NoteType.activeOrder }>
+        <Note key={ 3 }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 4 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 5 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 6 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 7 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 8 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 9 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 10 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 11 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 12 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 13 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 14 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 15 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 16 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 17 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 18 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 19 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 20 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 21 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 22 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 23 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 24 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 25 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 26 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 27 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 28 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 29 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 30 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 31 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 32 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 33 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 34 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 35 } noteType={ NoteType.activeOrder } />,
-        <Note key={ 36 } noteType={ NoteType.activeOrder } />,
+        <Note key={ 4 } />,
+        <Note key={ 5 } />,
+        <Note key={ 6 } />,
+        <Note key={ 7 } />,
+        <Note key={ 8 } />,
+        <Note key={ 9 } />,
+        <Note key={ 10 } />,
+        <Note key={ 11 } />,
+        <Note key={ 12 } />,
+        <Note key={ 13 } />,
+        <Note key={ 14 } />,
+        <Note key={ 15 } />,
+        <Note key={ 16 } />,
+        <Note key={ 17 } />,
+        <Note key={ 18 } />,
+        <Note key={ 19 } />,
+        <Note key={ 20 } />,
+        <Note key={ 21 } />,
+        <Note key={ 22 } />,
+        <Note key={ 23 } />,
+        <Note key={ 24 } />,
+        <Note key={ 25 } />,
+        <Note key={ 26 } />,
+        <Note key={ 27 } />,
+        <Note key={ 28 } />,
+        <Note key={ 29 } />,
+        <Note key={ 30 } />,
+        <Note key={ 31 } />,
+        <Note key={ 32 } />,
+        <Note key={ 33 } />,
+        <Note key={ 34 } />,
+        <Note key={ 35 } />,
+        <Note key={ 36 } />,
       ] } />
-      <Pagination/>
+      <Pagination />
     </Container>
   )
 }
