@@ -4,50 +4,43 @@ import Note, { NoteProps } from './Note'
 import breakpoints from '../styles/breakpoints'
 
 interface NoteContainerProps {
+  className?: string
   noteList: ReactElement<NoteProps>[]
 }
 
-const Container = styled.div({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(24ch, 100%), 1fr))',
-  gridAutoFlow: 'row dense',
-  gap: '1rem',
-  margin: '1rem 0 0 0',
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(24ch, 100%), 1fr));
+  grid-auto-flow: row dense;
+  gap: 1rem;
+  margin: 1rem 0 0 0;
 
-  [breakpoints.smallDesktop]: {
-    gridTemplateColumns: 'repeat(6, 1fr)',
-    columnGap: '2rem',
-    rowGap: '1.5rem',
+  ${ breakpoints.smallDesktop } {
+    grid-template-columns: repeat(6,
+    1fr);
+    column-gap: 2rem;
+    row-gap: 1.5rem;
 
-    [`${ Note }`]: {
-      gridColumnEnd: 'span 2',
-      '&:not(:nth-of-type(n+5))': {
-        gridColumnEnd: 'span 3',
-      },
-    },
-  },
-
-  [breakpoints.bigDesktop]: {
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(24ch, 100%), 1fr))',
-    [`${ Note }`]: {
-      gridColumnEnd: 'span 1',
-      '&:not(:nth-of-type(n+5))': {
-        gridColumnEnd: 'span 2',
-        gridRowEnd: 'span 2'
-      },
-      '&:nth-of-type(3), &:nth-of-type(4)': {
-        gridRowStart: '3',
-      }
-    },
+    ${ Note } {
+      grid-column-end: span 2;
+    }
   }
-})
+
+  ${ breakpoints.bigDesktop } {
+    grid-template-columns: repeat(auto-fit, minmax(min(24ch, 100%), 1fr));
+
+    ${ Note } {
+      grid-column-end: span 1;
+    }
+  }
+`
 
 /**
  * Component that contains a set of notes, and shows them responsively.
  */
-const NoteContainer: FC<NoteContainerProps> = ({ noteList }) => {
+const NoteContainer: FC<NoteContainerProps> = ({ className, noteList }) => {
   return (
-    <Container children={ noteList } />
+    <Container className={ className } children={ noteList } />
   )
 }
 
