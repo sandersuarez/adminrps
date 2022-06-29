@@ -91,9 +91,7 @@ const buttonStyles = css`
 `
 
 const PaginationButton: FC<{ className?: string, children?: ReactElement[] }> = ({ className, children }) => (
-  <button className={ className } css={ buttonStyles }>
-    { children }
-  </button>
+  <button className={ className } css={ buttonStyles } children={ children } />
 )
 
 const FirstPageButtonStyles = css`
