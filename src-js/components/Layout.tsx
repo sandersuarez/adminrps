@@ -65,10 +65,10 @@ const Main = styled.main({
     padding: '1rem',
     minHeight: '100%',
     [breakpoints.tablet]: {
-      padding: '1.5rem',
+      padding: '1.5rem 1.5rem 2rem 1.5rem',
     },
     [breakpoints.desktop]: {
-      padding: '1.5rem 3rem',
+      padding: '1.5rem 3rem 2rem 3rem',
     },
   },
 })

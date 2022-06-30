@@ -30,7 +30,7 @@ const Container = styled.article`
     }
   }
 
-  ${ breakpoints.smallDesktop } {
+  ${ breakpoints.bigDesktop } {
     ${ Note } {
       &:not(:nth-of-type(n+5)) {
         grid-column-end: span 2;

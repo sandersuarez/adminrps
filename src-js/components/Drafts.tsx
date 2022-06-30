@@ -4,6 +4,8 @@ import breakpoints from '../styles/breakpoints'
 import Alert from './Alert'
 import NoteContainer from './NoteContainer'
 import Note from './Note'
+import Button from './Button'
+import { css } from '@emotion/react'
 
 const Container = styled.article`
   margin: 1rem 0 0 0;
@@ -11,6 +13,36 @@ const Container = styled.article`
   ${ breakpoints.tablet } {
     margin: 2rem 0 0 0;
   }
+`
+
+const optionsStyles = css`
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 16rem 0 0;
+
+  button:nth-of-type(1) {
+    margin: 1rem 1rem 0 0;
+  }
+
+  button:nth-of-type(2) {
+    white-space: break-spaces;
+    height: unset;
+    min-height: 4.5rem;
+    padding: 1rem 1.7rem;
+    border-radius: 2.8rem;
+    margin-top: 1rem;
+  }
+
+  ${ breakpoints.tablet } {
+    button:nth-of-type(1) {
+      margin: 2rem 2rem 0 0;
+    }
+
+    button:nth-of-type(2) {
+      margin-top: 2rem;
+    }
+  }
+}
 `
 
 const Drafts = () => {
@@ -31,6 +63,10 @@ const Drafts = () => {
         <Note key={ 9 } />,
         <Note key={ 10 } />,
       ] } />
+      <div css={ optionsStyles }>
+        <Button customType={ 'secondary' }>{ 'Ver todos' }</Button>
+        <Button customType={ 'danger' }>{ 'Eliminar todos los borradores' }</Button>
+      </div>
     </Container>
   )
 }

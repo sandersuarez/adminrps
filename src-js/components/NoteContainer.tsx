@@ -20,12 +20,16 @@ const Container = styled.div`
     ${ fonts.noteTitle }
   }
 
+  ${ breakpoints.tablet } {
+    column-gap: 2rem;
+    row-gap: 1.5rem;
+    margin: 2rem 0 0 0;
+  }
+
   ${ breakpoints.smallDesktop } {
     grid-template-columns: repeat(6,
     1fr);
-    column-gap: 2rem;
-    row-gap: 1.5rem;
-
+    
     ${ Note } {
       grid-column-end: span 2;
     }
