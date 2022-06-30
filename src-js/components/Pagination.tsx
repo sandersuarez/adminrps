@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react'
+import React, { FC, ReactNode } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import IconUpDown from './svg/IconUpDown'
@@ -90,7 +90,7 @@ const buttonStyles = css`
   height: unset;
 `
 
-const PaginationButton: FC<{ className?: string, children?: ReactElement[] }> = ({ className, children }) => (
+const PaginationButton: FC<{ className?: string, children?: ReactNode }> = ({ className, children }) => (
   <button className={ className } css={ buttonStyles } children={ children } />
 )
 
