@@ -74,110 +74,112 @@ const PageNumber = styled.div`
   }
 `
 
-const buttonStyles = css`
-  // reset styles
-  cursor: pointer;
-  border: none;
-  font: inherit;
-  opacity: 1;
+const buttonStyles = {
+  base: css`
+    // reset styles
+    cursor: pointer;
+    border: none;
+    font: inherit;
+    opacity: 1;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: ${ colors.section };
-  border-radius: 0;
-  padding: 0;
-  height: unset;
-`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: ${ colors.section };
+    border-radius: 0;
+    padding: 0;
+    height: unset;
+  `,
+
+  firstPage: css`
+    width: 5rem;
+    margin: 0 1rem 0 0;
+    border-radius: 2.3rem 0 0 2.3rem;
+
+    svg {
+      transform: rotate(270deg);
+
+      &:nth-of-type(1) {
+        margin: 0 -0.3rem 0 0.3rem;
+      }
+
+      &:nth-of-type(2) {
+        margin: 0 0.3rem 0 -0.3rem;
+      }
+    }
+
+    ${ breakpoints.tablet } {
+      margin: 0 1.5rem 0 0;
+      width: 8.2rem;
+
+      svg {
+        height: 0.88rem;
+      }
+    }
+  `,
+
+  previousPage: css`
+    width: 3.5rem;
+    margin: 0 1rem 0 0;
+
+    svg {
+      transform: rotate(270deg);
+      margin-right: 0.2rem;
+    }
+
+    ${ breakpoints.tablet } {
+      margin: 0 1.5rem 0 0;
+      width: 5.8rem;
+    }
+  `,
+
+  nextPage: css`
+    width: 3.5rem;
+    margin: 0 0 0 1rem;
+
+    svg {
+      transform: rotate(90deg);
+      margin-left: 0.2rem;
+    }
+
+    ${ breakpoints.tablet } {
+      margin: 0 0 0 1.5rem;
+      width: 5.8rem;
+    }
+  `,
+
+  lastPage: css`
+    width: 5rem;
+    margin: 0 0 0 1rem;
+    border-radius: 0 2.3rem 2.3rem 0;
+
+    svg {
+      transform: rotate(90deg);
+
+      &:nth-of-type(1) {
+        margin: 0 -0.3rem 0 0.3rem;
+      }
+    ;
+
+      &:nth-of-type(2) {
+        margin: 0 0.3rem 0 -0.3rem;
+      }
+    }
+
+    ${ breakpoints.tablet } {
+      margin: 0 0 0 1.5rem;
+      width: 8.2rem;
+
+      svg {
+        height: 0.88rem;
+      }
+    }
+  `,
+}
 
 const PaginationButton: FC<{ className?: string, children?: ReactNode }> = ({ className, children }) => (
-  <button className={ className } css={ buttonStyles } children={ children } />
+  <button className={ className } css={ buttonStyles.base } children={ children } />
 )
-
-const FirstPageButtonStyles = css`
-  width: 5rem;
-  margin: 0 1rem 0 0;
-  border-radius: 2.3rem 0 0 2.3rem;
-
-  svg {
-    transform: rotate(270deg);
-
-    &:nth-of-type(1) {
-      margin: 0 -0.3rem 0 0.3rem;
-    }
-
-    &:nth-of-type(2) {
-      margin: 0 0.3rem 0 -0.3rem;
-    }
-  }
-
-  ${ breakpoints.tablet } {
-    margin: 0 1.5rem 0 0;
-    width: 8.2rem;
-
-    svg {
-      height: 0.88rem;
-    }
-  }
-`
-
-const PreviousPageButtonStyles = css`
-  width: 3.5rem;
-  margin: 0 1rem 0 0;
-
-  svg {
-    transform: rotate(270deg);
-    margin-right: 0.2rem;
-  }
-
-  ${ breakpoints.tablet } {
-    margin: 0 1.5rem 0 0;
-    width: 5.8rem;
-  }
-`
-
-const NextPageButtonStyles = css`
-  width: 3.5rem;
-  margin: 0 0 0 1rem;
-
-  svg {
-    transform: rotate(90deg);
-    margin-left: 0.2rem;
-  }
-
-  ${ breakpoints.tablet } {
-    margin: 0 0 0 1.5rem;
-    width: 5.8rem;
-  }
-`
-
-const LastPageButtonStyles = css`
-  width: 5rem;
-  margin: 0 0 0 1rem;
-  border-radius: 0 2.3rem 2.3rem 0;
-
-  svg {
-    transform: rotate(90deg);
-
-    &:nth-of-type(1) {
-      margin: 0 -0.3rem 0 0.3rem;
-    }
-  ;
-
-    &:nth-of-type(2) {
-      margin: 0 0.3rem 0 -0.3rem;
-    }
-  }
-
-  ${ breakpoints.tablet } {
-    margin: 0 0 0 1.5rem;
-    width: 8.2rem;
-
-    svg {
-      height: 0.88rem;
-    }
-  }
-`
 
 const Pagination = () => {
   return (
@@ -185,20 +187,20 @@ const Pagination = () => {
       <Container>
         <p>X páginas de resultados</p>
         <Controls>
-          <PaginationButton css={ FirstPageButtonStyles }>
+          <PaginationButton css={ buttonStyles.firstPage }>
             <IconUpDown />
             <IconUpDown />
           </PaginationButton>
-          <PaginationButton css={ PreviousPageButtonStyles }>
+          <PaginationButton css={ buttonStyles.previousPage }>
             <IconUpDown />
           </PaginationButton>
           <PageNumber>
             <input type={ 'number' } min={ 1 } defaultValue={ 1 } />
           </PageNumber>
-          <PaginationButton css={ NextPageButtonStyles }>
+          <PaginationButton css={ buttonStyles.nextPage }>
             <IconUpDown />
           </PaginationButton>
-          <PaginationButton css={ LastPageButtonStyles }>
+          <PaginationButton css={ buttonStyles.lastPage }>
             <IconUpDown />
             <IconUpDown />
           </PaginationButton>
