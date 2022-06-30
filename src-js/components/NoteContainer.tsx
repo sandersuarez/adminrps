@@ -2,6 +2,7 @@ import React, { FC, ReactElement } from 'react'
 import styled from '@emotion/styled'
 import Note, { NoteProps } from './Note'
 import breakpoints from '../styles/breakpoints'
+import fonts from '../styles/fonts'
 
 interface NoteContainerProps {
   className?: string
@@ -14,6 +15,10 @@ const Container = styled.div`
   grid-auto-flow: row dense;
   gap: 1rem;
   margin: 1rem 0 0 0;
+
+  h3 {
+    ${ fonts.noteTitle }
+  }
 
   ${ breakpoints.smallDesktop } {
     grid-template-columns: repeat(6,
