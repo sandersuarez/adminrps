@@ -4,21 +4,24 @@ import WelcomeLayer from './WelcomeLayer'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import ActiveOrders from './ActiveOrders'
+import Drafts from './Drafts'
 
-const NewOrderButton = styled(Button)({
-  position: 'fixed',
-  bottom: '7.5rem',
-  right: '2rem',
-  zIndex: 1,
-  [breakpoints.tablet]: {
-    bottom: '8.5rem',
-    right: '3rem',
-  },
-  [breakpoints.desktop]: {
-    bottom: '2rem',
-    right: '4rem',
-  },
-})
+const NewOrderButton = styled(Button)`
+  position: fixed;
+  bottom: 7.5rem;
+  right: 2rem;
+  z-index: 1;
+
+  ${ breakpoints.tablet } {
+    bottom: 8.5rem;
+    right: 3rem;
+  }
+
+  ${ breakpoints.desktop } {
+    bottom: 2rem;
+    right: 4rem;
+  }
+`
 
 /**
  * This component is the main section of the application, the home page. It contains the welcome message for the user,
@@ -30,6 +33,7 @@ const Home = () => {
       <WelcomeLayer userName={ 'sandy' } />
       <NewOrderButton customType={ 'secondary' }>Nuevo pedido</NewOrderButton>
       <ActiveOrders />
+      <Drafts />
     </section>
   )
 }
