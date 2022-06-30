@@ -69,9 +69,9 @@ const buttonStyles = {
   `,
 }
 
-const ThisButton: FC<{ className?: string, icon: ReactElement }> = ({ className, icon }) => (
+const ThisButton: FC<{ className?: string, icon: ReactElement, title?: string }> = ({ className, icon, title }) => (
   <div className={ className } css={ buttonStyles.div }>
-    <button css={ buttonStyles.button }>
+    <button title={ title } css={ buttonStyles.button }>
       { icon }
     </button>
   </div>
@@ -84,11 +84,15 @@ const Navbar: FC<IProps> = () => {
   return (
     <Wrapper>
       <Container>
-        <ThisButton icon={ <IconProducts /> } />
-        <ThisButton icon={ <IconUsers /> } />
-        <ThisButton icon={ <IconHome /> } css={ css`${ breakpoints.desktop } { order: -1 }` } />
-        <ThisButton icon={ <IconOrder /> } />
-        <ThisButton icon={ <IconSettings /> } css={ css`${ breakpoints.desktop } { margin-top: auto; }` } />
+        <ThisButton title='Productos' icon={ <IconProducts /> } />
+        <ThisButton title='Clientes' icon={ <IconUsers /> } />
+        <ThisButton title='Inicio' icon={ <IconHome /> } css={ css`${ breakpoints.desktop } {
+          order: -1
+        }` } />
+        <ThisButton title='Pedidos' icon={ <IconOrder /> } />
+        <ThisButton title='Ajustes' icon={ <IconSettings /> } css={ css`${ breakpoints.desktop } {
+          margin-top: auto;
+        }` } />
       </Container>
     </Wrapper>
   )
