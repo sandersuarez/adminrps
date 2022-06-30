@@ -12,8 +12,10 @@ import fonts from '../styles/fonts'
 const Container = styled.article`
   margin: 1rem 0 0 0;
 
-  h3 {
-    ${ fonts.orderNumber }
+  ${ Note } {
+    h3 {
+      ${ fonts.orderNumber }
+    }
   }
 
   ${ breakpoints.tablet } {
