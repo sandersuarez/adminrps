@@ -2,18 +2,16 @@ import React from 'react'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import Alert from './Alert'
-import Pagination from './Pagination'
 import NoteContainer from './NoteContainer'
 import Note from './Note'
 
-const Container = styled.article(
-  {
-    margin: '1rem 0 0 0',
-    [breakpoints.tablet]: {
-      margin: '2rem 0 0 0',
-    },
-  },
-)
+const Container = styled.article`
+  margin: 1rem 0 0 0;
+
+  ${ breakpoints.tablet } {
+    margin: 2rem 0 0 0;
+  }
+`
 
 const Drafts = () => {
   return (
@@ -33,7 +31,6 @@ const Drafts = () => {
         <Note key={ 9 } />,
         <Note key={ 10 } />,
       ] } />
-      <Pagination />
     </Container>
   )
 }
