@@ -21,6 +21,12 @@ const fonts: { [k: string]: NonNullable<CSSInterpolation> } = {
       fontSize: '2.2rem',
     }
   },
+  noteTitle: {
+    fontSize: '1.8rem',
+    [breakpoints.tablet]: {
+      fontSize: '2rem',
+    }
+  },
   orderNumber: {
     fontSize: '2.2rem',
     [breakpoints.tablet]: {
