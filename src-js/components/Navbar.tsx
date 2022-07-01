@@ -16,18 +16,12 @@ interface IProps {
 }
 
 const Wrapper = styled.nav`
-  bottom: 0;
-  left: 0;
-  right: 0;
-  position: fixed;
   background-color: ${ colors.menu };
-  height: 6.5rem;
-  z-index: 1;
+  flex-basis: 6.5rem;
+  flex-shrink: 0;
 
   ${ breakpoints.desktop } {
-    right: auto;
-    width: 6.5rem;
-    height: calc(100% - 3.5rem);
+    order: 1;
   }
 `
 

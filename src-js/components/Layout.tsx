@@ -9,83 +9,82 @@ import breakpoints from '../styles/breakpoints'
 /**
  * Component that contains the layout styles.
  */
-const Container = styled.div(
-  fonts.body,
-  {
-    h2: [
-      {
-        margin: 0,
-        borderBottom: '1px solid',
-        borderColor: colors.text,
-      },
-      fonts.title,
-    ],
-    h3: {
-      margin: 0,
-    },
-  },
-)
+const Container = styled.div`
+  ${ fonts.body }
+  h2 {
+    ${ fonts.title }
+    margin: 0;
+    border-bottom: 1px solid;
+    border-color: ${ colors.text };
+  }
+
+  h3 {
+    margin: 0;
+  }
+`
 
 /**
  * Component that contains the header styles.
  */
-const Header = styled.header({
-  display: 'flex',
-  alignItems: 'center',
-  background: colors.primary,
-  padding: '0 0 0 1rem',
-  top: 0,
-  left: 0,
-  right: 0,
-  height: '3rem',
-  position: 'fixed',
-  margin: 0,
-  zIndex: 1,
-  [breakpoints.tablet]: {
-    padding: '0 0 0 1.5rem',
-    height: '3.5rem',
-  },
-})
+const Header = styled.header`
+  display: flex;
+  align-items: center;
+  background: ${ colors.primary };
+  padding: 0 0 0 1rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  margin: 0;
 
-/**
- * Component that contains the section layer styles.
- */
-const Main = styled.main({
-  margin: '3rem 0 6.5rem 0',
-  minHeight: 'calc(100vh - 3rem - 6.5rem)',
-  [breakpoints.tablet]: {
-    margin: '3.5rem 0 6.5rem 0',
-    minHeight: 'calc(100vh - 3.5rem - 6.5rem)',
-  },
-  [breakpoints.desktop]: {
-    margin: '3.5rem 0 0 6.5rem',
-    minHeight: 'calc(100vh - 3.5rem)',
-  },
-  '& > section': {
-    padding: '1rem',
-    minHeight: '100%',
-    [breakpoints.tablet]: {
-      padding: '1.5rem 1.5rem 2rem 1.5rem',
-    },
-    [breakpoints.desktop]: {
-      padding: '1.5rem 3rem 2rem 3rem',
-    },
-  },
-})
+  ${ breakpoints.tablet } {
+    padding: 0 0 0 1.5rem;
+    height: 3.5rem;
+  }
+`
 
-/**
- * Component that contains the main title styles.
- */
-const H1 = styled.h1(
-  fonts.titleBar,
-  {
-    margin: 0,
-    cursor: 'default',
-    '&::selection': {
-      background: 'transparent',
-    },
-  },
-)
+const Main = styled.main`
+  height: calc(100vh - 3rem);
+
+  ${ breakpoints.tablet } {
+    height: calc(100vh - 3.5rem);
+  }
+`
+
+const MainWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  ${ breakpoints.desktop } {
+    flex-flow: row nowrap;
+  }
+
+  & > section {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+
+    ${ breakpoints.tablet } {
+      padding: 1.5rem 1.5rem 2rem 1.5rem;
+    }
+
+    ${ breakpoints.desktop } {
+      order: 2;
+      padding: 1.5rem 3rem 2rem 3rem;
+    }
+  }
+`
+
+const H1 = styled.h1`
+  ${ fonts.titleBar }
+  margin: 0;
+  cursor: default;
+
+  &::selection {
+    background: transparent;
+  }
+`
 
 /**
  * The component that defines the layout of the application. Contains the header, the navbar and the main sections,
@@ -98,8 +97,10 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         <H1>AdminRPS</H1>
       </Header>
       <Main>
-        <Navbar selected={ Sections.Products } />
+        <MainWrapper>
           { children }
+          <Navbar selected={ Sections.Products } />
+        </MainWrapper>
       </Main>
     </Container>
   )
