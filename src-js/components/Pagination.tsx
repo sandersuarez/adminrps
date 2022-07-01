@@ -35,7 +35,7 @@ const Controls = styled.div`
 
   button {
     flex-shrink: 0;
-    padding: 0 0.9rem;
+    padding: 0 .9rem;
   }
 
   ${ breakpoints.tablet } {
@@ -100,11 +100,11 @@ const buttonStyles = {
       transform: rotate(270deg);
 
       &:nth-of-type(1) {
-        margin: 0 -0.3rem 0 0.3rem;
+        margin: 0 -.3rem 0 .3rem;
       }
 
       &:nth-of-type(2) {
-        margin: 0 0.3rem 0 -0.3rem;
+        margin: 0 .3rem 0 -.3rem;
       }
     }
 
@@ -113,7 +113,7 @@ const buttonStyles = {
       width: 8.2rem;
 
       svg {
-        height: 0.88rem;
+        height: .88rem;
       }
     }
   `,
@@ -124,7 +124,7 @@ const buttonStyles = {
 
     svg {
       transform: rotate(270deg);
-      margin-right: 0.2rem;
+      margin-right: .2rem;
     }
 
     ${ breakpoints.tablet } {
@@ -139,7 +139,7 @@ const buttonStyles = {
 
     svg {
       transform: rotate(90deg);
-      margin-left: 0.2rem;
+      margin-left: .2rem;
     }
 
     ${ breakpoints.tablet } {
@@ -157,12 +157,12 @@ const buttonStyles = {
       transform: rotate(90deg);
 
       &:nth-of-type(1) {
-        margin: 0 -0.3rem 0 0.3rem;
+        margin: 0 -.3rem 0 .3rem;
       }
     ;
 
       &:nth-of-type(2) {
-        margin: 0 0.3rem 0 -0.3rem;
+        margin: 0 .3rem 0 -.3rem;
       }
     }
 
@@ -171,7 +171,7 @@ const buttonStyles = {
       width: 8.2rem;
 
       svg {
-        height: 0.88rem;
+        height: .88rem;
       }
     }
   `,

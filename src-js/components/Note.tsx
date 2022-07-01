@@ -15,7 +15,7 @@ const Container = styled.article`
   display: flex;
   flex-flow: column;
   background: ${ colors.section };
-  padding: 0.7rem;
+  padding: .7rem;
   cursor: pointer;
 
   h3 {
@@ -45,8 +45,8 @@ const Container = styled.article`
 
 const PickUpTime = styled.p`
   position: absolute;
-  top: 0.7rem;
-  right: 0.9rem;
+  top: .7rem;
+  right: .9rem;
 
   ${ breakpoints.tablet } {
     top: 1.3rem;
