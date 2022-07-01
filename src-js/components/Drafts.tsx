@@ -18,11 +18,8 @@ const Container = styled.article`
 const optionsStyles = css`
   display: flex;
   flex-flow: row wrap;
-  margin: 0 16rem 0 0;
-
-  button:nth-of-type(1) {
-    margin: 1rem 1rem 0 0;
-  }
+  margin: 1rem 16rem 0 0;
+  gap: 1rem;
 
   button:nth-of-type(2) {
     white-space: break-spaces;
@@ -30,17 +27,11 @@ const optionsStyles = css`
     min-height: 4.5rem;
     padding: 1rem 1.7rem;
     border-radius: 2.8rem;
-    margin-top: 1rem;
   }
 
   ${ breakpoints.tablet } {
-    button:nth-of-type(1) {
-      margin: 2rem 2rem 0 0;
-    }
-
-    button:nth-of-type(2) {
-      margin-top: 2rem;
-    }
+    gap: 2rem;
+    margin-top: 2rem;
   }
 }
 `
