@@ -28,6 +28,7 @@ const styles = css`
   svg {
     fill: ${ colors.primary };
     width: 4.67rem;
+    flex-shrink: 0;
   }
 
   ${ breakpoints.tablet } {
