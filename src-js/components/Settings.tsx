@@ -1,9 +1,11 @@
 import React from 'react'
+import PasswordChange from './PasswordChange'
 
 const Settings = () => {
   return (
     <section>
-      <p>Settings</p>
+      <h2>Ajustes</h2>
+      <PasswordChange />
     </section>
   )
 }
