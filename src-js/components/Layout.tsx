@@ -86,11 +86,17 @@ const H1 = styled.h1`
   }
 `
 
+interface LayoutProps {
+  children: ReactNode
+  section: Sections
+  setSection: (section: Sections) => void
+}
+
 /**
  * The component that defines the layout of the application. Contains the header, the navbar and the main sections,
  * and contains the styles that make them responsive.
  */
-const Layout: FC<{ children: ReactNode }> = ({ children }) => {
+const Layout: FC<LayoutProps> = ({ children, section, setSection }) => {
   return (
     <Container>
       <Header>
@@ -99,7 +105,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       <Main>
         <MainWrapper>
           { children }
-          <Navbar selected={ Sections.Products } />
+          <Navbar selectedSection={ section } setSection={ setSection } />
         </MainWrapper>
       </Main>
     </Container>

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react'
+import React, { FC, HTMLAttributes, ReactElement } from 'react'
 import Sections from '../shapes/Sections'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
@@ -10,9 +10,9 @@ import IconOrder from './svg/IconOrder'
 import IconSettings from './svg/IconSettings'
 import { css } from '@emotion/react'
 
-interface IProps {
-  className?: string
-  selected: Sections
+interface NavbarProps {
+  selectedSection: Sections
+  setSection: (section: Sections) => void
 }
 
 const Wrapper = styled.nav`
@@ -34,18 +34,17 @@ const Container = styled.div`
   }
 `
 
-const buttonStyles = {
-  div: css`
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
+const thisButtonStyles = css`
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
 
-    ${ breakpoints.desktop } {
-      flex-grow: 0;
-      height: 6.5rem;
-    }
-  `,
-  button: css`
+  ${ breakpoints.desktop } {
+    flex-grow: 0;
+    height: 6.5rem;
+  }
+
+  & > button {
     flex-grow: 1;
     max-width: 10rem;
     // reset styles
@@ -60,12 +59,18 @@ const buttonStyles = {
       height: 3rem;
       max-width: 100%;
     }
-  `,
+  }
+`
+
+interface ThisButtonProps extends HTMLAttributes<HTMLButtonElement> {
+  className?: string,
+  icon: ReactElement,
+  title?: string
 }
 
-const ThisButton: FC<{ className?: string, icon: ReactElement, title?: string }> = ({ className, icon, title }) => (
-  <div className={ className } css={ buttonStyles.div }>
-    <button title={ title } css={ buttonStyles.button }>
+const ThisButton: FC<ThisButtonProps> = ({ className, icon, title, ...buttonProps }) => (
+  <div className={ className } css={ thisButtonStyles }>
+    <button title={ title } { ...buttonProps }>
       { icon }
     </button>
   </div>
@@ -74,17 +79,17 @@ const ThisButton: FC<{ className?: string, icon: ReactElement, title?: string }>
 /**
  * The main menu component. This will be the main navigation layer for the application to switch between sections.
  */
-const Navbar: FC<IProps> = () => {
+const Navbar: FC<NavbarProps> = ({ selectedSection, setSection }) => {
   return (
     <Wrapper>
       <Container>
-        <ThisButton title='Productos' icon={ <IconProducts /> } />
-        <ThisButton title='Clientes' icon={ <IconUsers /> } />
+        <ThisButton onClick={ () => setSection(Sections.Products) } title='Productos' icon={ <IconProducts /> } />
+        <ThisButton onClick={ () => setSection(Sections.Customers) } title='Clientes' icon={ <IconUsers /> } />
         <ThisButton title='Inicio' icon={ <IconHome /> } css={ css`${ breakpoints.desktop } {
           order: -1
         }` } />
-        <ThisButton title='Pedidos' icon={ <IconOrder /> } />
-        <ThisButton title='Ajustes' icon={ <IconSettings /> } css={ css`${ breakpoints.desktop } {
+        <ThisButton onClick={ () => setSection(Sections.Orders) } title='Pedidos' icon={ <IconOrder /> } />
+        <ThisButton onClick={ () => setSection(Sections.Settings) } title='Ajustes' icon={ <IconSettings /> } css={ css`${ breakpoints.desktop } {
           margin-top: auto;
         }` } />
       </Container>

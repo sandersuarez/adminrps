@@ -57,7 +57,7 @@ interface OrderSectionProps {
   onClose: () => void
 }
 
-const OrderSection: FC<OrderSectionProps> = ({ onClose }) => (
+const OrderPanel: FC<OrderSectionProps> = ({ onClose }) => (
   <Container>
     <Title>
       Pedido Nº 1 - 06/04/2022
@@ -66,4 +66,4 @@ const OrderSection: FC<OrderSectionProps> = ({ onClose }) => (
   </Container>
 )
 
-export default OrderSection
+export default OrderPanel
