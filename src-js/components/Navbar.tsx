@@ -85,13 +85,29 @@ const Navbar: FC<NavbarProps> = ({ selectedSection, setSection }) => {
       <Container>
         <ThisButton onClick={ () => setSection(Sections.Products) } title='Productos' icon={ <IconProducts /> } />
         <ThisButton onClick={ () => setSection(Sections.Customers) } title='Clientes' icon={ <IconUsers /> } />
-        <ThisButton title='Inicio' icon={ <IconHome /> } css={ css`${ breakpoints.desktop } {
-          order: -1
-        }` } />
+        <ThisButton
+          onClick={ () => setSection(Sections.Home) }
+          title='Inicio'
+          icon={ <IconHome /> }
+          css={
+            css`
+              ${ breakpoints.desktop } {
+                order: -1
+              }
+            `
+          } />
         <ThisButton onClick={ () => setSection(Sections.Orders) } title='Pedidos' icon={ <IconOrder /> } />
-        <ThisButton onClick={ () => setSection(Sections.Settings) } title='Ajustes' icon={ <IconSettings /> } css={ css`${ breakpoints.desktop } {
-          margin-top: auto;
-        }` } />
+        <ThisButton
+          onClick={ () => setSection(Sections.Settings) }
+          title='Ajustes'
+          icon={ <IconSettings /> }
+          css={
+            css`
+              ${ breakpoints.desktop } {
+                margin-top: auto;
+              }
+            `
+          } />
       </Container>
     </Wrapper>
   )
