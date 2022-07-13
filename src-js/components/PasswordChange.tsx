@@ -6,10 +6,10 @@ import Button from './Button'
 import Label from './Label'
 
 const Container = styled.article`
-  margin: 1rem 0 0 0;
+  margin: 1.5rem 0 0 0;
   
   ${ breakpoints.tablet } {
-    margin: 2rem 0 0 0;
+    margin: 2.5rem 0 0 0;
   }
 `
 

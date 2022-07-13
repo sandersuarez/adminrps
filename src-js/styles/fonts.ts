@@ -32,6 +32,12 @@ const fonts: { [k: string]: NonNullable<CSSInterpolation> } = {
     [breakpoints.tablet]: {
       fontSize: '3.2rem',
     }
+  },
+  formMessage: {
+    fontSize: '1.4rem',
+    [breakpoints.tablet]: {
+      fontSize: '1.6rem',
+    }
   }
 }
 
