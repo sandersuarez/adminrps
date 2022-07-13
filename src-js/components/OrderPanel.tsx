@@ -3,34 +3,33 @@ import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import IconClose from './svg/IconClose'
 import breakpoints from '../styles/breakpoints'
+import OrderProductsTable from './OrderProductsTable'
 
 const Container = styled.section`
-  background: ${ colors.section };
-  --margin: 1rem;
-  margin-left: var(--margin);
-  margin-right: var(--margin);
+  --side-margin: 1rem;
+  --content-margin: 1.5rem;
 
   ${ breakpoints.tablet } {
-    --margin: 1.5rem;
+    --side-margin: 1.5rem;
+    --content-margin: 2rem;
   }
 
   ${ breakpoints.desktop } {
-    --margin: 3rem;
+    --side-margin: 3rem;
   }
+
+  background: ${ colors.section };
+  margin-left: var(--side-margin);
+  margin-right: var(--side-margin);
 
   p {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
   }
 
-  hr {
-    --margin: 1.5rem;
-    margin-top: var(--margin);
-    margin-bottom: var(--margin);
-
-    ${ breakpoints.tablet } {
-      --margin: 2rem;
-    }
+  hr, ${OrderProductsTable} {
+    margin-top: var(--content-margin);
+    margin-bottom: var(--content-margin);
   }
 `
 
@@ -63,6 +62,15 @@ const OrderPanel: FC<OrderSectionProps> = ({ onClose }) => (
       Pedido Nº 1 - 06/04/2022
       <button onClick={ onClose } children={ <IconClose /> } />
     </Title>
+    <p>
+      <b>Hora aproximada de recogida:</b>
+      12:43
+    </p>
+    <p>
+      <b>Luisa Santos</b><br />
+      <b>Teléfono:</b> 676676676
+    </p>
+    <OrderProductsTable />
   </Container>
 )
 

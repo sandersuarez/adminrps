@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
@@ -70,14 +70,18 @@ const Gradient = styled.div({
   background: 'linear-gradient(0deg, ' + colors.background + ' 0%, transparent 100%)',
 })
 
+interface OrderProductsTableProps {
+  className?: string
+}
+
 /**
  * Component that renders a products resume table for an order. The resume table may let the user edit the list. It
  * contains the name of the product with the unitary price, the amount, and the total price.
  */
-const OrderProductsTable = () => {
+const OrderProductsTable: FC<OrderProductsTableProps> = ({ className }) => {
   // todo: render table depending on a products prop
   return (
-    <Container>
+    <Container className={ className }>
       <TableContainer>
         <Table>
           <thead>
@@ -116,4 +120,4 @@ const OrderProductsTable = () => {
   )
 }
 
-export default OrderProductsTable
+export default styled(OrderProductsTable)``
