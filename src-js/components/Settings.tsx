@@ -39,6 +39,14 @@ const Note = styled.p`
   margin: 0;
 `
 
+const ivaInputStyles = css`
+  max-width: 6.3rem;
+
+  ${ breakpoints.tablet } {
+    max-width: 8rem;
+  }
+`
+
 const Settings = () => {
   return (
     <section>
@@ -51,8 +59,8 @@ const Settings = () => {
             }
           `
         }>
-          <Label css={ css`margin: 0;` }>IVA aplicado:</Label>
-          <Input />
+          <Label>IVA aplicado:</Label>
+          <Input css={ ivaInputStyles } />
         </FieldWrapper>
         <FieldWrapper>
           <Button customType={ 'secondary' }>Aplicar IVA</Button>
