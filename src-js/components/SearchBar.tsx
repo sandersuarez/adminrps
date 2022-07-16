@@ -5,37 +5,39 @@ import Input from './Input'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 
-const Container = styled.article(
-  {
-    display: 'flex',
-    alignItems: 'center',
-    background: colors.background,
-    border: '1px solid',
-    borderRadius: '1.8rem',
-    borderColor: colors.primary,
-    margin: '1rem 0 0 0',
-    padding: '0 1rem 0 0',
-    maxWidth: '51.2rem',
-    svg: {
-      width: '1.8rem',
-      height: '1.8rem',
-      margin: '0 0 0 1rem',
-    },
-    input: {
-      flex: '0% 1 1',
-      background: 'transparent',
-      border: 'none',
-    },
-    [breakpoints.tablet]: {
-      margin: '2rem 0 0 0',
-      borderRadius: '2.3rem',
-      padding: '0 1.5rem 0 0',
-      svg: {
-        margin: '0 0 0 1.5rem',
-      },
-    },
-  },
-)
+const Container = styled.article`
+  display: flex;
+  align-items: center;
+  background: ${ colors.background };
+  border-radius: 1.8rem;
+  border: 1px solid ${ colors.primary };
+  margin-top: 1rem;
+  padding-right: 1rem;
+  max-width: 56.4rem;
+
+  svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-left: 1rem;
+  }
+
+  input {
+    flex-basis: 0;
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+  }
+
+  ${ breakpoints.tablet } {
+    margin-top: 2rem;
+    border-radius: 2.3rem;
+    padding-right: 1.5rem;
+
+    svg {
+      margin-left: 1.5rem;
+    }
+  }
+`
 
 /**
  * Component that contains an input that accepts text to search elements.
