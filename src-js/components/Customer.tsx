@@ -5,17 +5,23 @@ import SlideButton from './SlideButton'
 import { css } from '@emotion/react'
 import Button from './Button'
 import fonts from '../styles/fonts'
+import breakpoints from '../styles/breakpoints'
 
 const Container = styled.div`
-  max-height: 3.5rem;
+  height: 3.5rem;
   border-radius: 0.5rem;
   border: 1px solid ${ colors.primary };
   overflow: hidden;
   padding-left: 1rem;
-  transition: max-height 1s ease;
+  transition: height 1s ease;
 
   p {
     margin: 0;
+  }
+
+  ${ breakpoints.tablet } {
+    height: 4.5rem;
+    padding-left: 1.5rem;
   }
 `
 
@@ -23,16 +29,47 @@ const ShownContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-height: 3.5rem;
+  height: 3.5rem;
+
+  p {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  ${ breakpoints.tablet } {
+    height: 4.5rem;
+  }
 `
 
 const HiddenContainer = styled.div`
+  --horizontal-margin: 1rem;
+  --vertical-margin: 1rem;
   display: flex;
   flex-wrap: wrap;
-  column-gap: 1rem;
+  margin-top: .5rem;
+  column-gap: var(--horizontal-margin);
+  row-gap: var(--vertical-margin);
 
   p {
     flex-grow: 1;
+    max-width: 36.5rem;
+  }
+
+  ${ breakpoints.smallTablet } {
+    display: grid;
+    grid-template-columns: min-content auto;
+
+    p {
+      grid-column: 2;
+    }
+
+    button {
+      justify-self: start;
+    }
+  }
+
+  ${ breakpoints.tablet } {
+    --horizontal-margin: 2rem;
   }
 `
 
@@ -41,17 +78,21 @@ const NoRemoveMessage = styled.p`
 `
 
 const openStyles = css`
-  max-height: 15rem;
+  height: 14rem;
+
+  ${ breakpoints.tablet } {
+    height: 14rem;
+  }
 `
 
 interface IProps {
   name: string
   phoneNumber: string
   editable: boolean
-  noRemoveMessage?: string
+  removable: boolean
 }
 
-const Customer: FC<IProps> = ({ name, phoneNumber, editable, noRemoveMessage }) => {
+const Customer: FC<IProps> = ({ name, phoneNumber, editable, removable }) => {
   const [open, setOpen] = React.useState<boolean>(false)
 
   const onSlideButtonClick = () => {
@@ -64,11 +105,20 @@ const Customer: FC<IProps> = ({ name, phoneNumber, editable, noRemoveMessage }) 
         <p>{ name } ({ phoneNumber })</p>
         { editable ? <SlideButton onSlideButtonClick={ onSlideButtonClick } open={ open } /> : null }
       </ShownContainer>
-      <HiddenContainer>
-        <Button customType={ 'secondary' }>Editar</Button>
-        <Button customType={ 'danger' } disabled={ noRemoveMessage !== undefined }>Eliminar</Button>
-        { noRemoveMessage !== undefined ? <NoRemoveMessage>{ noRemoveMessage }</NoRemoveMessage> : null }
-      </HiddenContainer>
+      {
+        editable ?
+          <HiddenContainer>
+            <Button customType={ 'secondary' }>Editar</Button>
+            <Button customType={ 'danger' } disabled={ !removable }>Eliminar</Button>
+            {
+              removable ?
+                null
+                : <NoRemoveMessage>No es posible eliminar este cliente porque tiene pedidos registrados a su
+                  nombre.</NoRemoveMessage>
+            }
+          </HiddenContainer>
+          : null
+      }
     </Container>
   )
 }
