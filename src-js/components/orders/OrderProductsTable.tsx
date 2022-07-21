@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
-import colors from '../styles/colors'
-import breakpoints from '../styles/breakpoints'
+import colors from '../../styles/colors'
+import breakpoints from '../../styles/breakpoints'
 
 const Container = styled.div({
   display: 'none',

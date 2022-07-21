@@ -26,7 +26,7 @@ const Wrapper = styled.div`
   }
 `
 
-const SectionButtonsWrapper: FC<{ children?: ReactNode }> = ({ children }) => {
+const ArticleButtonsWrapper: FC<{ children?: ReactNode }> = ({ children }) => {
   return (
     <Wrapper>
       { children }
@@ -34,4 +34,4 @@ const SectionButtonsWrapper: FC<{ children?: ReactNode }> = ({ children }) => {
   )
 }
 
-export default SectionButtonsWrapper
+export default ArticleButtonsWrapper

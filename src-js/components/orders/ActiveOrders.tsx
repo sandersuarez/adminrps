@@ -1,13 +1,13 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import breakpoints from '../styles/breakpoints'
-import SearchBar from './SearchBar'
-import NoteContainer from './NoteContainer'
-import Alert from './Alert'
-import Note from './Note'
+import breakpoints from '../../styles/breakpoints'
+import SearchBar from '../SearchBar'
+import NoteContainer from '../NoteContainer'
+import Alert from '../Alert'
+import Note from '../Note'
 import OrderProductsTable from './OrderProductsTable'
-import Pagination from './Pagination'
-import fonts from '../styles/fonts'
+import Pagination from '../Pagination'
+import fonts from '../../styles/fonts'
 
 const Container = styled.article`
   margin: 1rem 0 0 0;

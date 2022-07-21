@@ -1,10 +1,10 @@
 import React from 'react'
-import Button from './Button'
-import WelcomeLayer from './WelcomeLayer'
+import Button from '../Button'
+import WelcomeLayer from '../WelcomeLayer'
 import styled from '@emotion/styled'
-import breakpoints from '../styles/breakpoints'
-import ActiveOrders from './ActiveOrders'
-import Drafts from './Drafts'
+import breakpoints from '../../styles/breakpoints'
+import ActiveOrders from '../orders/ActiveOrders'
+import Drafts from '../Drafts'
 
 const NewOrderButton = styled(Button)`
   position: fixed;

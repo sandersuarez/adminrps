@@ -1,8 +1,8 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
-import colors from '../styles/colors'
-import IconClose from './svg/IconClose'
-import breakpoints from '../styles/breakpoints'
+import colors from '../../styles/colors'
+import IconClose from '../svg/IconClose'
+import breakpoints from '../../styles/breakpoints'
 import OrderProductsTable from './OrderProductsTable'
 
 const Container = styled.section`

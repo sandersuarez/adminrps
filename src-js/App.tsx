@@ -1,11 +1,11 @@
 import React from 'react'
 import Layout from './components/Layout'
-import Home from './components/Home'
+import Home from './components/sections/Home'
 import Sections from './shapes/Sections'
-import ProductsSection from './components/ProductsSection'
-import CustomersSection from './components/CustomersSection'
-import OrdersSection from './components/OrdersSection'
-import Settings from './components/Settings'
+import ProductsSection from './components/sections/ProductsSection'
+import CustomersSection from './components/sections/CustomersSection'
+import OrdersSection from './components/sections/OrdersSection'
+import Settings from './components/sections/Settings'
 
 /**
  * The root component.

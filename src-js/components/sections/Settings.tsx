@@ -1,11 +1,11 @@
 import React from 'react'
-import PasswordChange from './PasswordChange'
-import Input from './Input'
-import Button from './Button'
-import Label from './Label'
+import PasswordChange from '../PasswordChange'
+import Input from '../Input'
+import Button from '../Button'
+import Label from '../Label'
 import styled from '@emotion/styled'
-import fonts from '../styles/fonts'
-import breakpoints from '../styles/breakpoints'
+import fonts from '../../styles/fonts'
+import breakpoints from '../../styles/breakpoints'
 import { css } from '@emotion/react'
 
 const Form = styled.form`

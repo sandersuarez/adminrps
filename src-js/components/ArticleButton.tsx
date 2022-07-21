@@ -52,7 +52,7 @@ const styles = css`
  * Component that defines a special type of button with a card form, with an icon and text. Its principal function is
  * to serve as navigation element between section articles.
  */
-const SectionButton: FC<IProps> = (
+const ArticleButton: FC<IProps> = (
   {
     className,
     title,
@@ -67,4 +67,4 @@ const SectionButton: FC<IProps> = (
   )
 }
 
-export default SectionButton
+export default ArticleButton
