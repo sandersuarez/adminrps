@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import IconUpDown from './svg/IconUpDown'
-import { css, keyframes } from '@emotion/react'
+import { css } from '@emotion/react'
 import breakpoints from '../styles/breakpoints'
 
 const SlideButtonContainer = styled.button`
@@ -22,43 +22,19 @@ const SlideButtonContainer = styled.button`
   cursor: pointer;
   flex-shrink: 0;
 
-  svg {
-    width: 1.5rem;
-  }
-
   ${ breakpoints.tablet } {
     --dimensions: 4.5rem;
   }
 `
 
-const roll = keyframes`
-  from {
-    transform: rotate(180deg);
-  }
-
-  to {
-    transform: rotate(0deg);
-  }
-`
-
-const unroll = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(180deg);
-  }
+const svgStyles = css`
+  width: 1.5rem;
+  transform: rotate(180deg);
+  transition: transform .5s ease;
 `
 
 const activeStyles = css`
   transform: rotate(0deg);
-  animation: ${ roll } 1s ease;
-`
-
-const inactiveStyles = css`
-  transform: rotate(180deg);
-  animation: ${ unroll } 1s ease;
 `
 
 interface IProps {
@@ -69,7 +45,7 @@ interface IProps {
 const SlideButton: FC<IProps> = ({ onSlideButtonClick, open }) => {
   return (
     <SlideButtonContainer onClick={ onSlideButtonClick }>
-      <IconUpDown css={ open ? activeStyles : inactiveStyles } />
+      <IconUpDown css={ [svgStyles, open ? activeStyles : undefined] } />
     </SlideButtonContainer>
   )
 }

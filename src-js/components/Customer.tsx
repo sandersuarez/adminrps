@@ -8,20 +8,13 @@ import fonts from '../styles/fonts'
 import breakpoints from '../styles/breakpoints'
 
 const Container = styled.div`
-  height: 3.5rem;
   border-radius: 0.5rem;
   border: 1px solid ${ colors.primary };
   overflow: hidden;
-  padding-left: 1rem;
-  transition: height 1s ease;
+  transition: height .5s ease;
 
   p {
     margin: 0;
-  }
-
-  ${ breakpoints.tablet } {
-    height: 4.5rem;
-    padding-left: 1.5rem;
   }
 `
 
@@ -29,15 +22,10 @@ const ShownContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 3.5rem;
 
   p {
     overflow: hidden;
     white-space: nowrap;
-  }
-
-  ${ breakpoints.tablet } {
-    height: 4.5rem;
   }
 `
 
@@ -78,11 +66,6 @@ const NoRemoveMessage = styled.p`
 `
 
 const openStyles = css`
-  height: 14rem;
-
-  ${ breakpoints.tablet } {
-    height: 14rem;
-  }
 `
 
 interface IProps {

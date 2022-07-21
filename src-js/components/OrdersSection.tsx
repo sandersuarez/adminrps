@@ -7,6 +7,7 @@ import IconArchive from './svg/IconArchive'
 import IconBrokenClock from './svg/IconBrokenClock'
 
 const OrdersSection = () => {
+  //const [section, setSection] = React.useState<Sections>(Sections.Home)
   return (
     <section>
       <SectionButtonsWrapper>

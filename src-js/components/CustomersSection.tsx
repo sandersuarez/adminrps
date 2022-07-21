@@ -1,10 +1,10 @@
 import React from 'react'
-import Customer from './Customer'
+import PanelContainer from './PanelContainer'
 
 const CustomersSection = () => {
   return (
     <section>
-      <Customer name={ 'Luisa Santos' } phoneNumber={ '640000000' } editable={ true } removable={ false } />
+      <PanelContainer mainChildren={<></>} sideChildren={<></>}/>
     </section>
   )
 }
