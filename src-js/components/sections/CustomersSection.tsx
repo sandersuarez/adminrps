@@ -1,6 +1,6 @@
 import React from 'react'
 import PanelContainer from '../PanelContainer'
-import Customers from '../Customers'
+import Customers from '../customers/Customers'
 
 const CustomersSection = () => {
   return (

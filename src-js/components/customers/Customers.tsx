@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
-import SearchBar from './SearchBar'
-import Alert from './Alert'
-import Pagination from './Pagination'
+import SearchBar from '../SearchBar'
+import Alert from '../Alert'
+import Pagination from '../Pagination'
 import CustomersContainer from './CustomersContainer'
 import Customer from './Customer'
-import FixedButton from './FixedButton'
+import FixedButton from '../FixedButton'
 
 interface IProps {
   title?: boolean

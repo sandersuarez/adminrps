@@ -1,11 +1,11 @@
 import React, { FC, Key } from 'react'
 import styled from '@emotion/styled'
-import colors from '../styles/colors'
-import SlideButton from './SlideButton'
+import colors from '../../styles/colors'
+import SlideButton from '../SlideButton'
 import { css } from '@emotion/react'
-import Button from './Button'
-import fonts from '../styles/fonts'
-import breakpoints from '../styles/breakpoints'
+import Button from '../Button'
+import fonts from '../../styles/fonts'
+import breakpoints from '../../styles/breakpoints'
 
 const Container = styled.div`
   border-radius: 0.5rem;
