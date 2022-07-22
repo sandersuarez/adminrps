@@ -1,5 +1,4 @@
 import React from 'react'
-import Button from '../Button'
 import WelcomeLayer from '../WelcomeLayer'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
@@ -17,23 +16,6 @@ const Container = styled.section`
   ${ breakpoints.desktop } {
     order: 2;
     padding: 1.5rem 3rem 2rem 3rem;
-  }
-`
-
-const NewOrderButton = styled(Button)`
-  position: fixed;
-  bottom: 7.5rem;
-  right: 2rem;
-  z-index: 1;
-
-  ${ breakpoints.tablet } {
-    bottom: 8.5rem;
-    right: 3rem;
-  }
-
-  ${ breakpoints.desktop } {
-    bottom: 2rem;
-    right: 4rem;
   }
 `
 

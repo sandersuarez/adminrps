@@ -28,8 +28,8 @@ const Container = styled.article({
 const WelcomeLayer: FC<IProps> = ({ userName }) => {
   return (
     <Container>
-      <p>Bienvenido, { userName }.</p>
-      <Button customType={ 'flattened-secondary' }>Cerrar sesión</Button>
+      <p>{ 'Bienvenido, ' + userName + '.' }</p>
+      <Button customType={ 'flattened-secondary' }>{ 'Cerrar sesión' }</Button>
     </Container>
   )
 }
