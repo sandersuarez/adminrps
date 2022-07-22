@@ -15,6 +15,7 @@ interface IProps {
 const Button = styled.button<IProps>(
   {
     // reset styling
+    color: 'inherit',
     border: 'none',
     font: 'inherit',
     opacity: 1,

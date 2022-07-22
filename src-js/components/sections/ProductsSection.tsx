@@ -3,15 +3,30 @@ import ArticleButton from '../ArticleButton'
 import IconProducts from '../svg/IconProducts'
 import IconBin from '../svg/IconBin'
 import ArticleButtonsWrapper from '../ArticleButtonsWrapper'
+import styled from '@emotion/styled'
+import breakpoints from '../../styles/breakpoints'
+
+const Container = styled.section`
+  padding: 1rem;
+
+  ${ breakpoints.tablet } {
+    padding: 1.5rem 1.5rem 2rem 1.5rem;
+  }
+
+  ${ breakpoints.desktop } {
+    order: 2;
+    padding: 1.5rem 3rem 2rem 3rem;
+  }
+`
 
 const ProductsSection = () => {
   return (
-    <section>
+    <Container>
       <ArticleButtonsWrapper>
         <ArticleButton title={ 'Mis productos' } icon={ <IconProducts /> } />
         <ArticleButton title={ 'Productos eliminados' } icon={ <IconBin /> } />
       </ArticleButtonsWrapper>
-    </section>
+    </Container>
   )
 }
 

@@ -9,12 +9,13 @@ const Container = styled.div`
 `
 
 const MainContainer = styled.div`
-  background: ${ colors.section };
   flex-grow: 1;
+  overflow-y: auto;
 `
 
 const SideContainer = styled.div`
   display: none;
+  overflow-y: auto;
   flex-basis: 55rem;
   flex-shrink: 0;
 

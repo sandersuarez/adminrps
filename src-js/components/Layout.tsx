@@ -61,17 +61,11 @@ const MainWrapper = styled.div`
   }
 
   & > section {
-    padding: 1rem;
     overflow-y: auto;
     flex-grow: 1;
 
-    ${ breakpoints.tablet } {
-      padding: 1.5rem 1.5rem 2rem 1.5rem;
-    }
-
     ${ breakpoints.desktop } {
       order: 2;
-      padding: 1.5rem 3rem 2rem 3rem;
     }
   }
 `

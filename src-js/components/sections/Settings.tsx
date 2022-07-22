@@ -8,6 +8,19 @@ import fonts from '../../styles/fonts'
 import breakpoints from '../../styles/breakpoints'
 import { css } from '@emotion/react'
 
+const Container = styled.section`
+  padding: 1rem;
+
+  ${ breakpoints.tablet } {
+    padding: 1.5rem 1.5rem 2rem 1.5rem;
+  }
+
+  ${ breakpoints.desktop } {
+    order: 2;
+    padding: 1.5rem 3rem 2rem 3rem;
+  }
+`
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -49,7 +62,7 @@ const ivaInputStyles = css`
 
 const Settings = () => {
   return (
-    <section>
+    <Container>
       <h2>Ajustes</h2>
       <Form>
         <FieldWrapper css={
@@ -69,7 +82,7 @@ const Settings = () => {
         </FieldWrapper>
       </Form>
       <PasswordChange />
-    </section>
+    </Container>
   )
 }
 

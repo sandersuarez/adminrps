@@ -5,6 +5,20 @@ import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
 import ActiveOrders from '../orders/ActiveOrders'
 import Drafts from '../Drafts'
+import FixedButton from '../FixedButton'
+
+const Container = styled.section`
+  padding: 1rem;
+
+  ${ breakpoints.tablet } {
+    padding: 1.5rem 1.5rem 2rem 1.5rem;
+  }
+
+  ${ breakpoints.desktop } {
+    order: 2;
+    padding: 1.5rem 3rem 2rem 3rem;
+  }
+`
 
 const NewOrderButton = styled(Button)`
   position: fixed;
@@ -29,12 +43,12 @@ const NewOrderButton = styled(Button)`
  */
 const Home = () => {
   return (
-    <section>
+    <Container>
       <WelcomeLayer userName={ 'sandy' } />
-      <NewOrderButton customType={ 'secondary' }>Nuevo pedido</NewOrderButton>
+      <FixedButton>Nuevo pedido</FixedButton>
       <ActiveOrders />
       <Drafts />
-    </section>
+    </Container>
   )
 }
 

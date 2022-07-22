@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, Key } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import SlideButton from './SlideButton'
@@ -68,14 +68,15 @@ const NoRemoveMessage = styled.p`
 const openStyles = css`
 `
 
-interface IProps {
+export interface CustomerProps {
+  key: Key
   name: string
   phoneNumber: string
   editable: boolean
   removable: boolean
 }
 
-const Customer: FC<IProps> = ({ name, phoneNumber, editable, removable }) => {
+const Customer: FC<CustomerProps> = ({ name, phoneNumber, editable, removable }) => {
   const [open, setOpen] = React.useState<boolean>(false)
 
   const onSlideButtonClick = () => {
