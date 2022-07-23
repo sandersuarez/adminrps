@@ -7,20 +7,23 @@ interface IProps {
   userName: string
 }
 
-const Container = styled.article({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  p: {
-    margin: 0,
-  },
-  [breakpoints.smallTablet]: {
-    justifyContent: 'flex-start',
-    p: {
-      margin: '0 4rem 0 0',
-    },
-  },
-})
+const Container = styled.article`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  p {
+    margin: 0;
+  }
+
+  ${ breakpoints.smallTablet } {
+    justify-content: flex-start;
+
+    p {
+      margin-right: 4rem;
+    }
+  }
+`
 
 /**
  * This component contains the welcome message for the user and the logout button.

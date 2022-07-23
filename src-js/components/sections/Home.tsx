@@ -5,9 +5,10 @@ import breakpoints from '../../styles/breakpoints'
 import ActiveOrders from '../orders/ActiveOrders'
 import Drafts from '../Drafts'
 import FixedButton from '../FixedButton'
+import margins from '../../styles/margins'
 
 const Container = styled.section`
-  padding: 1rem;
+  padding: ${ margins.mobile.lateral };
 
   ${ breakpoints.tablet } {
     padding: 1.5rem 1.5rem 2rem 1.5rem;

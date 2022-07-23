@@ -4,21 +4,24 @@ import styled from '@emotion/styled'
 import Input from './Input'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
+import margins from '../styles/margins'
 
 const Container = styled.article`
+  --iconDimensions: 1.8rem;
+
   display: flex;
   align-items: center;
   background: ${ colors.background };
-  border-radius: 1.8rem;
+  border-radius: 999rem;
   border: 1px solid ${ colors.primary };
   margin-top: 1rem;
   padding-right: 1rem;
   max-width: 56.4rem;
 
   svg {
-    width: 1.8rem;
-    height: 1.8rem;
-    margin-left: 1rem;
+    width: var(--iconDimensions);
+    height: var(--iconDimensions);
+    margin-left: ${ margins.mobile.littleGap };
   }
 
   input {
