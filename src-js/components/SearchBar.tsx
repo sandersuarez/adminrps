@@ -49,7 +49,7 @@ const SearchBar = () => {
   return (
     <Container>
       <IconSearch />
-      <Input type='text' maxLength={ 300 } />
+      <Input type={ 'text' } maxLength={ 300 } />
     </Container>
   )
 }
