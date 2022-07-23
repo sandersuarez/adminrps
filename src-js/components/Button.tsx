@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
-import breakpoints from '../styles/breakpoints'
+import { css } from '@emotion/react'
 
 export type ButtonProps = typeof Button.propTypes
 
@@ -13,55 +13,48 @@ interface IProps {
  * Component that defines a customized button to be reused across the application
  */
 const Button = styled.button<IProps>(
-  {
+  css`
     // reset styling
-    color: 'inherit',
-    border: 'none',
-    font: 'inherit',
-    opacity: 1,
-    appearance: 'none',
+    color: inherit;
+    border: none;
+    font: inherit;
+    opacity: 1;
+    appearance: none;
+
     // custom styling
-    height: '4.5rem',
-    padding: '0 1.7rem',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '2.2rem',
-    fontWeight: 'bold',
-    whiteSpace: 'nowrap',
-    cursor: 'pointer',
-    [breakpoints.tablet]: {
-      padding: '0 2rem',
-    },
-    '&[disabled]': {
-      opacity: .6,
-    },
-  },
+    padding: .75em 1.25em;
+    border-radius: 2.2rem;
+    font-weight: bold;
+    white-space: nowrap;
+
+    &[disabled] {
+      opacity: .6
+    }
+  `,
   ({ customType }) => {
     switch (customType) {
       case 'secondary':
-        return { background: colors.secondary }
+        return css`
+          background: ${ colors.secondary }
+        `
 
       case 'flattened-secondary':
-        return {
-          fontWeight: 'normal',
-          background: colors.secondary,
-          height: '3.5rem',
-          [breakpoints.tablet]: {
-            height: '4.5rem',
-          },
-        }
+        return css`
+          background: ${ colors.secondary };
+          font-size: 1.4rem;
+          font-weight: normal;
+        `
 
       case 'danger':
-        return {
-          background: colors.danger,
-          color: '#fff',
+        return css`
+          background: ${ colors.danger };
+          color: #fff;
 
-          '&[disabled]': {
-            opacity: .3,
-            color: '#000',
-          },
-        }
+          &[disabled] {
+            opacity: .3;
+            color: #000;
+          }
+        `
     }
   },
 )

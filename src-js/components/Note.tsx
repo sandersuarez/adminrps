@@ -61,7 +61,7 @@ const Note: FC<NoteProps> = ({ className: className, children }) => {
   // todo: render elements depending on an order prop
   return (
     <Container className={ className }>
-      <h3>{ 'NºX' }</h3>
+      <h3>{ 'Nº X' }</h3>
       <p>{ 'Luisa Santos' }</p>
       <p>{ '640000000' }</p>
       <PickUpTime>{ '12:35' }</PickUpTime>
