@@ -4,24 +4,25 @@ import styled from '@emotion/styled'
 import Input from './Input'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
-import margins from '../styles/margins'
 
-const Container = styled.article`
-  --iconDimensions: 1.8rem;
+const Container = styled.div`
+  --icon-dimensions: 1.25em;
+  --vertical-padding: .75em;
 
   display: flex;
   align-items: center;
   background: ${ colors.background };
   border-radius: 999rem;
   border: 1px solid ${ colors.primary };
-  margin-top: 1rem;
-  padding-right: 1rem;
+  padding-top: var(--vertical-padding);
+  padding-bottom: var(--vertical-padding);
   max-width: 56.4rem;
 
   svg {
-    width: var(--iconDimensions);
-    height: var(--iconDimensions);
-    margin-left: ${ margins.mobile.littleGap };
+    flex-shrink: 0;
+    width: var(--icon-dimensions);
+    height: var(--icon-dimensions);
+    margin-left: 1.25em;
   }
 
   input {
@@ -29,16 +30,11 @@ const Container = styled.article`
     flex-grow: 1;
     background: transparent;
     border: none;
+    min-width: 0;
   }
 
   ${ breakpoints.tablet } {
     margin-top: 2rem;
-    border-radius: 2.3rem;
-    padding-right: 1.5rem;
-
-    svg {
-      margin-left: 1.5rem;
-    }
   }
 `
 
