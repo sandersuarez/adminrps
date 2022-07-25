@@ -5,7 +5,6 @@ import Alert from '../Alert'
 import Pagination from '../Pagination'
 import CustomersContainer from './CustomersContainer'
 import Customer from './Customer'
-import FixedButton from '../FixedButton'
 
 interface IProps {
   title?: boolean
@@ -21,7 +20,6 @@ const Customers: FC<IProps> = ({ title }) => {
       { title ? <h2>{ 'Clientes' }</h2> : null }
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />
-      <FixedButton>Nuevo cliente</FixedButton>
       <CustomersContainer
         customerList=
           { [

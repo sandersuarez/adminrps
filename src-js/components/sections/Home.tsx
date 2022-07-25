@@ -4,7 +4,6 @@ import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
 import ActiveOrders from '../orders/ActiveOrders'
 import Drafts from '../Drafts'
-import FixedButton from '../FixedButton'
 import margins from '../../styles/margins'
 
 const Container = styled.section`
@@ -28,7 +27,6 @@ const Home = () => {
   return (
     <Container>
       <WelcomeLayer userName={ 'sandy' } />
-      <FixedButton>Nuevo pedido</FixedButton>
       <ActiveOrders />
       <Drafts />
     </Container>
