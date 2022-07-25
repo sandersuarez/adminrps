@@ -8,9 +8,15 @@ import Note from '../Note'
 import OrderProductsTable from './OrderProductsTable'
 import Pagination from '../Pagination'
 import fonts from '../../styles/fonts'
+import margins from '../../styles/margins'
+import Button from '../Button'
+import { css } from '@emotion/react'
 
 const Container = styled.article`
-  margin: 1rem 0 0 0;
+  margin-top: ${ margins.mobile.bigVertical };
+  display: flex;
+  flex-direction: column;
+  gap: ${ margins.mobile.mediumVertical };
 
   ${ Note } {
     h3 {
@@ -53,6 +59,7 @@ const ActiveOrders = () => {
   return (
     <Container>
       <h2>Pedidos en elaboración</h2>
+      <Button customType={ 'primary' } css={ css`align-self: flex-start` }>Nuevo Pedido</Button>
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />
       <NoteContainer noteList={ [

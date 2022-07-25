@@ -6,7 +6,8 @@ import { css } from '@emotion/react'
 export type ButtonProps = typeof Button.propTypes
 
 interface IProps {
-  customType: 'secondary' | 'flattened-secondary' | 'danger'
+  className?: string
+  customType: 'primary' | 'secondary' | 'flattened-secondary' | 'danger'
 }
 
 /**
@@ -33,6 +34,12 @@ const Button = styled.button<IProps>(
   `,
   ({ customType }) => {
     switch (customType) {
+      case 'primary':
+        return css`
+          background: ${ colors.primary };
+          color: #fff;
+        `
+
       case 'secondary':
         return css`
           background: ${ colors.secondary }
@@ -51,7 +58,8 @@ const Button = styled.button<IProps>(
           color: #fff;
 
           &[disabled] {
-            opacity: .3;
+            background: ${ colors.danger + '99' };
+            opacity: .5;
             color: #000;
           }
         `
