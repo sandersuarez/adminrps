@@ -15,11 +15,12 @@ const Container = styled.article`
   display: flex;
   flex-flow: column;
   background: ${ colors.section };
-  padding: .7rem;
+  padding: .65em;
   cursor: pointer;
 
   h3 {
-    margin: 0 0 0.8rem 0;
+    line-height: .8em;
+    margin-bottom: .4em;
   }
 
   p {
@@ -30,6 +31,8 @@ const Container = styled.article`
     }
 
     &:nth-of-type(2) {
+      line-height: .9em;
+      margin-top: .25em;
       margin-bottom: auto;
     }
   }
@@ -44,9 +47,11 @@ const Container = styled.article`
 `
 
 const PickUpTime = styled.p`
+  --border-distance: .65em;
   position: absolute;
-  top: .7rem;
-  right: .9rem;
+  line-height: .85em;
+  top: var(--border-distance);
+  right: var(--border-distance);
 
   ${ breakpoints.tablet } {
     top: 1.3rem;
