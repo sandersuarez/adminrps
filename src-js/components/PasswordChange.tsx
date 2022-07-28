@@ -4,9 +4,13 @@ import breakpoints from '../styles/breakpoints'
 import Input from './Input'
 import Button from './Button'
 import Label from './Label'
+import margins from '../styles/margins'
 
 const Container = styled.article`
-  margin: 1.5rem 0 0 0;
+  margin-top: ${ margins.mobile.bigVertical };
+  display: flex;
+  flex-direction: column;
+  gap: ${ margins.mobile.mediumVertical };
 
   ${ breakpoints.tablet } {
     margin: 2.5rem 0 0 0;
@@ -17,14 +21,13 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  row-gap: 1rem;
-  margin-top: 1.5rem;
+  row-gap: ${ margins.mobile.mediumVertical };
   
   div {
     display: flex;
     flex-direction: column;
     align-self: stretch;
-    row-gap: 1rem;
+    row-gap: ${ margins.mobile.vertical };
   }
 
   ${ breakpoints.tablet } {

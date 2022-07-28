@@ -5,9 +5,10 @@ import IconBin from '../svg/IconBin'
 import ArticleButtonsWrapper from '../ArticleButtonsWrapper'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
+import margins from '../../styles/margins'
 
 const Container = styled.section`
-  padding: 1rem;
+  padding: ${ margins.mobile.lateral };
 
   ${ breakpoints.tablet } {
     padding: 1.5rem 1.5rem 2rem 1.5rem;

@@ -6,9 +6,17 @@ import NoteContainer from './NoteContainer'
 import Note from './Note'
 import Button from './Button'
 import { css } from '@emotion/react'
+import margins from '../styles/margins'
 
 const Container = styled.article`
-  margin: 1rem 0 0 0;
+  margin-top: ${ margins.mobile.bigVertical };
+  display: flex;
+  flex-direction: column;
+  gap: ${ margins.mobile.mediumVertical };
+
+  h3 {
+    line-height: 1em;
+  }
 
   ${ breakpoints.tablet } {
     margin: 2rem 0 0 0;
@@ -18,15 +26,10 @@ const Container = styled.article`
 const optionsStyles = css`
   display: flex;
   flex-flow: row wrap;
-  margin: 1rem 16rem 0 0;
-  gap: 1rem;
+  gap: ${ margins.mobile.vertical };
 
   button:nth-of-type(2) {
     white-space: break-spaces;
-    height: unset;
-    min-height: 4.5rem;
-    padding: 1rem 1.7rem;
-    border-radius: 2.8rem;
   }
 
   ${ breakpoints.tablet } {

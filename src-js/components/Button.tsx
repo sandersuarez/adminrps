@@ -24,7 +24,7 @@ const Button = styled.button<IProps>(
 
     // custom styling
     padding: .75em 1.25em;
-    border-radius: 2.2rem;
+    border-radius: 999rem;
     font-weight: bold;
     white-space: nowrap;
 

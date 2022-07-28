@@ -10,8 +10,9 @@ interface IProps {
 }
 
 const styles = css`
+  --lateral-padding: 2.25em;
+  
   // reset styles
-  cursor: pointer;
   background: none;
   font: inherit;
   opacity: 1;
@@ -19,7 +20,8 @@ const styles = css`
   display: flex;
   align-items: center;
   column-gap: 3.3rem;
-  padding: 0 3.5rem;
+  padding-right: var(--lateral-padding);
+  padding-left: var(--lateral-padding);
   border: 1px solid ${ colors.primary };
   border-radius: .5rem;
   flex-basis: 12.8rem;

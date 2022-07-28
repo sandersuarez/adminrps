@@ -7,15 +7,12 @@ import breakpoints from '../styles/breakpoints'
 
 const Container = styled.div`
   --icon-dimensions: 1.25em;
-  --vertical-padding: .75em;
 
   display: flex;
   align-items: center;
   background: ${ colors.background };
   border-radius: 999rem;
   border: 1px solid ${ colors.primary };
-  padding-top: var(--vertical-padding);
-  padding-bottom: var(--vertical-padding);
   max-width: 56.4rem;
 
   svg {

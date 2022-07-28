@@ -7,9 +7,10 @@ import styled from '@emotion/styled'
 import fonts from '../../styles/fonts'
 import breakpoints from '../../styles/breakpoints'
 import { css } from '@emotion/react'
+import margins from '../../styles/margins'
 
 const Container = styled.section`
-  padding: 1rem;
+  padding: ${ margins.mobile.lateral };
 
   ${ breakpoints.tablet } {
     padding: 1.5rem 1.5rem 2rem 1.5rem;
@@ -24,8 +25,8 @@ const Container = styled.section`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  margin-top: 1.5rem;
-  row-gap: 1rem;
+  margin-top: ${ margins.mobile.mediumVertical };
+  row-gap: ${ margins.mobile.mediumVertical };
 
   ${ breakpoints.tablet } {
     margin-top: 2rem;
@@ -37,8 +38,7 @@ const FieldWrapper = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: 1rem;
-  row-gap: 1rem;
+  gap: ${ margins.mobile.vertical };
 
   ${ breakpoints.tablet } {
     column-gap: 2rem;
