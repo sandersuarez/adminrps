@@ -48,7 +48,6 @@ const thisButtonStyles = css`
     flex-grow: 1;
     max-width: 10rem;
     // reset styles
-    cursor: pointer;
     background: none;
     border: none;
     font: inherit;

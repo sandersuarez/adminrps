@@ -16,7 +16,6 @@ const Container = styled.article`
   flex-flow: column;
   background: ${ colors.section };
   padding: .65em;
-  cursor: pointer;
 
   h3 {
     line-height: .8em;
