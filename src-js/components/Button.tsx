@@ -2,12 +2,13 @@ import React from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import { css } from '@emotion/react'
+import ButtonTypes from '../shapes/ButtonTypes'
 
 export type ButtonProps = typeof Button.propTypes
 
 interface IProps {
   className?: string
-  customType: 'primary' | 'secondary' | 'flattened-secondary' | 'danger'
+  customType: ButtonTypes
 }
 
 /**
@@ -34,25 +35,25 @@ const Button = styled.button<IProps>(
   `,
   ({ customType }) => {
     switch (customType) {
-      case 'primary':
+      case ButtonTypes.Primary:
         return css`
           background: ${ colors.primary };
           color: #fff;
         `
 
-      case 'secondary':
+      case ButtonTypes.Secondary:
         return css`
           background: ${ colors.secondary }
         `
 
-      case 'flattened-secondary':
+      case ButtonTypes.FlattenedSecondary:
         return css`
           background: ${ colors.secondary };
           font-size: 1.4rem;
           font-weight: normal;
         `
 
-      case 'danger':
+      case ButtonTypes.Danger:
         return css`
           background: ${ colors.danger };
           color: #fff;
@@ -62,6 +63,16 @@ const Button = styled.button<IProps>(
             opacity: .5;
             color: #000;
           }
+        `
+      case ButtonTypes.Auxiliar:
+        return css`
+          background: ${ colors.section };
+        `
+
+      case ButtonTypes.Empty:
+        return css`
+          background: ${ colors.background };
+          border: 1px solid ${ colors.primary };
         `
     }
   },
