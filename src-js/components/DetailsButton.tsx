@@ -38,16 +38,15 @@ const activeStyles = css`
 `
 
 interface IProps {
-  onSlideButtonClick: () => void
   open: boolean
 }
 
-const SlideButton: FC<IProps> = ({ onSlideButtonClick, open }) => {
+const DetailsButton: FC<IProps> = ({ open }) => {
   return (
-    <SlideButtonContainer onClick={ onSlideButtonClick }>
+    <SlideButtonContainer>
       <IconUpDown css={ [svgStyles, open ? activeStyles : undefined] } />
     </SlideButtonContainer>
   )
 }
 
-export default SlideButton
+export default DetailsButton

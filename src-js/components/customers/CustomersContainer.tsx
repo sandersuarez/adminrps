@@ -1,5 +1,5 @@
 import React, { FC, ReactElement } from 'react'
-import { CustomerProps } from './Customer'
+import { CustomerProps } from './EditableCustomer'
 import styled from '@emotion/styled'
 
 interface IProps {
