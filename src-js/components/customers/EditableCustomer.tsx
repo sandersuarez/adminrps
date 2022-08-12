@@ -1,13 +1,13 @@
 import React, { FC, Key, MouseEventHandler, useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import colors from '../../styles/colors'
-import DetailsButton from '../DetailsButton'
 import Button from '../Button'
 import fonts from '../../styles/fonts'
 import breakpoints from '../../styles/breakpoints'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import { motion } from 'framer-motion'
 import margins from '../../styles/margins'
+import IconDown from '../svg/IconDown'
 
 const Container = styled(motion.details)`
   --lateral-padding: 1em;
@@ -74,6 +74,17 @@ const Content = styled.div`
   }
 `
 
+const DetailArrow = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+
+  svg {
+    width: 1.4rem;
+  }
+`
+
 const NoRemoveMessage = styled.p`
   ${ fonts.formMessage }
 `
@@ -130,7 +141,12 @@ const EditableCustomer: FC<CustomerProps> = (
     >
       <Summary>
         <p>{ name } ({ phoneNumber })</p>
-        <DetailsButton open={ (openedElement === index) } />
+        <DetailArrow
+          animate={ (openedElement === index) ? { rotate: 180 } : null }
+          transition={ { ease: 'easeOut', duration: .3 } }
+        >
+          <IconDown />
+        </DetailArrow>
       </Summary>
       <Content>
         <Button customType={ ButtonTypes.Secondary }>Editar</Button>
