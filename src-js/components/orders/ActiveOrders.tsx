@@ -11,6 +11,7 @@ import fonts from '../../styles/fonts'
 import margins from '../../styles/margins'
 import Button from '../Button'
 import { css } from '@emotion/react'
+import ButtonTypes from '../../shapes/ButtonTypes'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -59,7 +60,7 @@ const ActiveOrders = () => {
   return (
     <Container>
       <h2>Pedidos en elaboración</h2>
-      <Button customType={ 'primary' } css={ css`align-self: flex-start` }>Nuevo Pedido</Button>
+      <Button customType={ ButtonTypes.Primary } css={ css`align-self: flex-start` }>Nuevo pedido</Button>
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />
       <NoteContainer noteList={ [

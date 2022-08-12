@@ -85,10 +85,6 @@ const DetailArrow = styled(motion.div)`
   }
 `
 
-const NoRemoveMessage = styled.p`
-  ${ fonts.formMessage }
-`
-
 export interface CustomerProps {
   key: Key
   index: Key
@@ -153,8 +149,8 @@ const EditableCustomer: FC<CustomerProps> = (
         <Button customType={ ButtonTypes.Danger } disabled={ !removable }>Eliminar</Button>
         {
           removable &&
-          <NoRemoveMessage>No es posible eliminar este cliente porque tiene pedidos registrados a su
-            nombre.</NoRemoveMessage>
+          <p css={ fonts.formMessage }>No es posible eliminar este cliente porque tiene pedidos registrados a su
+            nombre.</p>
         }
       </Content>
     </Container>

@@ -7,16 +7,16 @@ import CustomersContainer from './CustomersContainer'
 import EditableCustomer from './EditableCustomer'
 import margins from '../../styles/margins'
 
-interface IProps {
-  title?: boolean
-}
-
 const Container = styled.article`
   display: flex;
   flex-direction: column;
   row-gap: ${margins.mobile.mediumVertical};
   padding: ${margins.mobile.lateral};
 `
+
+interface IProps {
+  title?: boolean
+}
 
 const Customers: FC<IProps> = ({ title }) => {
 
