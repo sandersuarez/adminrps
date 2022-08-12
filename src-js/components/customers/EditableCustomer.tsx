@@ -7,10 +7,15 @@ import fonts from '../../styles/fonts'
 import breakpoints from '../../styles/breakpoints'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import { motion } from 'framer-motion'
+import margins from '../../styles/margins'
 
 const Container = styled(motion.details)`
+  --lateral-padding: 1em;
+
   display: flex;
-  border-radius: 0.5rem;
+  padding-left: var(--lateral-padding);
+  padding-right: var(--lateral-padding);
+  border-radius: .5rem;
   border: 1px solid ${ colors.primary };
   overflow: hidden;
 
@@ -20,9 +25,13 @@ const Container = styled(motion.details)`
 `
 
 const Summary = styled.summary`
+  --vertical-padding: .75em;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: var(--vertical-padding);
+  padding-bottom: var(--vertical-padding);
 
   p {
     overflow: hidden;
@@ -31,11 +40,14 @@ const Summary = styled.summary`
 `
 
 const Content = styled.div`
-  --horizontal-margin: 1rem;
-  --vertical-margin: 1rem;
+  --horizontal-margin: ${ margins.mobile.vertical };
+  --vertical-margin: ${ margins.mobile.vertical };
+  --vertical-padding: .75em;
+
   display: flex;
   flex-wrap: wrap;
-  margin-top: .5rem;
+  padding-top: var(--vertical-padding);
+  padding-bottom: var(--vertical-padding);
   column-gap: var(--horizontal-margin);
   row-gap: var(--vertical-margin);
 
@@ -68,20 +80,38 @@ const NoRemoveMessage = styled.p`
 
 export interface CustomerProps {
   key: Key
+  index: Key
   name: string
   phoneNumber: string
   removable: boolean
+  handleCustomerClick: (index: Key) => void
+  openedElement: Key
 }
 
-const EditableCustomer: FC<CustomerProps> = ({ name, phoneNumber, removable }) => {
-  const [open, setOpen] = React.useState<boolean>(false)
+const EditableCustomer: FC<CustomerProps> = (
+  {
+    name,
+    phoneNumber,
+    removable,
+    handleCustomerClick,
+    openedElement,
+    index,
+  },
+) => {
+
   const [height, setHeight] = React.useState<string>('unset')
 
   const containerRef = useRef<HTMLDetailsElement | null>(null)
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    setOpen(!open)
+
+    if (openedElement === index) {
+      handleCustomerClick('')
+    } else {
+      handleCustomerClick(index)
+    }
+
     if (!containerRef.current!.open) {
       containerRef.current!.open = true
     }
@@ -91,26 +121,16 @@ const EditableCustomer: FC<CustomerProps> = ({ name, phoneNumber, removable }) =
     setHeight(`${ containerRef.current!.offsetHeight }px`)
   }, [])
 
-  const variants = {
-    opened: {
-      height: 'auto',
-    },
-    closed: {
-      height: `${ height }`,
-    },
-  }
-
   return (
     <Container
-      variants={ variants }
       transition={ { ease: 'easeOut', duration: .3 } }
-      animate={ open ? 'opened' : 'closed' }
+      animate={ (openedElement === index) ? { height: 'auto' } : { height: `${ height }` } }
       onClick={ handleClick! }
       ref={ containerRef }
     >
       <Summary>
         <p>{ name } ({ phoneNumber })</p>
-        <DetailsButton open={ open } />
+        <DetailsButton open={ (openedElement === index) } />
       </Summary>
       <Content>
         <Button customType={ ButtonTypes.Secondary }>Editar</Button>

@@ -1,40 +1,18 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
-import IconUpDown from './svg/IconUpDown'
 import { css } from '@emotion/react'
-import breakpoints from '../styles/breakpoints'
+import IconDown from './svg/IconDown'
+import { motion } from 'framer-motion'
 
-const SlideButtonContainer = styled.button`
-  --dimensions: 3.5rem;
-
-  // reset styling
-  border: none;
-  font: inherit;
-  opacity: 1;
-  appearance: none;
-  background: transparent;
-
-  width: var(--dimensions);
-  height: var(--dimensions);
+const SlideButtonContainer = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
   flex-shrink: 0;
-
-  ${ breakpoints.tablet } {
-    --dimensions: 4.5rem;
-  }
 `
 
 const svgStyles = css`
-  width: 1.5rem;
-  transform: rotate(180deg);
-  transition: transform .5s ease;
-`
-
-const activeStyles = css`
-  transform: rotate(0deg);
+  width: 1.4rem;
 `
 
 interface IProps {
@@ -43,8 +21,8 @@ interface IProps {
 
 const DetailsButton: FC<IProps> = ({ open }) => {
   return (
-    <SlideButtonContainer>
-      <IconUpDown css={ [svgStyles, open ? activeStyles : undefined] } />
+    <SlideButtonContainer animate={ open ? { rotate: 180 } : null } transition={ { ease: 'easeOut', duration: .3 } }>
+      <IconDown css={ svgStyles } />
     </SlideButtonContainer>
   )
 }
