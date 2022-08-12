@@ -5,6 +5,8 @@ import Input from './Input'
 import Button from './Button'
 import Label from './Label'
 import margins from '../styles/margins'
+import Form from './Form'
+import ButtonTypes from '../shapes/ButtonTypes'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -14,25 +16,6 @@ const Container = styled.article`
 
   ${ breakpoints.tablet } {
     margin: 2.5rem 0 0 0;
-  }
-`
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  row-gap: ${ margins.mobile.mediumVertical };
-  
-  div {
-    display: flex;
-    flex-direction: column;
-    align-self: stretch;
-    row-gap: ${ margins.mobile.vertical };
-  }
-
-  ${ breakpoints.tablet } {
-    margin-top: 2rem;
-    row-gap: 1.5rem;
   }
 `
 
@@ -53,7 +36,7 @@ const PasswordChange = () => {
           <Label htmlFor={ 'rep-new-password' }>Repetir nueva contraseña:</Label>
           <Input id={ 'rep-new-password' } />
         </div>
-        <Button customType={ 'secondary' }>Cambiar contraseña</Button>
+        <Button customType={ ButtonTypes.Secondary }>Cambiar contraseña</Button>
       </Form>
     </Container>
   )
