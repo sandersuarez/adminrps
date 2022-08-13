@@ -8,6 +8,7 @@ import fonts from '../../styles/fonts'
 import breakpoints from '../../styles/breakpoints'
 import { css } from '@emotion/react'
 import margins from '../../styles/margins'
+import ButtonTypes from '../../shapes/ButtonTypes'
 
 const Container = styled.section`
   padding: ${ margins.mobile.lateral };
@@ -33,6 +34,7 @@ const Form = styled.form`
     row-gap: 1.5rem;
   }
 `
+
 const FieldWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -64,7 +66,7 @@ const Settings = () => {
   return (
     <Container>
       <h2>Ajustes</h2>
-      <Form>
+      <Form noValidate>
         <FieldWrapper css={
           css`
             ${ breakpoints.tablet } {
@@ -76,7 +78,7 @@ const Settings = () => {
           <Input css={ ivaInputStyles } />
         </FieldWrapper>
         <FieldWrapper>
-          <Button customType={ 'secondary' }>Aplicar IVA</Button>
+          <Button customType={ ButtonTypes.Secondary }>Aplicar IVA</Button>
           <Note>Nota: un cambio en el IVA aplicado a los productos se verá reflejado en todos los pedidos, incluidos los
             antiguos.</Note>
         </FieldWrapper>

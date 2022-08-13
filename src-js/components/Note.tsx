@@ -2,12 +2,14 @@ import React, { FC, Key, ReactNode } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
+import OrderProductsTable from './orders/OrderProductsTable'
 
 export interface NoteProps {
   key: Key
   className?: string
   // todo: remove children prop and add order prop
-  children?: ReactNode
+  children?: ReactNode,
+  handleClick: () => void,
 }
 
 const Container = styled.article`
@@ -36,11 +38,21 @@ const Container = styled.article`
     }
   }
 
+  ${ OrderProductsTable } {
+    display: none
+  }
+
   ${ breakpoints.tablet } {
     padding: 1.5rem;
 
     h3 {
       margin: 0 0 1.4rem 0;
+    }
+  }
+
+  ${ breakpoints.smallDesktop } {
+    ${ OrderProductsTable } {
+      display: unset
     }
   }
 `
@@ -61,10 +73,16 @@ const PickUpTime = styled.p`
 /**
  * Container that renders a layer as a card for an order or draft depending on its type.
  */
-const Note: FC<NoteProps> = ({ className: className, children }) => {
+const Note: FC<NoteProps> = (
+  {
+    className: className,
+    children,
+    handleClick,
+  },
+) => {
   // todo: render elements depending on an order prop
   return (
-    <Container className={ className }>
+    <Container className={ className } onClick={ handleClick }>
       <h3>{ 'Nº X' }</h3>
       <p>{ 'Luisa Santos' }</p>
       <p>{ '640000000' }</p>
@@ -74,4 +92,4 @@ const Note: FC<NoteProps> = ({ className: className, children }) => {
   )
 }
 
-export default styled(Note)({})
+export default styled(Note)``
