@@ -6,6 +6,7 @@ const colors = {
   section: '#63C8DD',
   danger: '#915724',
   text: '#000000',
+  separators: '#000000',
 }
 
 export default colors
