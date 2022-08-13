@@ -61,7 +61,6 @@ const MainWrapper = styled.div`
   }
 
   & > section {
-    overflow-y: auto;
     flex-grow: 1;
 
     ${ breakpoints.desktop } {

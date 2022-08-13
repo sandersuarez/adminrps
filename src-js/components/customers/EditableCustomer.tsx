@@ -10,11 +10,7 @@ import margins from '../../styles/margins'
 import IconDown from '../svg/IconDown'
 
 const Container = styled(motion.details)`
-  --lateral-padding: 1em;
-
   display: flex;
-  padding-left: var(--lateral-padding);
-  padding-right: var(--lateral-padding);
   border-radius: .5rem;
   border: 1px solid ${ colors.primary };
   overflow: hidden;
@@ -25,13 +21,10 @@ const Container = styled(motion.details)`
 `
 
 const Summary = styled.summary`
-  --vertical-padding: .75em;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: var(--vertical-padding);
-  padding-bottom: var(--vertical-padding);
+  padding: .75em 1em;
 
   p {
     overflow: hidden;
@@ -42,12 +35,10 @@ const Summary = styled.summary`
 const Content = styled.div`
   --horizontal-margin: ${ margins.mobile.vertical };
   --vertical-margin: ${ margins.mobile.vertical };
-  --vertical-padding: .75em;
 
   display: flex;
   flex-wrap: wrap;
-  padding-top: var(--vertical-padding);
-  padding-bottom: var(--vertical-padding);
+  padding: .75em 1em;
   column-gap: var(--horizontal-margin);
   row-gap: var(--vertical-margin);
 
@@ -92,6 +83,7 @@ export interface CustomerProps {
   phoneNumber: string
   removable: boolean
   handleCustomerClick: (index: Key) => void
+  handleOpenSidePanel: () => void
   openedElement: Key
 }
 
@@ -101,6 +93,7 @@ const EditableCustomer: FC<CustomerProps> = (
     phoneNumber,
     removable,
     handleCustomerClick,
+    handleOpenSidePanel,
     openedElement,
     index,
   },
@@ -132,10 +125,9 @@ const EditableCustomer: FC<CustomerProps> = (
     <Container
       transition={ { ease: 'easeOut', duration: .3 } }
       animate={ (openedElement === index) ? { height: 'auto' } : { height: `${ height }` } }
-      onClick={ handleClick! }
       ref={ containerRef }
     >
-      <Summary>
+      <Summary onClick={ handleClick! }>
         <p>{ name } ({ phoneNumber })</p>
         <DetailArrow
           animate={ (openedElement === index) ? { rotate: 180 } : null }
@@ -145,10 +137,10 @@ const EditableCustomer: FC<CustomerProps> = (
         </DetailArrow>
       </Summary>
       <Content>
-        <Button customType={ ButtonTypes.Secondary }>Editar</Button>
+        <Button customType={ ButtonTypes.Secondary } onClick={ handleOpenSidePanel }>Editar</Button>
         <Button customType={ ButtonTypes.Danger } disabled={ !removable }>Eliminar</Button>
         {
-          removable &&
+          !removable &&
           <p css={ fonts.formMessage }>No es posible eliminar este cliente porque tiene pedidos registrados a su
             nombre.</p>
         }

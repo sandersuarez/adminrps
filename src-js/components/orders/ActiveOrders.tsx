@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
 import SearchBar from '../SearchBar'
@@ -51,64 +51,68 @@ const Container = styled.article`
   }
 `
 
+interface IProps {
+  handleOpenSidePanel: () => void
+}
+
 /**
  * Component that contains all the data to manage the active orders of the user. It lists them, and provides a search
  * bar to filter by phone number or customer name, pagination, and responsive styles to make them awesome in all
  * kind of versions.
  */
-const ActiveOrders = () => {
+const ActiveOrders: FC<IProps> = ({ handleOpenSidePanel }) => {
   return (
     <Container>
       <h2>Pedidos en elaboración</h2>
-      <Button customType={ ButtonTypes.Primary } css={ css`align-self: flex-start` }>Nuevo pedido</Button>
+      <Button customType={ ButtonTypes.Primary } css={ css`align-self: start` }>Nuevo pedido</Button>
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />
       <NoteContainer noteList={ [
-        <Note key={ 0 }>
+        <Note key={ 0 } handleClick={ handleOpenSidePanel }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 1 }>
+        <Note key={ 1 } handleClick={ handleOpenSidePanel }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 2 }>
+        <Note key={ 2 } handleClick={ handleOpenSidePanel }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 3 }>
+        <Note key={ 3 } handleClick={ handleOpenSidePanel }>
           <OrderProductsTable />
         </Note>,
-        <Note key={ 4 } />,
-        <Note key={ 5 } />,
-        <Note key={ 6 } />,
-        <Note key={ 7 } />,
-        <Note key={ 8 } />,
-        <Note key={ 9 } />,
-        <Note key={ 10 } />,
-        <Note key={ 11 } />,
-        <Note key={ 12 } />,
-        <Note key={ 13 } />,
-        <Note key={ 14 } />,
-        <Note key={ 15 } />,
-        <Note key={ 16 } />,
-        <Note key={ 17 } />,
-        <Note key={ 18 } />,
-        <Note key={ 19 } />,
-        <Note key={ 20 } />,
-        <Note key={ 21 } />,
-        <Note key={ 22 } />,
-        <Note key={ 23 } />,
-        <Note key={ 24 } />,
-        <Note key={ 25 } />,
-        <Note key={ 26 } />,
-        <Note key={ 27 } />,
-        <Note key={ 28 } />,
-        <Note key={ 29 } />,
-        <Note key={ 30 } />,
-        <Note key={ 31 } />,
-        <Note key={ 32 } />,
-        <Note key={ 33 } />,
-        <Note key={ 34 } />,
-        <Note key={ 35 } />,
-        <Note key={ 36 } />,
+        <Note key={ 4 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 5 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 6 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 7 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 8 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 9 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 10 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 11 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 12 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 13 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 14 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 15 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 16 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 17 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 18 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 19 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 20 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 21 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 22 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 23 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 24 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 25 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 26 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 27 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 28 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 29 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 30 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 31 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 32 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 33 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 34 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 35 } handleClick={ handleOpenSidePanel } />,
+        <Note key={ 36 } handleClick={ handleOpenSidePanel } />,
       ] } />
       <Pagination />
     </Container>
