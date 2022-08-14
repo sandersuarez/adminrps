@@ -10,7 +10,7 @@ const Container = styled.section`
   flex-direction: column;
   row-gap: ${ margins.mobile.mediumVertical };
   padding: ${ margins.mobile.lateral };
-  
+
   p {
     margin: 0;
   }
@@ -27,15 +27,15 @@ const TitleWrapper = styled.div`
 
   button {
     --dimensions: 1.35em;
-    
+
     // reset styling
     border: none;
     font: inherit;
     opacity: 1;
     appearance: none;
-    
-    background: ${colors.primary};
-    color: ${colors.background};
+
+    background: ${ colors.primary };
+    color: ${ colors.background };
     border-radius: .25em;
     padding: .22em .3em;
     ${ fonts.orderNumber }
@@ -43,13 +43,14 @@ const TitleWrapper = styled.div`
 `
 
 interface OrderSectionProps {
+  handleCloseSidePanel: () => void
 }
 
-const OrderPanel: FC<OrderSectionProps> = () => (
+const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel }) => (
   <Container>
     <TitleWrapper>
       <h2>{ 'Pedido Nº 1 - 06/04/2022' }</h2>
-      <button>
+      <button onClick={ handleCloseSidePanel }>
         <i className={ 'bi bi-x' }></i>
       </button>
     </TitleWrapper>

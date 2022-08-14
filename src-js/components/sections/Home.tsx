@@ -21,11 +21,17 @@ const auxPanelStyles = css`
   }
 `
 
+const HomeWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: ${ margins.mobile.lateral };
+  overflow-y: auto;
+`
+
 const Container = styled.section`
   position: relative;
   width: 100%;
-  overflow-x: hidden;
-  padding: ${ margins.mobile.lateral };
+  overflow: hidden;
 
   ${ breakpoints.tablet } {
     padding: 1.5rem 1.5rem 2rem 1.5rem;
@@ -64,13 +70,15 @@ const Home = () => {
 
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
-      <WelcomeLayer userName={ 'sandy' } />
-      <ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } />
-      <Drafts />
+      <HomeWrapper>
+        <WelcomeLayer userName={ 'sandy' } />
+        <ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } />
+        <Drafts />
+      </HomeWrapper>
       <PanelContainer
         css={ auxPanelStyles }
         open={ openFirstSidePanel }
-        mainChildren={ <OrderPanel /> }
+        mainChildren={ <OrderPanel handleCloseSidePanel={ handleCloseFirstSidePanel } /> }
         sideChildren={ <Customers handleOpenSidePanel={ handleOpenSecondSidePanel } /> }
         openSidePanel={ openSecondSidePanel }
       />
