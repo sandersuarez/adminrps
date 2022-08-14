@@ -39,6 +39,7 @@ const CustomersSection = () => {
             <Customers title={ true } handleOpenSidePanel={ handleOpenSidePanel } />
           }
         sideChildren={ <EditCustomer removable={ false } handleCloseSidePanel={ handleCloseSidePanel } /> }
+        border={ true }
       />
     </Container>
   )

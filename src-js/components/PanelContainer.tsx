@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import { motion } from 'framer-motion'
 import colors from '../styles/colors'
+import { css } from '@emotion/react'
 
 const Container = styled(motion.div)`
   position: relative;
@@ -13,7 +14,7 @@ const Container = styled(motion.div)`
 
 const MainContainer = styled.div`
   flex-grow: 1;
-  min-height: 100%;
+  height: 100%;
   background: ${ colors.background };
   overflow-y: auto;
 `
@@ -21,7 +22,7 @@ const MainContainer = styled.div`
 const SideContainer = styled(motion.div)`
   position: absolute;
   left: 100%;
-  min-height: 100%;
+  height: 100%;
   background: ${ colors.background };
   overflow-y: auto;
   width: 100%;
@@ -39,6 +40,7 @@ interface IProps {
   sideChildren: ReactNode
   openSidePanel: boolean
   open?: boolean
+  border: boolean
 }
 
 const PanelContainer: FC<IProps> = (
@@ -48,8 +50,22 @@ const PanelContainer: FC<IProps> = (
     sideChildren,
     openSidePanel,
     open,
+    border,
   },
 ) => {
+
+  const variants = {
+    opened: {
+      left: 0,
+    },
+    borderOpened: {
+      left: '-1px',
+    },
+    closed: {
+      left: '100%',
+    },
+  }
+
   return (
     <Container
       className={ className }
@@ -58,8 +74,10 @@ const PanelContainer: FC<IProps> = (
     >
       <MainContainer children={ mainChildren } />
       <SideContainer
+        css={ border ? css`border-left: 1px solid ${ colors.separators }` : null }
+        variants={ variants }
         transition={ { ease: 'easeInOut', duration: .5 } }
-        animate={ openSidePanel ? { left: '-1px' } : { left: '100%' } }
+        animate={ openSidePanel ? (border ? 'borderOpened' : 'opened') : 'closed' }
         children={ sideChildren }
       />
     </Container>

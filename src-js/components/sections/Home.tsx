@@ -78,9 +78,16 @@ const Home = () => {
       <PanelContainer
         css={ auxPanelStyles }
         open={ openFirstSidePanel }
-        mainChildren={ <OrderPanel handleCloseSidePanel={ handleCloseFirstSidePanel } /> }
+        mainChildren=
+          {
+            <OrderPanel
+              handleCloseSidePanel={ handleCloseFirstSidePanel }
+              handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+            />
+          }
         sideChildren={ <Customers handleOpenSidePanel={ handleOpenSecondSidePanel } /> }
         openSidePanel={ openSecondSidePanel }
+        border={ false }
       />
     </Container>
   )
