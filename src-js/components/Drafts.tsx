@@ -7,6 +7,7 @@ import Note from './Note'
 import Button from './Button'
 import { css } from '@emotion/react'
 import margins from '../styles/margins'
+import ButtonTypes from '../shapes/ButtonTypes'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -58,8 +59,8 @@ const Drafts = () => {
         <Note key={ 10 } />,
       ] } />
       <div css={ optionsStyles }>
-        <Button customType={ 'secondary' }>{ 'Ver todos' }</Button>
-        <Button customType={ 'danger' }>{ 'Eliminar todos los borradores' }</Button>
+        <Button customType={ ButtonTypes.Primary }>{ 'Ver todos' }</Button>
+        <Button customType={ ButtonTypes.Danger }>{ 'Eliminar todos los borradores' }</Button>
       </div>
     </Container>
   )

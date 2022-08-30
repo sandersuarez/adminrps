@@ -10,6 +10,7 @@ import Form from '../Form'
 import Label from '../Label'
 import Input from '../Input'
 import { css } from '@emotion/react'
+import breakpoints from '../../styles/breakpoints'
 
 const TitleWrapper = styled.div`
   display: flex;
@@ -21,8 +22,6 @@ const TitleWrapper = styled.div`
   }
 
   button {
-    --dimensions: 1.35em;
-
     // reset styling
     border: none;
     font: inherit;
@@ -37,15 +36,11 @@ const TitleWrapper = styled.div`
   }
 `
 
-const formStyles = css`
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: ${ margins.mobile.bigVertical };
-
-  div {
-    flex-grow: 1;
-  }
+const FieldWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  row-gap: ${ margins.mobile.vertical };
 `
 
 const Container = styled.section`
@@ -57,6 +52,33 @@ const Container = styled.section`
   p {
     margin: 0;
   }
+`
+
+const formStyles = css`
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: ${ margins.mobile.bigVertical };
+
+  div {
+    flex-grow: 1;
+  }
+`
+
+const optionsStyles = css`
+  display: flex;
+  flex-flow: row wrap;
+  gap: ${ margins.mobile.vertical };
+
+  button:nth-of-type(2), button:nth-of-type(3) {
+    white-space: break-spaces;
+  }
+
+  ${ breakpoints.tablet } {
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+}
 `
 
 interface OrderSectionProps {
@@ -81,17 +103,41 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
       <TitleWrapper>
         <h2>{ 'Pedido Nº 1 - 06/04/2022' }</h2>
         <button onClick={ handleExitClick }>
-          <i className={ 'bi bi-x' }></i>
+          <i className={ 'bi bi-x' } />
         </button>
       </TitleWrapper>
       <p><b>{ 'Hora aproximada de recogida: ' }</b>{ '12:43' }</p>
       <p><b>{ 'Luisa Santos' }</b><br /><b>{ 'Teléfono: ' }</b>{ '676676676' }</p>
       {
         editMode ?
+          <div css={ optionsStyles }>
+            <Button customType={ ButtonTypes.Secondary }>Cambiar cliente</Button>
+            <Button customType={ ButtonTypes.Secondary }>Nuevo cliente</Button>
+          </div>
+          :
           null
+      }
+      <OrderProductsTable editable={ editMode } />
+      {
+        editMode ?
+          <>
+            <Button
+              customType={ ButtonTypes.Primary }
+              css={ css`align-self: start` }
+              children={ 'Añadir producto' }
+            />
+            <FieldWrapper>
+              <Label htmlFor={ 'pick-up-hour' }>Hora aproximada de recogida:</Label>
+              <Input id={ 'pick-up-hour' } />
+            </FieldWrapper>
+            <div css={ [optionsStyles, css`margin-top: ${ margins.mobile.bigVertical }`] }>
+              <Button customType={ ButtonTypes.Primary }>Guardar cambios</Button>
+              <Button customType={ ButtonTypes.Secondary }>Cancelar</Button>
+              <Button customType={ ButtonTypes.Danger }>Cancelar pedido</Button>
+            </div>
+          </>
           :
           <>
-            <OrderProductsTable />
             <Button
               customType={ ButtonTypes.Secondary }
               onClick={ handleEditClick }
