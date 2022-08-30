@@ -76,7 +76,7 @@ const DetailArrow = styled(motion.div)`
   }
 `
 
-export interface CustomerProps {
+export interface editableCustomerProps {
   key: Key
   index: Key
   name: string
@@ -87,7 +87,7 @@ export interface CustomerProps {
   openedElement: Key
 }
 
-const EditableCustomer: FC<CustomerProps> = (
+const EditableCustomer: FC<editableCustomerProps> = (
   {
     name,
     phoneNumber,

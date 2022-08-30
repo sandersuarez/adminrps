@@ -36,7 +36,7 @@ const CustomersSection = () => {
         openSidePanel={ openSidePanel }
         mainChildren=
           {
-            <Customers title={ true } handleOpenSidePanel={ handleOpenSidePanel } />
+            <Customers handleOpenSidePanel={ handleOpenSidePanel } />
           }
         sideChildren={ <EditCustomer removable={ false } handleCloseSidePanel={ handleCloseSidePanel } /> }
         border={ true }

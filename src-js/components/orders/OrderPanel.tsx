@@ -10,7 +10,7 @@ import Form from '../Form'
 import Label from '../Label'
 import Input from '../Input'
 import { css } from '@emotion/react'
-import breakpoints from '../../styles/breakpoints'
+import Options from '../Options'
 
 const TitleWrapper = styled.div`
   display: flex;
@@ -65,22 +65,6 @@ const formStyles = css`
   }
 `
 
-const optionsStyles = css`
-  display: flex;
-  flex-flow: row wrap;
-  gap: ${ margins.mobile.vertical };
-
-  button:nth-of-type(2), button:nth-of-type(3) {
-    white-space: break-spaces;
-  }
-
-  ${ breakpoints.tablet } {
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-}
-`
-
 interface OrderSectionProps {
   handleCloseSidePanel: () => void
   handleOpenSecondSidePanel: () => void
@@ -110,10 +94,15 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
       <p><b>{ 'Luisa Santos' }</b><br /><b>{ 'Teléfono: ' }</b>{ '676676676' }</p>
       {
         editMode ?
-          <div css={ optionsStyles }>
-            <Button customType={ ButtonTypes.Secondary }>Cambiar cliente</Button>
-            <Button customType={ ButtonTypes.Secondary }>Nuevo cliente</Button>
-          </div>
+          <Options>
+            <Button
+              customType={ ButtonTypes.Secondary }
+              onClick={ handleOpenSecondSidePanel }
+            >
+              { 'Cambiar cliente' }
+            </Button>
+            <Button customType={ ButtonTypes.Secondary }>{ 'Nuevo cliente' }</Button>
+          </Options>
           :
           null
       }
@@ -127,14 +116,14 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
               children={ 'Añadir producto' }
             />
             <FieldWrapper>
-              <Label htmlFor={ 'pick-up-hour' }>Hora aproximada de recogida:</Label>
+              <Label htmlFor={ 'pick-up-hour' }>{ 'Hora aproximada de recogida:' }</Label>
               <Input id={ 'pick-up-hour' } />
             </FieldWrapper>
-            <div css={ [optionsStyles, css`margin-top: ${ margins.mobile.bigVertical }`] }>
-              <Button customType={ ButtonTypes.Primary }>Guardar cambios</Button>
-              <Button customType={ ButtonTypes.Secondary }>Cancelar</Button>
-              <Button customType={ ButtonTypes.Danger }>Cancelar pedido</Button>
-            </div>
+            <Options css={ css`margin-top: ${ margins.mobile.bigVertical }` }>
+              <Button customType={ ButtonTypes.Primary }>{ 'Guardar cambios' }</Button>
+              <Button customType={ ButtonTypes.Secondary }>{ 'Cancelar' }</Button>
+              <Button customType={ ButtonTypes.Danger }>{ 'Cancelar pedido' }</Button>
+            </Options>
           </>
           :
           <>
@@ -146,11 +135,11 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
             />
             <Form css={ formStyles } noValidate>
               <div>
-                <Label htmlFor={ 'given-money' }>Ingrese el dinero entregado por el cliente:</Label>
+                <Label htmlFor={ 'given-money' }>{ 'Ingrese el dinero entregado por el cliente:' }</Label>
                 <Input id={ 'given-money' } />
               </div>
               <p>{ 'El cambio es: ' }<b>{ '4,00 €' }</b></p>
-              <Button customType={ ButtonTypes.Primary }>Entregar pedido</Button>
+              <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>
             </Form>
           </>
       }

@@ -5,9 +5,9 @@ import Alert from './Alert'
 import NoteContainer from './NoteContainer'
 import Note from './Note'
 import Button from './Button'
-import { css } from '@emotion/react'
 import margins from '../styles/margins'
 import ButtonTypes from '../shapes/ButtonTypes'
+import Options from './Options'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -22,22 +22,6 @@ const Container = styled.article`
   ${ breakpoints.tablet } {
     margin: 2rem 0 0 0;
   }
-`
-
-const optionsStyles = css`
-  display: flex;
-  flex-flow: row wrap;
-  gap: ${ margins.mobile.vertical };
-
-  button:nth-of-type(2) {
-    white-space: break-spaces;
-  }
-
-  ${ breakpoints.tablet } {
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-}
 `
 
 const Drafts = () => {
@@ -58,10 +42,10 @@ const Drafts = () => {
         <Note key={ 9 } />,
         <Note key={ 10 } />,
       ] } />
-      <div css={ optionsStyles }>
+      <Options>
         <Button customType={ ButtonTypes.Primary }>{ 'Ver todos' }</Button>
         <Button customType={ ButtonTypes.Danger }>{ 'Eliminar todos los borradores' }</Button>
-      </div>
+      </Options>
     </Container>
   )
 }

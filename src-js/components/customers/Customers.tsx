@@ -18,11 +18,10 @@ const Container = styled.article`
 `
 
 interface IProps {
-  title?: boolean
   handleOpenSidePanel: () => void
 }
 
-const Customers: FC<IProps> = ({ title, handleOpenSidePanel }) => {
+const Customers: FC<IProps> = ({ handleOpenSidePanel }) => {
 
   const [openedElement, setOpenedElement] = React.useState<Key>('')
 
@@ -32,7 +31,7 @@ const Customers: FC<IProps> = ({ title, handleOpenSidePanel }) => {
 
   return (
     <Container>
-      { title ? <h2>{ 'Clientes' }</h2> : null }
+      <h2>{ 'Clientes' }</h2>
       <Button customType={ buttonTypes.Primary } css={ css`align-self: start` }>Nuevo cliente</Button>
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />

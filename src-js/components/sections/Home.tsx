@@ -7,9 +7,9 @@ import Drafts from '../Drafts'
 import margins from '../../styles/margins'
 import PanelContainer from '../PanelContainer'
 import OrderPanel from '../orders/OrderPanel'
-import Customers from '../customers/Customers'
 import { css } from '@emotion/react'
 import colors from '../../styles/colors'
+import CustomersSelection from '../customers/CustomersSelection'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -64,7 +64,6 @@ const Home = () => {
   }
 
   const handleCloseSecondSidePanel = () => {
-    handleCloseFirstSidePanel()
     setOpenSecondSidePanel(false)
   }
 
@@ -85,7 +84,7 @@ const Home = () => {
               handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
             />
           }
-        sideChildren={ <Customers handleOpenSidePanel={ handleOpenSecondSidePanel } /> }
+        sideChildren={ <CustomersSelection handleCloseSidePanel={ handleCloseSecondSidePanel } /> }
         openSidePanel={ openSecondSidePanel }
         border={ false }
       />
