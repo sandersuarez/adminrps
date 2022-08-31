@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from 'react'
 import styled from '@emotion/styled'
 import { ProductProps } from './Product'
-import margins from '../styles/margins'
+import margins from '../../styles/margins'
 
 const Container = styled.div`
   display: flex;

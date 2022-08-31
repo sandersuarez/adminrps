@@ -9,7 +9,7 @@ import OrderProductsTable from './OrderProductsTable'
 import Pagination from '../Pagination'
 import fonts from '../../styles/fonts'
 import margins from '../../styles/margins'
-import Button from '../Button'
+import Button from '../buttons/Button'
 import { css } from '@emotion/react'
 import ButtonTypes from '../../shapes/ButtonTypes'
 

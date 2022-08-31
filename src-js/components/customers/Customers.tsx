@@ -6,7 +6,7 @@ import Pagination from '../Pagination'
 import CustomersContainer from './CustomersContainer'
 import EditableCustomer from './EditableCustomer'
 import margins from '../../styles/margins'
-import Button from '../Button'
+import Button from '../buttons/Button'
 import buttonTypes from '../../shapes/ButtonTypes'
 import { css } from '@emotion/react'
 

@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import colors from '../styles/colors'
+import colors from '../../styles/colors'
 import { css } from '@emotion/react'
-import ButtonTypes from '../shapes/ButtonTypes'
+import ButtonTypes from '../../shapes/ButtonTypes'
 
 export type ButtonProps = typeof Button.propTypes
 

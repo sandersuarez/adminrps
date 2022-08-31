@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
-import { ButtonProps } from './Button'
+import { ButtonProps } from './buttons/Button'
 
 const Wrapper = styled.div({
   position: 'fixed',

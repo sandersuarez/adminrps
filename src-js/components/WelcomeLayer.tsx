@@ -1,7 +1,8 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
-import Button from './Button'
+import Button from './buttons/Button'
 import breakpoints from '../styles/breakpoints'
+import ButtonTypes from '../shapes/ButtonTypes'
 
 interface IProps {
   userName: string
@@ -32,7 +33,7 @@ const WelcomeLayer: FC<IProps> = ({ userName }) => {
   return (
     <Container>
       <p>{ 'Bienvenido, ' + userName + '.' }</p>
-      <Button customType={ 'flattened-secondary' }>{ 'Cerrar sesión' }</Button>
+      <Button customType={ ButtonTypes.FlattenedSecondary }>{ 'Cerrar sesión' }</Button>
     </Container>
   )
 }

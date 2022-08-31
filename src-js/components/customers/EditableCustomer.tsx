@@ -1,5 +1,5 @@
 import React, { FC, Key, MouseEventHandler, useEffect, useRef } from 'react'
-import Button from '../Button'
+import Button from '../buttons/Button'
 import fonts from '../../styles/fonts'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import IconDown from '../svg/IconDown'

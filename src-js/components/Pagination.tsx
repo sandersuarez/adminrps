@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react'
 import styled from '@emotion/styled'
 import { css } from '@emotion/react'
-import Button from './Button'
+import Button from './buttons/Button'
 import ButtonTypes from '../shapes/ButtonTypes'
 import margins from '../styles/margins'
 

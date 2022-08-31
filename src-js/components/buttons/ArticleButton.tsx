@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from 'react'
 import { css } from '@emotion/react'
-import colors from '../styles/colors'
-import breakpoints from '../styles/breakpoints'
+import colors from '../../styles/colors'
+import breakpoints from '../../styles/breakpoints'
 
 const styles = css`
   --lateral-padding: 2.25em;

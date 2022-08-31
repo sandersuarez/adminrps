@@ -1,11 +1,12 @@
-import React, { FC } from 'react'
-import ArticleButton from '../ArticleButton'
+import React, { FC, useEffect } from 'react'
+import ArticleButton from '../buttons/ArticleButton'
 import IconProducts from '../svg/IconProducts'
 import IconBin from '../svg/IconBin'
-import ArticleButtonsWrapper from '../ArticleButtonsWrapper'
+import ArticleButtonsWrapper from '../buttons/ArticleButtonsWrapper'
 import styled from '@emotion/styled'
 import ProductsArticles from '../../shapes/ProductsArticles'
-import MyProducts from '../MyProducts'
+import MyProducts from '../products/MyProducts'
+import PanelContainer from '../PanelContainer'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -29,6 +30,21 @@ interface IProps {
  * This section also implements a recycling bin for deleted products.
  */
 const ProductsSection: FC<IProps> = ({ article, setArticle }) => {
+  const [openSidePanel, setOpenSidePanel] = React.useState<boolean>(false)
+
+  const handleOpenSidePanel = () => {
+    setOpenSidePanel(true)
+  }
+
+  const handleCloseSidePanel = () => {
+    setOpenSidePanel(false)
+  }
+
+  useEffect(() => {
+    if (article === ProductsArticles.Menu) {
+      handleCloseSidePanel()
+    }
+  }, [article])
 
   let children
   switch (article) {
@@ -49,9 +65,18 @@ const ProductsSection: FC<IProps> = ({ article, setArticle }) => {
       break
     case ProductsArticles.Products:
       children =
-        <Wrapper>
-          <MyProducts handleOpenSidePanel={()=>{}} back={() => setArticle(ProductsArticles.Menu)}/>
-        </Wrapper>
+        <PanelContainer
+          openSidePanel={ openSidePanel }
+          mainChildren=
+            {
+              <MyProducts
+                handleOpenSidePanel={ handleOpenSidePanel }
+                back={ () => setArticle(ProductsArticles.Menu) }
+              />
+            }
+          sideChildren={ <></> }
+          border={ true }
+        />
       break
     case ProductsArticles.Deleted:
       children =

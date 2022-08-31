@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import OrderProductsTable from './OrderProductsTable'
 import margins from '../../styles/margins'
-import Button from '../Button'
+import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Form from '../Form'
 import Label from '../Label'
@@ -10,7 +10,7 @@ import Input from '../Input'
 import { css } from '@emotion/react'
 import Options from '../Options'
 import TitleWrapper from '../TitleWrapper'
-import ExitButton from '../ExitButton'
+import ExitButton from '../buttons/ExitButton'
 
 const FieldWrapper = styled.div`
   display: flex;

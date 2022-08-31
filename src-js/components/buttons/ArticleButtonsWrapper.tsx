@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react'
 import styled from '@emotion/styled'
-import breakpoints from '../styles/breakpoints'
-import margins from '../styles/margins'
+import breakpoints from '../../styles/breakpoints'
+import margins from '../../styles/margins'
 
 const Wrapper = styled.div`
   display: flex;
