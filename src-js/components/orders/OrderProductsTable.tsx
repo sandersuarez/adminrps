@@ -3,32 +3,22 @@ import styled from '@emotion/styled'
 import colors from '../../styles/colors'
 import breakpoints from '../../styles/breakpoints'
 import margins from '../../styles/margins'
-import fonts from '../../styles/fonts'
 import { css } from '@emotion/react'
 import IconDown from '../svg/IconDown'
 import IconUp from '../svg/IconUp'
 
-const ResetButton = styled.button`
+const ArrowButton = styled.button`
+  // reset styles
   border: none;
   font: inherit;
   opacity: 1;
   appearance: none;
-`
-
-const RemoveButton = styled(ResetButton)`
-  background: ${ colors.danger };
-  color: ${ colors.background };
-  border-radius: 999em;
-  padding: .22em .3em;
-  ${ fonts.orderNumber }
-`
-
-const ArrowButton = styled(ResetButton)`
+  
   display: flex;
   background: ${ colors.primary };
   border-radius: 999em;
   padding: .85em .7em;
-  
+
   svg {
     fill: ${ colors.background };
     width: .8em;
@@ -139,29 +129,17 @@ const OrderProductsTable: FC<OrderProductsTableProps> = ({ className, editable }
           </thead>
           <tbody>
             <tr>
-              <td scope={ 'row' }>
-                {
-                  editable ?
-                    <CellWrapper>
-                      <RemoveButton>
-                        <i className={ 'bi bi-x' } />
-                      </RemoveButton>
-                      <div>{ 'Agua ' }<span>{ '(1,00 €)' }</span></div>
-                    </CellWrapper>
-                    :
-                    <>{ 'Agua ' }<span>{ '(1,00 €)' }</span></>
-                }
-              </td>
+              <td scope={ 'row' }>{ 'Agua ' }<span>{ '(1,00 €)' }</span></td>
               <td>
                 {
                   editable ?
                     <CellWrapper css={ css`justify-content: center` }>
                       <ArrowButton>
-                        <IconDown/>
+                        <IconDown />
                       </ArrowButton>
                       { 1 }
                       <ArrowButton>
-                        <IconUp/>
+                        <IconUp />
                       </ArrowButton>
                     </CellWrapper>
                     :
@@ -171,29 +149,17 @@ const OrderProductsTable: FC<OrderProductsTableProps> = ({ className, editable }
               <td>{ '1,00 €' }</td>
             </tr>
             <tr>
-              <td scope={ 'row' }>
-                {
-                  editable ?
-                    <CellWrapper>
-                      <RemoveButton>
-                        <i className={ 'bi bi-x' } />
-                      </RemoveButton>
-                      <div>{ 'Pollo ' }<span>{ '(5,00 €)' }</span></div>
-                    </CellWrapper>
-                    :
-                    <>{ 'Pollo ' }<span>{ '(5,00 €)' }</span></>
-                }
-              </td>
+              <td scope={ 'row' }>{ 'Pollo ' }<span>{ '(5,00 €)' }</span></td>
               <td>
                 {
                   editable ?
                     <CellWrapper css={ css`justify-content: center` }>
                       <ArrowButton>
-                        <IconDown/>
+                        <IconDown />
                       </ArrowButton>
                       { 1 }
                       <ArrowButton>
-                        <IconUp/>
+                        <IconUp />
                       </ArrowButton>
                     </CellWrapper>
                     :
@@ -203,29 +169,17 @@ const OrderProductsTable: FC<OrderProductsTableProps> = ({ className, editable }
               <td>{ '5,00 €' }</td>
             </tr>
             <tr>
-              <td scope={ 'row' }>
-                {
-                  editable ?
-                    <CellWrapper>
-                      <RemoveButton>
-                        <i className={ 'bi bi-x' } />
-                      </RemoveButton>
-                      <div>{ 'Patatas ' }<span>{ '(5,00 €)' }</span></div>
-                    </CellWrapper>
-                    :
-                    <>{ 'Patatas ' }<span>{ '(5,00 €)' }</span></>
-                }
-              </td>
+              <td scope={ 'row' }>{ 'Patatas ' }<span>{ '(5,00 €)' }</span></td>
               <td>
                 {
                   editable ?
                     <CellWrapper css={ css`justify-content: center` }>
                       <ArrowButton>
-                        <IconDown/>
+                        <IconDown />
                       </ArrowButton>
                       { 1 }
                       <ArrowButton>
-                        <IconUp/>
+                        <IconUp />
                       </ArrowButton>
                     </CellWrapper>
                     :

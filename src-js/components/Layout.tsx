@@ -5,6 +5,7 @@ import styled from '@emotion/styled'
 import fonts from '../styles/fonts'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
+import margins from '../styles/margins'
 
 /**
  * Component that contains the layout styles.
@@ -13,9 +14,8 @@ const Container = styled.div`
   ${ fonts.body }
   h2 {
     ${ fonts.title }
-    margin: 0;
-    border-bottom: 1px solid;
-    border-color: ${ colors.text };
+    margin-top: 0;
+    margin-bottom: ${ margins.mobile.mediumVertical };
   }
 
   h3 {

@@ -9,7 +9,7 @@ const fonts: { [k: string]: NonNullable<CSSInterpolation> } = {
     fontSize: '1.6rem',
   },
   title: {
-    fontSize: '1.8rem',
+    fontSize: '2.2rem',
   },
   noteTitle: {
     fontSize: '1.8rem',

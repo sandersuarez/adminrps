@@ -14,11 +14,13 @@ import Options from '../Options'
 
 const TitleWrapper = styled.div`
   display: flex;
-  align-items: start;
+  align-items: center;
   column-gap: ${ margins.mobile.mediumVertical };
+  margin-bottom: ${ margins.mobile.mediumVertical };
 
   h2 {
     flex-grow: 1;
+    margin: 0;
   }
 
   button {
@@ -58,7 +60,7 @@ const formStyles = css`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin-top: ${ margins.mobile.bigVertical };
+  margin-top: ${ margins.mobile.mediumVertical };
 
   div {
     flex-grow: 1;
@@ -115,7 +117,7 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
               css={ css`align-self: start` }
               children={ 'Añadir producto' }
             />
-            <FieldWrapper>
+            <FieldWrapper css={ css`margin-top: ${ margins.mobile.mediumVertical }` }>
               <Label htmlFor={ 'pick-up-hour' }>{ 'Hora aproximada de recogida:' }</Label>
               <Input id={ 'pick-up-hour' } />
             </FieldWrapper>
