@@ -15,13 +15,13 @@ const Container = styled.div`
   }
 `
 
-export interface customerProps {
+export interface CustomerProps {
   key: Key
   name: string
   phoneNumber: string
 }
 
-const Customer: FC<customerProps> = (
+const Customer: FC<CustomerProps> = (
   {
     name,
     phoneNumber,

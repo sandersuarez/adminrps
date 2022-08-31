@@ -1,8 +1,8 @@
 import React, { FC, ReactElement } from 'react'
-import { editableCustomerProps } from './EditableCustomer'
+import { EditableCustomerProps } from './EditableCustomer'
 import styled from '@emotion/styled'
 import margins from '../../styles/margins'
-import { customerProps } from './Customer'
+import { CustomerProps } from './Customer'
 
 const Container = styled.div`
   display: flex;
@@ -11,7 +11,7 @@ const Container = styled.div`
 `
 
 interface IProps {
-  customerList: ReactElement<editableCustomerProps | customerProps>[]
+  customerList: ReactElement<EditableCustomerProps | CustomerProps>[]
 }
 
 const CustomersContainer: FC<IProps> = ({ customerList }) => {

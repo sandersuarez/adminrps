@@ -3,15 +3,9 @@ import { css } from '@emotion/react'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 
-interface IProps {
-  className?: string,
-  title: string,
-  icon: ReactElement,
-}
-
 const styles = css`
   --lateral-padding: 2.25em;
-  
+
   // reset styles
   background: none;
   font: inherit;
@@ -50,6 +44,13 @@ const styles = css`
   }
 `
 
+interface IProps {
+  className?: string,
+  title: string,
+  icon: ReactElement,
+  handleClick: () => void,
+}
+
 /**
  * Component that defines a special type of button with a card form, with an icon and text. Its principal function is
  * to serve as navigation element between section articles.
@@ -59,10 +60,11 @@ const ArticleButton: FC<IProps> = (
     className,
     title,
     icon,
+    handleClick,
   },
 ) => {
   return (
-    <button className={ className } title={ title } css={ styles }>
+    <button className={ className } title={ title } css={ styles } onClick={ handleClick }>
       { icon }
       { title }
     </button>

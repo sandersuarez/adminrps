@@ -6,12 +6,32 @@ import ProductsSection from './components/sections/ProductsSection'
 import CustomersSection from './components/sections/CustomersSection'
 import OrdersSection from './components/sections/OrdersSection'
 import Settings from './components/sections/Settings'
+import ProductsArticles from './shapes/ProductsArticles'
 
 /**
- * The root component.
+ * The root component. Manages main navigation mechanics.
  */
 const App = () => {
   const [section, setSection] = React.useState<Sections>(Sections.Home)
+  const [productsArticle, setProductsArticle] = React.useState<string>('menu')
+
+  const handleSetSection = (value: (((prevState: Sections) => Sections) | Sections)) => {
+
+    if (section === Sections.Products && value === Sections.Products) {
+      setProductsArticle(ProductsArticles.Menu)
+    } else {
+      setSection(value)
+      reset()
+    }
+  }
+
+  const reset = () => {
+    setProductsArticle(ProductsArticles.Menu)
+  }
+
+  const handleSetProductsArticle = (article: string) => {
+    setProductsArticle(article)
+  }
 
   let children
   switch (section) {
@@ -19,7 +39,7 @@ const App = () => {
       children = <Home />
       break
     case Sections.Products:
-      children = <ProductsSection />
+      children = <ProductsSection article={ productsArticle } setArticle={ handleSetProductsArticle } />
       break
     case Sections.Customers:
       children = <CustomersSection />
@@ -35,7 +55,7 @@ const App = () => {
   }
 
   return (
-    <Layout section={ section } setSection={ setSection } children={ children } />
+    <Layout section={ section } setSection={ handleSetSection } children={ children } />
   )
 }
 
