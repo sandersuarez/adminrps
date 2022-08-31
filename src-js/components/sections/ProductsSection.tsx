@@ -4,13 +4,12 @@ import IconProducts from '../svg/IconProducts'
 import IconBin from '../svg/IconBin'
 import ArticleButtonsWrapper from '../ArticleButtonsWrapper'
 import styled from '@emotion/styled'
-import margins from '../../styles/margins'
 import ProductsArticles from '../../shapes/ProductsArticles'
+import MyProducts from '../MyProducts'
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  padding: ${ margins.mobile.lateral };
   overflow-y: auto;
 `
 
@@ -51,7 +50,7 @@ const ProductsSection: FC<IProps> = ({ article, setArticle }) => {
     case ProductsArticles.Products:
       children =
         <Wrapper>
-          <p>{ 'products' }</p>
+          <MyProducts handleOpenSidePanel={()=>{}} back={() => setArticle(ProductsArticles.Menu)}/>
         </Wrapper>
       break
     case ProductsArticles.Deleted:

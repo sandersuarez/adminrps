@@ -7,6 +7,7 @@ import ButtonTypes from '../shapes/ButtonTypes'
 import fonts from '../styles/fonts'
 import IconDown from './svg/IconDown'
 import Button from './Button'
+import { css } from '@emotion/react'
 
 export interface ProductProps {
   key: Key
@@ -15,6 +16,7 @@ export interface ProductProps {
   price: number
   deleted: boolean
   removable: boolean
+  stock?: number
   handleProductClick: (index: Key) => void
   handleOpenSidePanel: () => void
   openedElement: Key
@@ -33,10 +35,14 @@ const Product: FC<ProductProps> = (
     handleOpenSidePanel,
     openedElement,
     index,
+    stock,
   },
 ) => {
 
   const [height, setHeight] = React.useState<string>('unset')
+
+  const formattedPrice =
+    new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(price)
 
   const containerRef = useRef<HTMLDetailsElement | null>(null)
 
@@ -64,8 +70,12 @@ const Product: FC<ProductProps> = (
       animate={ (openedElement === index) ? { height: 'auto' } : { height: `${ height }` } }
       ref={ containerRef }
     >
-      <DetailsSummary onClick={ handleClick! }>
-        <p>{ name } ({ price })</p>
+      <DetailsSummary onClick={ handleClick! } css={ css`justify-content: end` }>
+        <p css={ css`flex-grow: 1` }>{ name } ({ formattedPrice })</p>
+        {
+          stock &&
+          <p>{ 'Stock: ' }{ stock }</p>
+        }
         <DetailsArrow
           animate={ (openedElement === index) ? { rotate: 180 } : null }
           transition={ { ease: 'easeOut', duration: .3 } }

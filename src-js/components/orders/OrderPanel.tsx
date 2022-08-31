@@ -2,8 +2,6 @@ import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import OrderProductsTable from './OrderProductsTable'
 import margins from '../../styles/margins'
-import fonts from '../../styles/fonts'
-import colors from '../../styles/colors'
 import Button from '../Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Form from '../Form'
@@ -11,32 +9,8 @@ import Label from '../Label'
 import Input from '../Input'
 import { css } from '@emotion/react'
 import Options from '../Options'
-
-const TitleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  column-gap: ${ margins.mobile.mediumVertical };
-  margin-bottom: ${ margins.mobile.mediumVertical };
-
-  h2 {
-    flex-grow: 1;
-    margin: 0;
-  }
-
-  button {
-    // reset styling
-    border: none;
-    font: inherit;
-    opacity: 1;
-    appearance: none;
-
-    background: ${ colors.primary };
-    color: ${ colors.background };
-    border-radius: .25em;
-    padding: .22em .3em;
-    ${ fonts.orderNumber }
-  }
-`
+import TitleWrapper from '../TitleWrapper'
+import ExitButton from '../ExitButton'
 
 const FieldWrapper = styled.div`
   display: flex;
@@ -88,9 +62,9 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
     <Container>
       <TitleWrapper>
         <h2>{ 'Pedido Nº 1 - 06/04/2022' }</h2>
-        <button onClick={ handleExitClick }>
+        <ExitButton onClick={ handleExitClick }>
           <i className={ 'bi bi-x' } />
-        </button>
+        </ExitButton>
       </TitleWrapper>
       <p><b>{ 'Hora aproximada de recogida: ' }</b>{ '12:43' }</p>
       <p><b>{ 'Luisa Santos' }</b><br /><b>{ 'Teléfono: ' }</b>{ '676676676' }</p>
