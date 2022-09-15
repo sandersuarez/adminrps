@@ -67,11 +67,15 @@ const Home = () => {
     setOpenSecondSidePanel(false)
   }
 
+  const handleNewOrder = () => {
+
+  }
+
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
       <HomeWrapper>
         <WelcomeLayer userName={ 'sandy' } />
-        <ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } />
+        <ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />
         <Drafts />
       </HomeWrapper>
       <PanelContainer

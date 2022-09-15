@@ -53,6 +53,7 @@ const Container = styled.article`
 
 interface IProps {
   handleOpenSidePanel: () => void
+  handleNewOrder: () => void
 }
 
 /**
@@ -60,11 +61,23 @@ interface IProps {
  * bar to filter by phone number or customer name, pagination, and responsive styles to make them awesome in all
  * kind of versions.
  */
-const ActiveOrders: FC<IProps> = ({ handleOpenSidePanel }) => {
+const ActiveOrders: FC<IProps> = ({ handleOpenSidePanel, handleNewOrder }) => {
+
+  const newOrder = () => {
+    handleNewOrder()
+
+  }
+
   return (
     <Container>
       <h2>Pedidos en elaboración</h2>
-      <Button customType={ ButtonTypes.Primary } css={ css`align-self: start` }>Nuevo pedido</Button>
+      <Button
+        customType={ ButtonTypes.Primary }
+        css={ css`align-self: start` }
+        onClick={ newOrder }
+      >
+        { 'Nuevo pedido' }
+      </Button>
       <SearchBar />
       <Alert message={ 'error' } type={ 'error' } />
       <NoteContainer noteList={ [

@@ -1,11 +1,10 @@
-import React, { FC, ReactNode } from 'react'
-import Navbar from './Navbar'
-import Sections from '../shapes/Sections'
+import React from 'react'
 import styled from '@emotion/styled'
 import fonts from '../styles/fonts'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 import margins from '../styles/margins'
+import Main from './Main'
 
 /**
  * Component that contains the layout styles.
@@ -43,32 +42,6 @@ const Header = styled.header`
   }
 `
 
-const Main = styled.main`
-  height: calc(100vh - 3rem);
-
-  ${ breakpoints.tablet } {
-    height: calc(100vh - 3.5rem);
-  }
-`
-
-const MainWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  ${ breakpoints.desktop } {
-    flex-flow: row nowrap;
-  }
-
-  & > section {
-    flex-grow: 1;
-
-    ${ breakpoints.desktop } {
-      order: 2;
-    }
-  }
-`
-
 const H1 = styled.h1`
   ${ fonts.titleBar }
   margin: 0;
@@ -79,28 +52,17 @@ const H1 = styled.h1`
   }
 `
 
-interface LayoutProps {
-  children: ReactNode
-  section: Sections
-  setSection: (section: Sections) => void
-}
-
 /**
  * The component that defines the layout of the application. Contains the header, the navbar and the main sections,
  * and contains the styles that make them responsive.
  */
-const Layout: FC<LayoutProps> = ({ children, section, setSection }) => {
+const Layout = () => {
   return (
     <Container>
       <Header>
         <H1>AdminRPS</H1>
       </Header>
-      <Main>
-        <MainWrapper>
-          { children }
-          <Navbar selectedSection={ section } setSection={ setSection } />
-        </MainWrapper>
-      </Main>
+      <Main/>
     </Container>
   )
 }
