@@ -14,6 +14,10 @@ export interface Session {
 
 export type SessionMessage = Message<'info' | 'warning' | 'error'>
 
+/**
+ * Hook that manages the app user session. Checks the session, creates one by the login method, and destroys it by
+ * the logout method.
+ */
 function useSession() {
   const { doRequest: doSessionRequest } = useFetch<Session['Response']>('api/session_status')
   const { doRequest: doLoginRequest } = useFetchWith.bodyParams<Login['Request'], Login['Response']>('api/login')

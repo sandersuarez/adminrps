@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Navbar from './Navbar'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
@@ -40,8 +40,8 @@ const Container = styled.main`
 
 const Main = () => {
   const { user, message, login, logout, clearMessage } = useSession()
-  const [section, setSection] = React.useState<Sections>(Sections.Home)
-  const [productsArticle, setProductsArticle] = React.useState<string>('menu')
+  const [section, setSection] = useState<Sections>(Sections.Home)
+  const [productsArticle, setProductsArticle] = useState<string>('menu')
 
   const handleSetSection = (value: (((prevState: Sections) => Sections) | Sections)) => {
 

@@ -4,7 +4,7 @@ const colors = {
   menu: '#EEEEEE',
   secondary: '#DE9C64',
   section: '#63C8DD',
-  danger: '#915724',
+  danger: '#BB2124',
   text: '#000000',
   separators: '#000000',
 }
