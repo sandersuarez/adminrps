@@ -1,7 +1,6 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
-import breakpoints from '../styles/breakpoints'
 import { css } from '@emotion/react'
 
 
@@ -17,10 +16,6 @@ const Container = styled.article<{ type?: 'normal' | 'error' }>(
 
     p {
       margin: 0;
-    }
-
-    ${ breakpoints.tablet } {
-      margin-top: 2rem;
     }
   `,
   ({ type }) => {

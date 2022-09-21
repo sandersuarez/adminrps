@@ -8,6 +8,8 @@ import ButtonTypes from '../shapes/ButtonTypes'
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
 import useValid from '../hooks/useValid'
+import InputMessage from './InputMessage'
+import Alert from './Alert'
 
 const Container = styled.div`
   --lateral-margin: ${ margins.mobile.lateral };
@@ -25,6 +27,10 @@ const Container = styled.div`
     flex-grow: 1;
     max-width: 51.2rem;
   }
+
+  h2 {
+    margin-bottom: 3.5rem;
+  }
 `
 
 interface IProps {
@@ -38,9 +44,10 @@ const LoginForm: FC<IProps> = ({ login }) => {
       username: values['username'],
       key: values['password'],
     })
+    console.log('login')
   }
 
-  const { handleChange, values, errors, handleSubmit } = useValid(doLogin)
+  const { handleChange, values, errors, setErrors, handleSubmit } = useValid(doLogin)
 
   return (
     <Container>
@@ -56,11 +63,9 @@ const LoginForm: FC<IProps> = ({ login }) => {
               maxLength={ 60 }
               onChange={ handleChange }
               onBlur={ handleChange }
-            /><p>{'\t'}
-            {
-              errors['username'] &&
-              <><i className='bi bi-exclamation-triangle-fill'></i><span>'\t' + errors['username']</span></>
-            }</p>
+              valid={ errors['username'] === undefined }
+            />
+            <InputMessage message={ errors['username'] } />
           </div>
           <div>
             <Label htmlFor={ 'password' }>{ 'Contraseña:' }</Label>
@@ -71,12 +76,14 @@ const LoginForm: FC<IProps> = ({ login }) => {
               maxLength={ 8 }
               onChange={ handleChange }
               onBlur={ handleChange }
+              valid={ errors['password'] === undefined }
             />
-            {
-              errors['password'] &&
-              <p><i className='bi bi-exclamation-triangle-fill'></i>{ '\t' + errors['password'] }</p>
-            }
+            <InputMessage message={ errors['password'] } />
           </div>
+          {
+            errors['form'] &&
+            <Alert message={ errors['form'] } />
+          }
           <Button customType={ ButtonTypes.Primary }>{ 'Iniciar Sesión' }</Button>
         </Form>
       </div>

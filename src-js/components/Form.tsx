@@ -2,7 +2,6 @@ import React from 'react'
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
 import breakpoints from '../styles/breakpoints'
-import colors from '../styles/colors'
 
 const Form = styled.form`
   display: flex;
@@ -15,11 +14,6 @@ const Form = styled.form`
     flex-direction: column;
     align-self: stretch;
     row-gap: ${ margins.mobile.vertical };
-
-    p {
-      margin: 0;
-      color: ${ colors.danger };
-    }
   }
 
   input {
