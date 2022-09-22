@@ -72,7 +72,7 @@ function useSession() {
 
   const clearMessage = () => setMessage(undefined)
 
-  return { user, message: message, login, logout, clearMessage: clearMessage }
+  return { user, message, login, logout, clearMessage }
 }
 
 export default useSession

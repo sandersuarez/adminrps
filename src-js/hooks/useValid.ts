@@ -8,23 +8,38 @@ type FieldsType = { name: string; value: string; e?: FormEvent<HTMLInputElement>
  */
 const useValid = (callback: () => void) => {
   const [values, setValues] = useState<{ [name: string]: string }>({})
-  const [errors, setErrors] = useState<{ [name: string]: string }>({})
+  const [errors1, setErrors1] = useState<{ [name: string]: string }>({})
+  const [errors2, setErrors2] = useState<{ [name: string]: string }>({})
   const [submitState, setSubmitState] = useState<boolean>(false)
 
   useEffect(() => {
     if (submitState) {
-      if (Object.keys(errors).length === 0 && Object.keys(values).length !== 0) {
+      if (Object.keys(errors1).length === 0 && Object.keys(errors2).length === 0 && Object.keys(values).length !== 0) {
         callback()
       }
       setSubmitState(false)
     }
-  }, [values, errors, submitState])
+  }, [values, errors2, submitState])
 
   const validate = (fields: FieldsType) => {
+    if (validate1(fields)) {
+      validate2(fields)
+    }
+  }
 
-    let tmpErrors = { ...errors }
+  /**
+   * First stage validation
+   */
+  const validate1 = (fields: FieldsType) => {
+
+    let tmpErrors = { ...errors1 }
 
     forEach(fields, (element) => {
+
+      // If the event is from change, the second stage errors get reset
+      if (element.e !== undefined && element.e.type === 'change') {
+        setErrors2(omit(errors2, ['username', 'password']))
+      }
 
       switch (element.name) {
         case 'username':
@@ -46,17 +61,7 @@ const useValid = (callback: () => void) => {
             }
           } else {
             tmpErrors = omit(tmpErrors, 'password')
-
-            if (element.e === undefined && element.value.length != 8) {
-              tmpErrors = {
-                ...tmpErrors,
-                form: 'La contraseña es incorrecta',
-              }
-            } else {
-              tmpErrors = omit(tmpErrors, 'form')
-            }
           }
-
           break
 
         default:
@@ -65,7 +70,49 @@ const useValid = (callback: () => void) => {
     })
 
     // Commit changes
-    setErrors(tmpErrors)
+    setErrors1(tmpErrors)
+
+    return Object.keys(tmpErrors).length === 0
+  }
+
+  /**
+   * Second stage validation
+   */
+  const validate2 = (fields: FieldsType) => {
+
+    let tmpErrors = { ...errors2 }
+
+    forEach(fields, (element) => {
+      switch (element.name) {
+        case 'username':
+          if (element.e === undefined && element.value.length > 60) {
+            tmpErrors = {
+              ...tmpErrors,
+              username: 'El nombre usuario o la contraseña son incorrectos',
+            }
+          } else {
+            tmpErrors = omit(tmpErrors, 'username')
+          }
+          break
+
+        case 'password':
+          if (element.e === undefined && element.value.length != 8) {
+            tmpErrors = {
+              ...tmpErrors,
+              password: 'El nombre usuario o la contraseña son incorrectos',
+            }
+          } else {
+            tmpErrors = omit(tmpErrors, 'password')
+          }
+          break
+
+        default:
+          break
+      }
+    })
+
+    // Commit changes
+    setErrors2(tmpErrors)
   }
 
   const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
@@ -74,7 +121,7 @@ const useValid = (callback: () => void) => {
     let name = e.currentTarget.name
     let value = e.currentTarget.value
 
-    validate([{ name, value, e }])
+    validate1([{ name, value, e }])
 
     setValues({
       ...values,
@@ -99,14 +146,15 @@ const useValid = (callback: () => void) => {
     })
 
     validate(fields)
-
     setSubmitState(true)
   }
 
   return {
     values,
-    errors,
-    setErrors,
+    errors1,
+    errors2,
+    setErrors1,
+    setErrors2,
     handleChange,
     handleSubmit,
   }

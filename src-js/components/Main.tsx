@@ -92,7 +92,7 @@ const Main = () => {
               <Navbar selectedSection={ section } setSection={ handleSetSection } />
             </>
             :
-            <LoginForm login={ login } />
+            <LoginForm login={ login } message={ message } />
         }
       </MainWrapper>
     </Container>

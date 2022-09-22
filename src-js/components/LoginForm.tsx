@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Login } from '../hooks/useSession'
+import { Login, SessionMessage } from '../hooks/useSession'
 import Form from './Form'
 import Label from './Label'
 import Input from './Input'
@@ -10,6 +10,9 @@ import margins from '../styles/margins'
 import useValid from '../hooks/useValid'
 import InputMessage from './InputMessage'
 import Alert from './Alert'
+import AlertTypes from '../shapes/AlertTypes'
+import { css } from '@emotion/react'
+import breakpoints from '../styles/breakpoints'
 
 const Container = styled.div`
   --lateral-margin: ${ margins.mobile.lateral };
@@ -31,29 +34,43 @@ const Container = styled.div`
   h2 {
     margin-bottom: 3.5rem;
   }
+
+  ${ breakpoints.tablet } {
+    --lateral-margin: ${ margins.tablet.lateral };
+  }
+
+  ${ breakpoints.desktop } {
+    --lateral-margin: 6rem;
+    justify-content: start;
+  }
 `
 
 interface IProps {
   login: (details: Login['Request']) => void
+  message: SessionMessage | undefined
 }
 
-const LoginForm: FC<IProps> = ({ login }) => {
+const LoginForm: FC<IProps> = ({ login, message }) => {
 
   const doLogin = () => {
     login({
       username: values['username'],
       key: values['password'],
     })
-    console.log('login')
   }
 
-  const { handleChange, values, errors, setErrors, handleSubmit } = useValid(doLogin)
+  const { handleChange, values, errors1, errors2, setErrors2, handleSubmit } = useValid(doLogin)
 
   return (
     <Container>
       <div>
         <h2>Iniciar sesión</h2>
         <Form onSubmit={ handleSubmit } noValidate={ true }>
+          {
+            Object.values(errors2)[0] &&
+            <Alert css={ css`margin-bottom: 2rem` } message={ Object.values(errors2)[0] }
+                   type={ AlertTypes.Warning } />
+          }
           <div>
             <Label htmlFor={ 'username' }>{ 'Usuario:' }</Label>
             <Input
@@ -63,9 +80,9 @@ const LoginForm: FC<IProps> = ({ login }) => {
               maxLength={ 60 }
               onChange={ handleChange }
               onBlur={ handleChange }
-              valid={ errors['username'] === undefined }
+              valid={ errors1['username'] === undefined }
             />
-            <InputMessage message={ errors['username'] } />
+            <InputMessage message={ errors1['username'] } />
           </div>
           <div>
             <Label htmlFor={ 'password' }>{ 'Contraseña:' }</Label>
@@ -76,14 +93,10 @@ const LoginForm: FC<IProps> = ({ login }) => {
               maxLength={ 8 }
               onChange={ handleChange }
               onBlur={ handleChange }
-              valid={ errors['password'] === undefined }
+              valid={ errors1['password'] === undefined }
             />
-            <InputMessage message={ errors['password'] } />
+            <InputMessage message={ errors1['password'] } />
           </div>
-          {
-            errors['form'] &&
-            <Alert message={ errors['form'] } />
-          }
           <Button customType={ ButtonTypes.Primary }>{ 'Iniciar Sesión' }</Button>
         </Form>
       </div>

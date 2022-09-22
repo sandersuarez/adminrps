@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
-import breakpoints from '../styles/breakpoints'
 
 const Form = styled.form`
   display: flex;
@@ -18,11 +17,6 @@ const Form = styled.form`
 
   input {
     align-self: stretch;
-  }
-
-  ${ breakpoints.tablet } {
-    margin-top: 2rem;
-    row-gap: 1.5rem;
   }
 `
 

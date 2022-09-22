@@ -7,7 +7,9 @@ const margins = {
     mediumVertical: '1.6rem',
     bigVertical: '4rem',
   },
-  tablet: {},
+  tablet: {
+    lateral: '3rem',
+  },
   desktop: {},
 }
 

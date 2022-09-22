@@ -10,6 +10,17 @@ const Container = styled(motion.p)`
   color: ${ colors.danger };
 `
 
+const ContainerVariants = {
+  hide: {
+    opacity: 0,
+    display: 'none',
+  },
+  show: {
+    opacity: 1,
+    display: 'inline',
+  },
+}
+
 interface IProps {
   message: string
 }
@@ -28,9 +39,10 @@ const InputMessage: FC<IProps> = ({ message }) => {
 
   return (
     <Container
-      transition={ { ease: 'easeInOut', duration: .1 } }
-      initial={ { opacity: 0 } }
-      animate={ message ? { opacity: 1 } : { opacity: 0 } }
+      variants={ ContainerVariants }
+      transition={ { ease: 'easeInOut', duration: .3 } }
+      initial={ 'hide' }
+      animate={ message ? 'show' : 'hide' }
     >
       <i className='bi bi-exclamation-triangle-fill'></i>
       <span>{ '\t' + shownMessage }</span>
