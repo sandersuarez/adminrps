@@ -6,7 +6,7 @@ require __DIR__ . '/../../src-php/pdo/pdo_factory.php';
  * Security function to protect services
  * @return array|int If there is a pdo exception or a valid user session returns an array. If there is not an active session returns an int
  */
-function security()
+function security($renew = true)
 {
     $answer = -3;
     // User login check
@@ -15,6 +15,7 @@ function security()
         // Session time check
         if (time() - $_SESSION['last_access'] > 60 * $_SESSION['inactive_time']) {
             $answer = -1;
+            session_destroy();
         } else {
             try {
                 // SQL query
@@ -29,15 +30,19 @@ function security()
                 // If there are results, the password is verified with password_verify
                 if ($result = $query->fetch(PDO::FETCH_ASSOC)) {
                     if (password_verify($_SESSION['key'], $result['keyuser'])) {
-                        // If the password is verified the session is renewed
-                        $_SESSION['last_access'] = time();
+                        if ($renew) {
+                            // If the password is verified the session is renewed
+                            $_SESSION['last_access'] = time();
+                        }
                         unset($result['keyuser']);
                         $answer = array('user' => $result);
                     } else {
                         $answer = -2;
+                        session_destroy();
                     }
                 } else {
                     $answer = -2;
+                    session_destroy();
                 }
 
                 clear_query_data($query, $connection);
@@ -58,11 +63,11 @@ function security()
 function reason_no_session($security)
 {
     if ($security < -2) {
-        $answer = array('no_logged' => 'Not logged in previously');
+        $answer = array('no_logged' => 'Not logged in');
     } elseif ($security < -1) {
         $answer = array('forbidden' => 'Restricted zone');
     } else {
-        $answer = array('time' => 'Session time expired');
+        $answer = array('time' => 'La sesión ha sido cerrada por inactividad. Por favor, vuelva a iniciar sesión.');
     }
     return $answer;
 }
@@ -77,7 +82,8 @@ function login($input_data)
     // Input data control
     $input_data['username'] = trim($input_data['username']);
     if ($input_data['username'] == '') return array('message' => 'El nombre de usuario es un campo requerido');
-    if (strlen($input_data['username']) > 60 || strlen($input_data['key']) > 255) return array('message' => 'El usuario no está registrado');
+    if (strlen($input_data['username']) > 60 || strlen($input_data['key']) > 255)
+      return array('message' => 'El nombre usuario o la contraseña son incorrectos');
 
     try {
         // SQL query to search for matching users
@@ -100,10 +106,10 @@ function login($input_data)
                 $_SESSION['last_access'] = time();
                 $_SESSION['inactive_time'] = SESSION_TIME;
             } else {
-                $answer = array('message' => 'La contraseña es incorrecta');
+                $answer = array('message' => 'El nombre usuario o la contraseña son incorrectos');
             }
         } else {
-            $answer = array('message' => 'El usuario no está registrado');
+            $answer = array('message' => 'El nombre usuario o la contraseña son incorrectos');
         }
 
         clear_query_data($query, $connection);

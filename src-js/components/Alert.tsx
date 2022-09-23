@@ -22,7 +22,7 @@ const Container = styled.article<{ type?: AlertTypes }>(
     }
   `,
   ({ type }) => {
-    if (type === AlertTypes.Warning)
+    if (type === AlertTypes.Warning || type === AlertTypes.Error) {
       return css`
         border-color: ${ colors.danger };
 
@@ -30,6 +30,14 @@ const Container = styled.article<{ type?: AlertTypes }>(
           color: ${ colors.danger };
         }
       `
+    }
+    if (type === AlertTypes.Info) {
+      return css`
+        i {
+          color: ${ colors.primary };
+        }
+      `
+    }
   },
 )
 
@@ -37,10 +45,25 @@ const Container = styled.article<{ type?: AlertTypes }>(
  * Component that is used as a message for errors or warnings from the server or another module of the application.
  */
 const Alert: FC<IProps> = ({ className, message, type }) => {
+
+  let iconClass
+  switch (type) {
+    case AlertTypes.Warning:
+      iconClass = 'bi bi-exclamation-triangle-fill'
+      break
+    case AlertTypes.Info:
+    case AlertTypes.Error:
+      iconClass = 'bi bi-exclamation-circle-fill'
+      break
+  }
+
   return (
     <Container className={ className } type={ type! }>
       <p>
-        <i className='bi bi-exclamation-triangle-fill'></i>
+        {
+          iconClass &&
+          <i className={ iconClass }></i>
+        }
         <span>{ '\t' + message }</span>
       </p>
     </Container>

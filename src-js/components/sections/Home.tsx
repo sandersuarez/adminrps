@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import WelcomeLayer from '../WelcomeLayer'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
@@ -43,11 +43,15 @@ const Container = styled.section`
   }
 `
 
+interface IProps {
+  logout: () => void
+}
+
 /**
  * This component is the main section of the application, the home page. It contains the welcome message for the user,
  * the logout button, the active orders component and the drafts component.
  */
-const Home = () => {
+const Home: FC<IProps> = ({ logout }) => {
   const [openFirstSidePanel, setOpenFirstSidePanel] = React.useState<boolean>(false)
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
 
@@ -74,7 +78,7 @@ const Home = () => {
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
       <HomeWrapper>
-        <WelcomeLayer userName={ 'sandy' } />
+        <WelcomeLayer userName={ 'sandy' } logout={ logout } />
         <ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />
         <Drafts />
       </HomeWrapper>

@@ -39,7 +39,7 @@ const Container = styled.main`
 `
 
 const Main = () => {
-  const { user, message, login, logout, clearMessage } = useSession()
+  const { user, message, login, sessionRenew, logout } = useSession()
   const [section, setSection] = useState<Sections>(Sections.Home)
   const [productsArticle, setProductsArticle] = useState<string>('menu')
 
@@ -64,7 +64,7 @@ const Main = () => {
   let children
   switch (section) {
     case Sections.Home:
-      children = <Home />
+      children = <Home logout={ logout } />
       break
     case Sections.Products:
       children = <ProductsSection article={ productsArticle } setArticle={ handleSetProductsArticle } />
@@ -79,7 +79,7 @@ const Main = () => {
       children = <Settings />
       break
     default:
-      children = <Home />
+      children = <Home logout={ logout } />
   }
 
   return (

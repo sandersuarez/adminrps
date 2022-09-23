@@ -38,7 +38,7 @@ const useValid = (callback: () => void) => {
 
       // If the event is from change, the second stage errors get reset
       if (element.e !== undefined && element.e.type === 'change') {
-        setErrors2(omit(errors2, ['username', 'password']))
+        setErrors2({})
       }
 
       switch (element.name) {

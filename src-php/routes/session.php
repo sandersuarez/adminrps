@@ -27,14 +27,14 @@ $app->post('/login', function (Request $request, Response $response) {
     } else {
         $response_content = json_encode(array('error' => 'There is already an open session'), JSON_UNESCAPED_UNICODE);
     }
-    
+
     $response->getBody()->write($response_content);
     return $response
         ->withHeader('Content-Type', 'application/json')
         ->withStatus(200);
 });
 
-$app->get('/session_status', function (Request $request, Response $response) {
+$app->get('/session_status_renew', function (Request $request, Response $response) {
 
     $response_content = '';
 
@@ -52,9 +52,29 @@ $app->get('/session_status', function (Request $request, Response $response) {
         ->withStatus(200);
 });
 
+$app->get('/session_status', function (Request $request, Response $response) {
+
+  $response_content = '';
+
+  // Security check
+  $session_check = security(false);
+  if (is_array($session_check)) {
+    $response_content = json_encode($session_check, JSON_UNESCAPED_UNICODE);
+  } else {
+    $response_content = json_encode(reason_no_session($session_check), JSON_UNESCAPED_UNICODE);
+  }
+
+  $response->getBody()->write($response_content);
+  return $response
+    ->withHeader('Content-Type', 'application/json')
+    ->withStatus(200);
+});
+
+
 $app->get('/logout', function (Request $request, Response $response) {
     session_destroy();
+    $response->getBody()->write(json_encode(array('null' => 'null'), JSON_UNESCAPED_UNICODE));
     return $response
         ->withHeader('Content-Type', 'application/json')
-        ->withStatus(204);
+        ->withStatus(200);
 });
