@@ -11,6 +11,8 @@ import OrdersSection from './sections/OrdersSection'
 import Settings from './sections/Settings'
 import useSession from '../hooks/useSession'
 import LoginForm from './LoginForm'
+import { Route, Routes } from 'react-router-dom'
+import ErrorPage from './ErrorPage'
 
 const MainWrapper = styled.div`
   display: flex;
@@ -61,35 +63,22 @@ const Main = () => {
     setProductsArticle(article)
   }
 
-  let children
-  switch (section) {
-    case Sections.Home:
-      children = <Home logout={ logout } />
-      break
-    case Sections.Products:
-      children = <ProductsSection article={ productsArticle } setArticle={ handleSetProductsArticle } />
-      break
-    case Sections.Customers:
-      children = <CustomersSection />
-      break
-    case Sections.Orders:
-      children = <OrdersSection />
-      break
-    case Sections.Settings:
-      children = <Settings />
-      break
-    default:
-      children = <Home logout={ logout } />
-  }
-
   return (
     <Container>
       <MainWrapper>
         {
           user ?
             <>
-              { children }
-              <Navbar selectedSection={ section } setSection={ handleSetSection } />
+              <Routes>
+                <Route index element={ <Home logout={ logout } /> } />
+                <Route path={ 'products' } element={ <ProductsSection article={ productsArticle }
+                                                                      setArticle={ handleSetProductsArticle } /> } />
+                <Route path={ 'customers' } element={ <CustomersSection /> } />
+                <Route path={ 'orders' } element={ <OrdersSection /> } />
+                <Route path={ 'settings' } element={ <Settings /> } />
+                <Route path={ '*' } element={ <ErrorPage /> } />
+              </Routes>
+              <Navbar />
             </>
             :
             <LoginForm login={ login } message={ message } />

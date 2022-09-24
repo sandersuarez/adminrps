@@ -10,7 +10,9 @@ module.exports = {
   output: {
     path: path.resolve('./dist'),
     filename: 'bundle.js',
+    publicPath: path.resolve('/'),
   },
+  devtool: 'source-map',
 
   mode: process.env.NODE_ENV || 'development',
 
@@ -39,7 +41,7 @@ module.exports = {
     }),
     new DefinePlugin({
       'process.env': JSON.stringify(process.env),
-    })
+    }),
   ],
 
   devServer: {
@@ -48,5 +50,6 @@ module.exports = {
     proxy: {
       '/api': process.env.DEV_SERVER_PUBLIC_URL,
     },
+    historyApiFallback: true,
   },
 }

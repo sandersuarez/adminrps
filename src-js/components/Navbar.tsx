@@ -1,5 +1,4 @@
-import React, { FC, HTMLAttributes, ReactElement } from 'react'
-import Sections from '../shapes/Sections'
+import React, { FC, ReactElement } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
@@ -9,11 +8,7 @@ import IconHome from './svg/IconHome'
 import IconOrder from './svg/IconOrder'
 import IconSettings from './svg/IconSettings'
 import { css } from '@emotion/react'
-
-interface NavbarProps {
-  selectedSection: Sections
-  setSection: (section: Sections) => void
-}
+import { NavLink, NavLinkProps } from 'react-router-dom'
 
 const Wrapper = styled.nav`
   background-color: ${ colors.menu };
@@ -44,15 +39,17 @@ const thisButtonStyles = css`
     height: 6.5rem;
   }
 
-  & > button {
+  & > a {
+    // reset styles
+    text-decoration: inherit;
+    color: ${ colors.text };
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
     flex-grow: 1;
     max-width: 10rem;
-    // reset styles
-    background: none;
-    border: none;
-    font: inherit;
-    opacity: 1;
-
+    
     svg {
       fill: ${ colors.primary };
       height: 3rem;
@@ -61,31 +58,30 @@ const thisButtonStyles = css`
   }
 `
 
-interface ThisButtonProps extends HTMLAttributes<HTMLButtonElement> {
+interface ThisNavLinkProps extends NavLinkProps {
   className?: string,
   icon: ReactElement,
-  title?: string
 }
 
-const ThisButton: FC<ThisButtonProps> = ({ className, icon, title, ...buttonProps }) => (
+const ThisButton: FC<ThisNavLinkProps> = ({ className, icon, ...linkProps }) => (
   <div className={ className } css={ thisButtonStyles }>
-    <button title={ title } { ...buttonProps }>
+    <NavLink { ...linkProps }>
       { icon }
-    </button>
+    </NavLink>
   </div>
 )
 
 /**
  * The main menu component. This will be the main navigation layer for the application to switch between sections.
  */
-const Navbar: FC<NavbarProps> = ({ selectedSection, setSection }) => {
+const Navbar: FC = () => {
   return (
     <Wrapper>
       <Container>
-        <ThisButton onClick={ () => setSection(Sections.Products) } title='Productos' icon={ <IconProducts /> } />
-        <ThisButton onClick={ () => setSection(Sections.Customers) } title='Clientes' icon={ <IconUsers /> } />
+        <ThisButton to={ 'products' } title='Productos' icon={ <IconProducts /> } />
+        <ThisButton to={ 'customers' } title='Clientes' icon={ <IconUsers /> } />
         <ThisButton
-          onClick={ () => setSection(Sections.Home) }
+          to={ '/' }
           title='Inicio'
           icon={ <IconHome /> }
           css={
@@ -95,9 +91,9 @@ const Navbar: FC<NavbarProps> = ({ selectedSection, setSection }) => {
               }
             `
           } />
-        <ThisButton onClick={ () => setSection(Sections.Orders) } title='Pedidos' icon={ <IconOrder /> } />
+        <ThisButton to={ 'orders' } title='Pedidos' icon={ <IconOrder /> } />
         <ThisButton
-          onClick={ () => setSection(Sections.Settings) }
+          to={ 'settings' }
           title='Ajustes'
           icon={ <IconSettings /> }
           css={

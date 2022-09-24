@@ -9,6 +9,7 @@ import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import buttonTypes from '../../shapes/ButtonTypes'
 import { css } from '@emotion/react'
+import AlertTypes from '../../shapes/AlertTypes'
 
 const Container = styled.article`
   display: flex;
@@ -34,7 +35,7 @@ const Customers: FC<IProps> = ({ handleOpenSidePanel }) => {
       <h2>{ 'Clientes' }</h2>
       <Button customType={ buttonTypes.Primary } css={ css`align-self: start` }>Nuevo cliente</Button>
       <SearchBar />
-      <Alert message={ 'error' } type={ 'error' } />
+      <Alert message={ 'error' } type={ AlertTypes.Error } />
       <CustomersContainer
         customerList=
           { [
