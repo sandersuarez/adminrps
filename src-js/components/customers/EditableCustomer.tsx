@@ -62,7 +62,7 @@ const EditableCustomer: FC<EditableCustomerProps> = (
       <DetailsSummary onClick={ handleClick! }>
         <p>{ name } ({ phoneNumber })</p>
         <DetailsArrow
-          animate={ (openedElement === index) ? { rotate: 180 } : null }
+          animate={ (openedElement === index) ? { rotate: 180 } : {} }
           transition={ { ease: 'easeOut', duration: .3 } }
         >
           <IconDown />
