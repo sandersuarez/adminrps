@@ -1,12 +1,18 @@
 import React from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
-import breakpoints from '../styles/breakpoints'
 import fonts from '../styles/fonts'
+import margins from '../styles/margins'
 
 const H1 = styled.h1`
+  --vertical-margin: 0;
+  --lateral-margin: ${ margins.mobile.lateral };
+
   ${ fonts.titleBar }
-  margin: 0;
+  margin-top: var(--vertical-margin);
+  margin-bottom: var(--vertical-margin);
+  margin-left: var(--lateral-margin);
+  margin-right: var(--lateral-margin);
   cursor: default;
 
   &::selection {
@@ -18,17 +24,11 @@ const Container = styled.header`
   display: flex;
   align-items: center;
   background: ${ colors.primary };
-  padding: 0 0 0 1rem;
   top: 0;
   left: 0;
   right: 0;
-  height: 3rem;
+  height: 3.5rem;
   margin: 0;
-
-  ${ breakpoints.tablet } {
-    padding: 0 0 0 1.5rem;
-    height: 3.5rem;
-  }
 `
 
 /**

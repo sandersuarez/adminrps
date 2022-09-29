@@ -7,7 +7,7 @@ import Note from './Note'
 import Button from './buttons/Button'
 import margins from '../styles/margins'
 import ButtonTypes from '../shapes/ButtonTypes'
-import Options from './Options'
+import Options from './buttons/Options'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };

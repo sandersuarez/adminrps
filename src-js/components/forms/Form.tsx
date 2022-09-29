@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import margins from '../styles/margins'
+import margins from '../../styles/margins'
 
 const Form = styled.form`
   display: flex;
@@ -12,11 +12,11 @@ const Form = styled.form`
     display: flex;
     flex-direction: column;
     align-self: stretch;
-    row-gap: ${ margins.mobile.vertical };
   }
 
   input {
     align-self: stretch;
+    margin-top: ${ margins.mobile.vertical };
   }
 `
 

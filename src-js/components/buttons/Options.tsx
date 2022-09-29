@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import margins from '../styles/margins'
-import breakpoints from '../styles/breakpoints'
+import margins from '../../styles/margins'
+import breakpoints from '../../styles/breakpoints'
 
 const Options = styled.div`
   display: flex;

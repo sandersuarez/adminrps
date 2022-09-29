@@ -10,7 +10,7 @@ import CustomersSection from './sections/CustomersSection'
 import OrdersSection from './sections/OrdersSection'
 import Settings from './sections/Settings'
 import useSession from '../hooks/useSession'
-import LoginForm from './LoginForm'
+import LoginForm from './forms/LoginForm'
 import { Route, Routes } from 'react-router-dom'
 import ErrorPage from './ErrorPage'
 
@@ -33,11 +33,7 @@ const MainWrapper = styled.div`
 `
 
 const Container = styled.main`
-  height: calc(100vh - 3rem);
-
-  ${ breakpoints.tablet } {
-    height: calc(100vh - 3.5rem);
-  }
+  height: calc(100vh - 3.5rem);
 `
 
 const Main = () => {

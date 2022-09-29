@@ -7,7 +7,7 @@ import CustomersContainer from './CustomersContainer'
 import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
-import Options from '../Options'
+import Options from '../buttons/Options'
 import Customer from './Customer'
 
 const Container = styled.article`

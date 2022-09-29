@@ -1,7 +1,7 @@
 import React from 'react'
 import IconSearch from './svg/IconSearch'
 import styled from '@emotion/styled'
-import Input from './Input'
+import Input from './forms/Input'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 

@@ -25,7 +25,7 @@ $app->post('/login', function (Request $request, Response $response) {
             $response_content = json_encode(array('message' => 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
         }
     } else {
-        $response_content = json_encode(array('error' => 'There is already an open session'), JSON_UNESCAPED_UNICODE);
+        $response_content = json_encode(array('already_session' => 'There is already an open session'), JSON_UNESCAPED_UNICODE);
     }
 
     $response->getBody()->write($response_content);

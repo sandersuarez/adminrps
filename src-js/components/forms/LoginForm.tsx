@@ -1,26 +1,28 @@
 import React, { FC, FormEventHandler, useEffect, useState } from 'react'
-import { Login, SessionMessage, SessionMessageTypes } from '../hooks/useSession'
+import { Login, SessionMessage, SessionMessageTypes } from '../../hooks/useSession'
 import Form from './Form'
 import Label from './Label'
 import Input from './Input'
-import Button from './buttons/Button'
-import ButtonTypes from '../shapes/ButtonTypes'
+import Button from '../buttons/Button'
+import ButtonTypes from '../../shapes/ButtonTypes'
 import styled from '@emotion/styled'
-import margins from '../styles/margins'
-import useValid from '../hooks/useValid'
+import margins from '../../styles/margins'
+import useValid from '../../hooks/useValid'
 import InputMessage from './InputMessage'
-import Alert from './Alert'
-import AlertTypes from '../shapes/AlertTypes'
+import Alert from '../Alert'
+import AlertTypes from '../../shapes/AlertTypes'
 import { css } from '@emotion/react'
-import breakpoints from '../styles/breakpoints'
+import breakpoints from '../../styles/breakpoints'
+import sizes from '../../styles/sizes'
+import colors from '../../styles/colors'
 
 const Container = styled.div`
   --lateral-margin: ${ margins.mobile.lateral };
 
   display: flex;
   width: 100%;
-  justify-content: center;
-  margin-top: ${ margins.mobile.bigVertical };
+  justify-content: start;
+  margin-top: ${ margins.mobile.mediumVertical };
   padding-left: var(--lateral-margin);
   padding-right: var(--lateral-margin);
 
@@ -28,20 +30,27 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    max-width: 51.2rem;
+    max-width: ${ sizes.inputMaxWidth };
   }
 
   h2 {
-    margin-bottom: 3.5rem;
+    display: none;
   }
 
-  ${ breakpoints.tablet } {
-    --lateral-margin: ${ margins.tablet.lateral };
-  }
+  ${ breakpoints.formLimits } {
+    margin-top: auto;
+    margin-bottom: auto;
+    justify-content: center;
 
-  ${ breakpoints.desktop } {
-    --lateral-margin: 6rem;
-    justify-content: start;
+    h2 {
+      display: inherit;
+      margin-bottom: ${ margins.mobile.bigVertical };
+    }
+
+    & > div {
+      padding: ${ margins.tablet.lateral };
+      border: 1px solid ${ colors.primary };
+    }
   }
 `
 
@@ -127,7 +136,7 @@ const LoginForm: FC<IProps> = ({ login, message }) => {
         <Form onSubmit={ handleSubmit } noValidate={ true }>
           {
             Object.values(errors2)[0] &&
-            <Alert css={ css`margin-bottom: 2rem` } message={ Object.values(errors2)[0] }
+            <Alert css={ css`margin-bottom: ${ margins.mobile.littleGap }` } message={ Object.values(errors2)[0] }
                    type={ AlertTypes.Warning } />
           }
           <div>

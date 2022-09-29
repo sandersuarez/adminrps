@@ -52,11 +52,21 @@ function useSession() {
     if ('user' in res) {
       setUser(res['user'])
     } else {
-      sessionClear()
       if ('time' in res) {
+        sessionClear()
         setMessage({ content: res['time'], type: SessionMessageTypes.Info })
       } else if ('forbidden' in res) {
+        sessionClear()
         setMessage({ content: res['forbidden'], type: SessionMessageTypes.Error })
+        if (console && console.error) {
+          console.error(res['forbidden'])
+        }
+      } else if ('error' in res) {
+        setUser(undefined)
+        setMessage({ content: res['error'], type: SessionMessageTypes.Error })
+        if (console && console.error) {
+          console.error(res['error'])
+        }
       }
     }
   }
@@ -74,14 +84,18 @@ function useSession() {
         setMessage({ content: res['message'], type: SessionMessageTypes.Warning })
       } else if ('error' in res) {
         setMessage({ content: res['error'], type: SessionMessageTypes.Error })
+        if (console && console.error) {
+          console.error(res['error'])
+        }
+      } else if ('already_session' in res) {
+        sessionCheck()
       } else {
         setUser(res['user'])
       }
     })
   }
 
-  const logout = () => doLogoutRequest()
-    .then(() => setUser(undefined))
+  const logout = () => doLogoutRequest().then(sessionClear)
 
   return { user, message, login, sessionRenew, logout }
 }

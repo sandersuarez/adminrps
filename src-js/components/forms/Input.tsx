@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import styled from '@emotion/styled'
-import colors from '../styles/colors'
+import colors from '../../styles/colors'
 import { HTMLMotionProps, motion } from 'framer-motion'
 
 

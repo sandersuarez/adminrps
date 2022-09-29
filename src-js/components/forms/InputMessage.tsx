@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import styled from '@emotion/styled'
-import margins from '../styles/margins'
-import colors from '../styles/colors'
+import margins from '../../styles/margins'
+import colors from '../../styles/colors'
 
 const Container = styled(motion.p)`
-  margin-top: 0;
-  margin-bottom: ${ margins.mobile.littleGap };
+  margin-top: ${ margins.mobile.littleGap };
+  margin-bottom: 0;
   color: ${ colors.danger };
 `
 

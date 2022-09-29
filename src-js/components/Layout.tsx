@@ -13,7 +13,7 @@ const Container = styled.div`
   h2 {
     ${ fonts.title }
     margin-top: 0;
-    margin-bottom: ${ margins.mobile.mediumVertical };
+    margin-bottom: ${ margins.mobile.vertical };
   }
 
   h3 {

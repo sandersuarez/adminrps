@@ -1,12 +1,12 @@
 import React from 'react'
 import styled from '@emotion/styled'
-import breakpoints from '../styles/breakpoints'
+import breakpoints from '../../styles/breakpoints'
 import Input from './Input'
-import Button from './buttons/Button'
+import Button from '../buttons/Button'
 import Label from './Label'
-import margins from '../styles/margins'
+import margins from '../../styles/margins'
 import Form from './Form'
-import ButtonTypes from '../shapes/ButtonTypes'
+import ButtonTypes from '../../shapes/ButtonTypes'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
