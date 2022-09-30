@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
@@ -11,7 +11,7 @@ import OrdersSection from './sections/OrdersSection'
 import Settings from './sections/Settings'
 import useSession from '../hooks/useSession'
 import LoginForm from './forms/LoginForm'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import ErrorPage from './ErrorPage'
 
 const MainWrapper = styled.div`
@@ -38,8 +38,11 @@ const Container = styled.main`
 
 const Main = () => {
   const { user, message, login, sessionRenew, logout } = useSession()
+  const location = useLocation()
   const [section, setSection] = useState<Sections>(Sections.Home)
   const [productsArticle, setProductsArticle] = useState<string>('menu')
+
+  useEffect(sessionRenew, [location])
 
   const handleSetSection = (value: (((prevState: Sections) => Sections) | Sections)) => {
 

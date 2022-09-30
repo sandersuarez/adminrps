@@ -8,8 +8,10 @@ export interface Login {
   Response: { user: User } | { message: string } | { error: string }
 }
 
+export type ForbidReasons = { no_logged: string } | { forbidden: string } | { time: string }
+
 export interface Session {
-  Response: { user: User } | { no_logged: string } | { forbidden: string } | { time: string }
+  Response: { user: User } | ForbidReasons
 }
 
 export enum SessionMessageTypes {
@@ -42,10 +44,24 @@ function useSession() {
 
   const sessionCheck = () => {
     doSessionRequest().then(res => handleSessionInfo(res))
+      .catch(reason => {
+        setUser(undefined)
+        setMessage({ content: reason, type: SessionMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
   }
 
   const sessionRenew = () => {
     doSessionRenewRequest().then(res => handleSessionInfo(res))
+      .catch(reason => {
+        setUser(undefined)
+        setMessage({ content: reason, type: SessionMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
   }
 
   const handleSessionInfo = (res: Session['Response']) => {
@@ -71,12 +87,6 @@ function useSession() {
     }
   }
 
-  useEffect(() => {
-    sessionRenew()
-    sessionInterval.current = window.setInterval(sessionCheck, 60000)
-    return sessionClear
-  }, [])
-
   const login = (credentials: Login['Request']) => {
     setMessage(undefined)
     doLoginRequest(credentials).then(res => {
@@ -92,10 +102,21 @@ function useSession() {
       } else {
         setUser(res['user'])
       }
+    }).catch(reason => {
+      setMessage({ content: reason, type: SessionMessageTypes.Error })
+      if (console && console.error) {
+        console.error(reason)
+      }
     })
   }
 
   const logout = () => doLogoutRequest().then(sessionClear)
+
+  useEffect(() => {
+    sessionRenew()
+    sessionInterval.current = window.setInterval(sessionCheck, 60000)
+    return sessionClear
+  }, [])
 
   return { user, message, login, sessionRenew, logout }
 }
