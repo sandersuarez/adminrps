@@ -21,6 +21,7 @@ export enum SessionMessageTypes {
 }
 
 export type SessionMessage = Message<SessionMessageTypes>
+export type SessionCheckType = (action?: () => void) => void
 
 /**
  * Hook that manages the app user session. Checks the session, creates one by the login method, and destroys it by
@@ -42,8 +43,13 @@ function useSession() {
     sessionInterval.current = undefined
   }
 
-  const sessionCheck = () => {
-    doSessionRequest().then(res => handleSessionInfo(res))
+  const sessionCheck: SessionCheckType = (action) => {
+    doSessionRequest().then(res => {
+      handleSessionInfo(res)
+      if (!('time' in res || 'forbidden' in res || 'error' in res) && action) {
+        action()
+      }
+    })
       .catch(reason => {
         setUser(undefined)
         setMessage({ content: reason, type: SessionMessageTypes.Error })
@@ -118,7 +124,7 @@ function useSession() {
     return sessionClear
   }, [])
 
-  return { user, message, login, sessionRenew, logout }
+  return { user, message, login, sessionCheck, sessionRenew, logout }
 }
 
 export default useSession

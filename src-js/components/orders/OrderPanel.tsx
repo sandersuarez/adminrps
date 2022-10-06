@@ -50,7 +50,6 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
   const [editMode, setEditMode] = React.useState<boolean>(false)
 
   const handleExitClick = () => {
-    handleCloseSidePanel()
     setEditMode(false)
   }
 

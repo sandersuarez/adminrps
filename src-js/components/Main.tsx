@@ -37,7 +37,7 @@ const Container = styled.main`
 `
 
 const Main = () => {
-  const { user, message, login, sessionRenew, logout } = useSession()
+  const { user, message, login, sessionCheck, sessionRenew, logout } = useSession()
   const location = useLocation()
   const [section, setSection] = useState<Sections>(Sections.Home)
   const [productsArticle, setProductsArticle] = useState<string>('menu')
@@ -69,7 +69,7 @@ const Main = () => {
           user ?
             <>
               <Routes>
-                <Route index element={ <Home logout={ logout } /> } />
+                <Route index element={ <Home logout={ logout } sessionCheck={ sessionCheck } /> } />
                 <Route path={ 'products' } element={ <ProductsSection article={ productsArticle }
                                                                       setArticle={ handleSetProductsArticle } /> } />
                 <Route path={ 'customers' } element={ <CustomersSection /> } />

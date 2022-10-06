@@ -10,6 +10,8 @@ import OrderPanel from '../orders/OrderPanel'
 import { css } from '@emotion/react'
 import colors from '../../styles/colors'
 import CustomersSelection from '../customers/CustomersSelection'
+import { SessionCheckType } from '../../hooks/useSession'
+import DraftPanel from '../DraftPanel'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -43,17 +45,24 @@ const Container = styled.section`
   }
 `
 
+enum Panels {
+  Drafts = 'Drafts',
+  Orders = 'Orders',
+}
+
 interface IProps {
   logout: () => void
+  sessionCheck: SessionCheckType
 }
 
 /**
  * This component is the main section of the application, the home page. It contains the welcome message for the user,
  * the logout button, the active orders component and the drafts component.
  */
-const Home: FC<IProps> = ({ logout }) => {
+const Home: FC<IProps> = ({ logout, sessionCheck }) => {
   const [openFirstSidePanel, setOpenFirstSidePanel] = React.useState<boolean>(false)
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
+  const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
 
   const handleOpenFirstSidePanel = () => {
     setOpenFirstSidePanel(true)
@@ -75,6 +84,22 @@ const Home: FC<IProps> = ({ logout }) => {
 
   }
 
+  let mainPanel
+  switch (firstSidePanel) {
+    case Panels.Orders:
+      mainPanel = <OrderPanel
+        handleCloseSidePanel={ handleCloseFirstSidePanel }
+        handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+      />
+      break
+    default:
+      mainPanel = <DraftPanel
+        handleCloseSidePanel={ handleCloseFirstSidePanel }
+        handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+      />
+      break
+  }
+
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
       <HomeWrapper>
@@ -85,13 +110,7 @@ const Home: FC<IProps> = ({ logout }) => {
       <PanelContainer
         css={ auxPanelStyles }
         open={ openFirstSidePanel }
-        mainChildren=
-          {
-            <OrderPanel
-              handleCloseSidePanel={ handleCloseFirstSidePanel }
-              handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
-            />
-          }
+        mainChildren={ mainPanel }
         sideChildren={ <CustomersSelection handleCloseSidePanel={ handleCloseSecondSidePanel } /> }
         openSidePanel={ openSecondSidePanel }
         border={ false }
