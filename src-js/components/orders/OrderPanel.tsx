@@ -11,13 +11,7 @@ import { css } from '@emotion/react'
 import Options from '../buttons/Options'
 import TitleWrapper from '../TitleWrapper'
 import ExitButton from '../buttons/ExitButton'
-
-const FieldWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-self: stretch;
-  row-gap: ${ margins.mobile.vertical };
-`
+import FieldWrapper from '../forms/FieldWrapper'
 
 const Container = styled.section`
   display: flex;

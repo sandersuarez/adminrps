@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 import colors from '../../styles/colors'
 import { HTMLMotionProps, motion } from 'framer-motion'
 
-
 /**
  * Component that defines a custom input to be reused across the application
  */

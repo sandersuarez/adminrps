@@ -11,6 +11,7 @@ import { css } from '@emotion/react'
 import { NavLink, NavLinkProps } from 'react-router-dom'
 
 const Wrapper = styled.nav`
+  border-top: 1px solid #d9d9d9;
   background-color: ${ colors.menu };
   flex-basis: 6.5rem;
   flex-shrink: 0;

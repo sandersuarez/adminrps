@@ -106,7 +106,7 @@ function add_draft($input_data)
     }
 
     if (array_key_exists('codcustomer', $input_data) && !filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
-        return array('message' => 'The draft code is invalid');
+        return array('message' => 'The customer code is invalid');
 
     if (array_key_exists('namecustomertmp', $input_data)) {
         $input_data['namecustomertmp'] = trim($input_data['namecustomertmp']);

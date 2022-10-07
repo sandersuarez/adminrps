@@ -13,11 +13,6 @@ const Form = styled.form`
     flex-direction: column;
     align-self: stretch;
   }
-
-  input {
-    align-self: stretch;
-    margin-top: ${ margins.mobile.vertical };
-  }
 `
 
 export default Form

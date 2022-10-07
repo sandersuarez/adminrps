@@ -12,6 +12,7 @@ import colors from '../../styles/colors'
 import CustomersSelection from '../customers/CustomersSelection'
 import { SessionCheckType } from '../../hooks/useSession'
 import DraftPanel from '../DraftPanel'
+import useDrafts from '../../hooks/useDrafts'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -64,6 +65,16 @@ const Home: FC<IProps> = ({ logout, sessionCheck }) => {
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
 
+  const {
+    individualMessage: indDraftMessage,
+    newDraftID,
+    draft,
+    addingDraft,
+    setNewDraftID,
+    addDraft,
+    getDraft,
+  } = useDrafts(sessionCheck)
+
   const handleOpenFirstSidePanel = () => {
     setOpenFirstSidePanel(true)
   }
@@ -96,6 +107,12 @@ const Home: FC<IProps> = ({ logout, sessionCheck }) => {
       mainPanel = <DraftPanel
         handleCloseSidePanel={ handleCloseFirstSidePanel }
         handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+        indDraftMessage={ indDraftMessage }
+        newDraftID={ newDraftID }
+        setNewDraftID={setNewDraftID}
+        draft={ draft }
+        addDraft={ addDraft }
+        addingDraft={ addingDraft }
       />
       break
   }

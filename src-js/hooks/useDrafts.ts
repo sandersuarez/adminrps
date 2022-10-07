@@ -1,6 +1,6 @@
 import { SessionCheckType, ForbidReasons } from './useSession'
 import Message from '../shapes/Message'
-import { useFetchWith } from './useFetch'
+import { buildParametrizedUrl, useFetch, useFetchWith } from './useFetch'
 import { useState } from 'react'
 
 // noinspection SpellCheckingInspection
@@ -30,6 +30,14 @@ export interface AddDraft {
     | ForbidReasons
 }
 
+export interface GetDrafts {
+  Response:
+    { drafts: { draft: Draft & DraftContent }[] }
+    | { message: string }
+    | { error: string }
+    | ForbidReasons
+}
+
 // noinspection SpellCheckingInspection
 export interface GetDraft {
   Request: { coddraft: number },
@@ -51,31 +59,40 @@ export type DraftMessage = Message<DraftMessageTypes>
  * Hook that manages the drafts' creation, modification and destruction using the crud api services.
  */
 function useDrafts(sessionCheck: SessionCheckType) {
-  const { doRequest: doAddDraftRequest } =
+
+  const { doRequest: doAddDraftRequest, pending: addingDraft } =
     useFetchWith.bodyParams<AddDraft['Request'], AddDraft['Response']>('api/add_draft')
+  const { doRequest: doGetDraftsRequest } = useFetch('api/obtain_drafts')
+
+  // noinspection SpellCheckingInspection
+  const { doRequest: doGetDraftRequest } = useFetchWith.urlPlaceholders<GetDraft['Request'], GetDraft['Response']>(
+    buildParametrizedUrl`api/obtain_draft/${ 'coddraft' }`,
+  )
 
   const [newDraftID, setNewDraftID] = useState<number>()
-  const [message, setMessage] = useState<DraftMessage>()
+  const [individualMessage, setIndividualMessage] = useState<DraftMessage>()
+  const [collectiveMessage, setCollectiveMessage] = useState<DraftMessage>()
+  const [draft, setDraft] = useState<Draft & DraftContent>()
 
   const addDraft = (data: AddDraft['Request']) => {
     sessionCheck(() => {
-      setMessage(undefined)
+      setIndividualMessage(undefined)
       doAddDraftRequest(data).then(res => {
         if ('success_message' in res) {
           // noinspection SpellCheckingInspection
           setNewDraftID(res['coddraft'])
         } else if ('message' in res) {
-          setMessage({ content: res['message'], type: DraftMessageTypes.Warning })
+          setIndividualMessage({ content: res['message'], type: DraftMessageTypes.Warning })
         } else if ('error' in res) {
-          setMessage({ content: res['error'], type: DraftMessageTypes.Error })
+          setIndividualMessage({ content: res['error'], type: DraftMessageTypes.Error })
           if (console && console.error) {
             console.error(res['error'])
           }
         } else if ('overflow' in res) {
-          setMessage({ content: res['overflow'], type: DraftMessageTypes.Error })
+          setIndividualMessage({ content: res['overflow'], type: DraftMessageTypes.Error })
         }
       }).catch(reason => {
-        setMessage({ content: reason, type: DraftMessageTypes.Error })
+        setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
         if (console && console.error) {
           console.error(reason)
         }
@@ -83,14 +100,33 @@ function useDrafts(sessionCheck: SessionCheckType) {
     })
   }
 
-  const getDraft = () => {
+  const getDrafts = () => {
     sessionCheck(() => {
-      setMessage(undefined)
-
+      setCollectiveMessage(undefined)
     })
   }
 
-  return { newDraftID, message, addDraft }
+  const getDraft = (draftID: number) => {
+    sessionCheck(() => {
+      setIndividualMessage(undefined)
+      // noinspection SpellCheckingInspection
+      doGetDraftRequest({ coddraft: draftID }).then((res) => {
+        if ('draft' in res) {
+          setNewDraftID(undefined)
+          setDraft(res['draft'])
+        } else if ('message' in res) {
+          setIndividualMessage({ content: res['message'], type: DraftMessageTypes.Warning })
+        } else if ('error' in res) {
+          setIndividualMessage({ content: res['error'], type: DraftMessageTypes.Error })
+          if (console && console.error) {
+            console.error(res['error'])
+          }
+        }
+      })
+    })
+  }
+
+  return { newDraftID, individualMessage, draft, addingDraft, setNewDraftID, addDraft, getDraft }
 }
 
 export default useDrafts

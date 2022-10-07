@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
 import { css } from '@emotion/react'
-import React, { FC, useEffect } from 'react'
+import React, { EventHandler, FC, FormEventHandler, useEffect } from 'react'
 import TitleWrapper from './TitleWrapper'
 import ExitButton from './buttons/ExitButton'
 import Options from './buttons/Options'
@@ -11,13 +11,11 @@ import OrderProductsTable from './orders/OrderProductsTable'
 import Label from './forms/Label'
 import Input from './forms/Input'
 import Form from './forms/Form'
-
-const FieldWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-self: stretch;
-  row-gap: ${ margins.mobile.vertical };
-`
+import { AddDraft, Draft, DraftContent, DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
+import AlertTypes from '../shapes/AlertTypes'
+import Alert from './Alert'
+import { add } from 'lodash'
+import FieldWrapper from './forms/FieldWrapper'
 
 const Container = styled.section`
   display: flex;
@@ -28,43 +26,105 @@ const Container = styled.section`
   p {
     margin: 0;
   }
+
+  ${ Options } {
+    margin-top: ${ margins.mobile.mediumVertical };
+    flex-direction: initial;
+  }
 `
 
 interface DraftSectionProps {
   draftID?: number
   handleCloseSidePanel: () => void
   handleOpenSecondSidePanel: () => void
+  indDraftMessage: DraftMessage | undefined
+  newDraftID: number | undefined
+  setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
+  draft: (Draft & DraftContent) | undefined
+  addDraft: (data: AddDraft['Request']) => void
+  addingDraft: boolean
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
   {
-    draftID,
     handleCloseSidePanel,
     handleOpenSecondSidePanel,
+    indDraftMessage,
+    newDraftID,
+    setNewDraftID,
+    draft,
+    addDraft,
+    addingDraft,
   }) => {
-  const [newMode, setNewMode] = React.useState<boolean | undefined>(undefined)
 
-  useEffect(() => {
-    if (draftID) {
-      setNewMode(false)
-    } else {
-      setNewMode(true)
+  const handleBlur: FormEventHandler<HTMLInputElement> = (e) => {
+    if (newDraftID === undefined && draft === undefined && !addingDraft) {
+      addDraft({})
     }
-  }, [])
+    if (newDraftID !== undefined) {
+      console.log(newDraftID)
+    }
+  }
+
+  const handleClose = () => {
+    handleCloseSidePanel()
+    setNewDraftID(undefined)
+  }
+
+  let DraftID
+  if (draft !== undefined) {
+    // noinspection SpellCheckingInspection
+    DraftID = draft['coddraft']
+  }
 
   return (
     <Container>
       <TitleWrapper>
+        <h2>{ draft ? 'Borrador ' + DraftID : 'Nuevo pedido' }</h2>
+        <ExitButton onClick={ handleClose }>
+          <i className={ 'bi bi-x' } />
+        </ExitButton>
         {
-          newMode !== undefined &&
-          <>
-            <h2>{ newMode ? 'Nuevo Pedido' : 'Borrador: '}</h2>
-            <ExitButton onClick={ handleCloseSidePanel }>
-              <i className={ 'bi bi-x' } />
-            </ExitButton>
-          </>
+          indDraftMessage && indDraftMessage.type === DraftMessageTypes.Error &&
+          <Alert message={ indDraftMessage.content + '. Contacte con el administrador.' }
+                 type={ AlertTypes.Error } />
+        }
+        {
+          indDraftMessage && indDraftMessage.type === DraftMessageTypes.Warning &&
+          <Alert message={ indDraftMessage.content } type={ AlertTypes.Warning } />
         }
       </TitleWrapper>
+      <Form>
+        <FieldWrapper>
+          <Label htmlFor={ 'customer-name' }>{ 'Nombre del cliente:' }</Label>
+          <Input
+            type={ 'text' }
+            name={ 'customer-name' }
+            id={ 'customer-name' }
+            maxLength={ 60 }
+            onBlur={ handleBlur }
+          />
+        </FieldWrapper>
+        <FieldWrapper>
+          <Label htmlFor={ 'customer-phone' }>{ 'Teléfono del cliente:' }</Label>
+          <Input
+            type={ 'tel' }
+            name={ 'customer-phone' }
+            id={ 'customer-phone' }
+            maxLength={ 9 }
+            onBlur={ handleBlur }
+          />
+        </FieldWrapper>
+        <Button customType={ ButtonTypes.Primary }>{ 'Buscar cliente' }</Button>
+        <FieldWrapper>
+          <Label htmlFor={ 'pick-up-hour' }>{ 'Hora aproximada de recogida:' }</Label>
+          <Input type={ 'time' } name={ 'pick-up-hour' } id={ 'pick-up-hour' } />
+        </FieldWrapper>
+        <Options>
+          <Button customType={ ButtonTypes.Danger }>{ 'Cancelar' }</Button>
+          <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
+        </Options>
+      </Form>
     </Container>
   )
 }

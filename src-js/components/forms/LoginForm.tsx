@@ -15,6 +15,7 @@ import { css } from '@emotion/react'
 import breakpoints from '../../styles/breakpoints'
 import sizes from '../../styles/sizes'
 import colors from '../../styles/colors'
+import FieldWrapper from './FieldWrapper'
 
 const Container = styled.div`
   --lateral-margin: ${ margins.mobile.lateral };
@@ -139,32 +140,36 @@ const LoginForm: FC<IProps> = ({ login, message }) => {
             <Alert css={ css`margin-bottom: ${ margins.mobile.littleGap }` } message={ Object.values(errors2)[0] }
                    type={ AlertTypes.Warning } />
           }
-          <div>
+          <FieldWrapper>
             <Label htmlFor={ 'username' }>{ 'Usuario:' }</Label>
-            <Input
-              type={ 'text' }
-              id={ 'username' }
-              name={ 'username' }
-              maxLength={ 60 }
-              onChange={ handleChange }
-              onBlur={ handleChange }
-              valid={ errors1['username'] === undefined }
-            />
-            <InputMessage message={ errors1['username'] } />
-          </div>
-          <div>
+            <div>
+              <Input
+                type={ 'text' }
+                id={ 'username' }
+                name={ 'username' }
+                maxLength={ 60 }
+                onChange={ handleChange }
+                onBlur={ handleChange }
+                valid={ errors1['username'] === undefined }
+              />
+              <InputMessage message={ errors1['username'] } />
+            </div>
+          </FieldWrapper>
+          <FieldWrapper>
             <Label htmlFor={ 'password' }>{ 'Contraseña:' }</Label>
-            <Input
-              type={ 'password' }
-              id={ 'password' }
-              name={ 'password' }
-              maxLength={ 8 }
-              onChange={ handleChange }
-              onBlur={ handleChange }
-              valid={ errors1['password'] === undefined }
-            />
-            <InputMessage message={ errors1['password'] } />
-          </div>
+            <div>
+              <Input
+                type={ 'password' }
+                id={ 'password' }
+                name={ 'password' }
+                maxLength={ 8 }
+                onChange={ handleChange }
+                onBlur={ handleChange }
+                valid={ errors1['password'] === undefined }
+              />
+              <InputMessage message={ errors1['password'] } />
+            </div>
+          </FieldWrapper>
           <Button customType={ ButtonTypes.Primary }>{ 'Iniciar Sesión' }</Button>
         </Form>
       </div>
