@@ -1,20 +1,17 @@
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
-import { css } from '@emotion/react'
-import React, { EventHandler, FC, FormEventHandler, useEffect } from 'react'
+import React, { FC, FormEventHandler} from 'react'
 import TitleWrapper from './TitleWrapper'
 import ExitButton from './buttons/ExitButton'
 import Options from './buttons/Options'
 import Button from './buttons/Button'
 import ButtonTypes from '../shapes/ButtonTypes'
-import OrderProductsTable from './orders/OrderProductsTable'
 import Label from './forms/Label'
 import Input from './forms/Input'
 import Form from './forms/Form'
 import { AddDraft, Draft, DraftContent, DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import Alert from './Alert'
-import { add } from 'lodash'
 import FieldWrapper from './forms/FieldWrapper'
 
 const Container = styled.section`
@@ -37,7 +34,7 @@ interface DraftSectionProps {
   draftID?: number
   handleCloseSidePanel: () => void
   handleOpenSecondSidePanel: () => void
-  indDraftMessage: DraftMessage | undefined
+  message: DraftMessage | undefined
   newDraftID: number | undefined
   setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
   draft: (Draft & DraftContent) | undefined
@@ -49,7 +46,7 @@ const DraftPanel: FC<DraftSectionProps> = (
   {
     handleCloseSidePanel,
     handleOpenSecondSidePanel,
-    indDraftMessage,
+    message,
     newDraftID,
     setNewDraftID,
     draft,
@@ -85,13 +82,13 @@ const DraftPanel: FC<DraftSectionProps> = (
           <i className={ 'bi bi-x' } />
         </ExitButton>
         {
-          indDraftMessage && indDraftMessage.type === DraftMessageTypes.Error &&
-          <Alert message={ indDraftMessage.content + '. Contacte con el administrador.' }
+          message && message.type === DraftMessageTypes.Error &&
+          <Alert message={ message.content + '. Contacte con el administrador.' }
                  type={ AlertTypes.Error } />
         }
         {
-          indDraftMessage && indDraftMessage.type === DraftMessageTypes.Warning &&
-          <Alert message={ indDraftMessage.content } type={ AlertTypes.Warning } />
+          message && message.type === DraftMessageTypes.Warning &&
+          <Alert message={ message.content } type={ AlertTypes.Warning } />
         }
       </TitleWrapper>
       <Form>

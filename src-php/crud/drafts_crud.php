@@ -22,7 +22,7 @@ function obtain_drafts()
         if ($result) {
             $answer = array('drafts' => $result);
         } else {
-            $answer = array('message' => 'There are no drafts');
+            $answer = array('empty' => 'No hay borradores.');
         }
 
         clear_query_data($query, $connection);

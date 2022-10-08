@@ -1,8 +1,9 @@
+// noinspection SpellCheckingInspection
 interface User {
-  id: number
-  name: string
-  iva: string
-  lastKeyDate: string
+  coduser: number
+  nameuser: string
+  ivaprefuser: string
+  datlastkeyuser: string
 }
 
 export default User

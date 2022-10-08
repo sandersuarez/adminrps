@@ -69,7 +69,10 @@ const Main = () => {
           user ?
             <>
               <Routes>
-                <Route index element={ <Home logout={ logout } sessionCheck={ sessionCheck } /> } />
+                <Route
+                  index
+                  element={ <Home username={ user.nameuser } logout={ logout } sessionCheck={ sessionCheck } /> }
+                />
                 <Route path={ 'products' } element={ <ProductsSection article={ productsArticle }
                                                                       setArticle={ handleSetProductsArticle } /> } />
                 <Route path={ 'customers' } element={ <CustomersSection /> } />

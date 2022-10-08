@@ -7,7 +7,7 @@ import margins from '../styles/margins'
 
 interface NoteContainerProps {
   className?: string
-  noteList: ReactElement<NoteProps>[]
+  noteList: ReactElement<NoteProps>[] | undefined
 }
 
 const Container = styled.div`

@@ -32,7 +32,7 @@ export interface AddDraft {
 
 export interface GetDrafts {
   Response:
-    { drafts: { draft: Draft & DraftContent }[] }
+    { drafts: (Draft & DraftContent)[] }
     | { message: string }
     | { error: string }
     | ForbidReasons
@@ -49,6 +49,7 @@ export interface GetDraft {
 }
 
 export enum DraftMessageTypes {
+  Info = 'info',
   Warning = 'warning',
   Error = 'error',
 }
@@ -62,7 +63,8 @@ function useDrafts(sessionCheck: SessionCheckType) {
 
   const { doRequest: doAddDraftRequest, pending: addingDraft } =
     useFetchWith.bodyParams<AddDraft['Request'], AddDraft['Response']>('api/add_draft')
-  const { doRequest: doGetDraftsRequest } = useFetch('api/obtain_drafts')
+
+  const { doRequest: doGetDraftsRequest } = useFetch<GetDrafts['Response']>('api/obtain_drafts')
 
   // noinspection SpellCheckingInspection
   const { doRequest: doGetDraftRequest } = useFetchWith.urlPlaceholders<GetDraft['Request'], GetDraft['Response']>(
@@ -73,6 +75,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
   const [individualMessage, setIndividualMessage] = useState<DraftMessage>()
   const [collectiveMessage, setCollectiveMessage] = useState<DraftMessage>()
   const [draft, setDraft] = useState<Draft & DraftContent>()
+  const [drafts, setDrafts] = useState<(Draft & DraftContent)[]>()
 
   const addDraft = (data: AddDraft['Request']) => {
     sessionCheck(() => {
@@ -103,6 +106,20 @@ function useDrafts(sessionCheck: SessionCheckType) {
   const getDrafts = () => {
     sessionCheck(() => {
       setCollectiveMessage(undefined)
+      doGetDraftsRequest().then((res) => {
+        if ('drafts' in res) {
+          setDrafts(res['drafts'])
+        } else if ('message' in res) {
+          setCollectiveMessage({ content: res['message'], type: DraftMessageTypes.Warning })
+        } else if ('empty' in res) {
+          setCollectiveMessage({ content: res['empty'], type: DraftMessageTypes.Info })
+        } else if ('error' in res) {
+          setCollectiveMessage({ content: res['error'], type: DraftMessageTypes.Error })
+          if (console && console.error) {
+            console.error(res['error'])
+          }
+        }
+      })
     })
   }
 
@@ -126,7 +143,19 @@ function useDrafts(sessionCheck: SessionCheckType) {
     })
   }
 
-  return { newDraftID, individualMessage, draft, addingDraft, setNewDraftID, addDraft, getDraft }
+  return {
+    newDraftID,
+    individualMessage,
+    collectiveMessage,
+    draft,
+    addingDraft,
+    drafts,
+    setNewDraftID,
+    setCollectiveMessage,
+    addDraft,
+    getDrafts,
+    getDraft,
+  }
 }
 
 export default useDrafts

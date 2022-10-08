@@ -2,7 +2,6 @@ import React, { FC } from 'react'
 import WelcomeLayer from '../WelcomeLayer'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
-import ActiveOrders from '../orders/ActiveOrders'
 import Drafts from '../Drafts'
 import margins from '../../styles/margins'
 import PanelContainer from '../PanelContainer'
@@ -13,6 +12,7 @@ import CustomersSelection from '../customers/CustomersSelection'
 import { SessionCheckType } from '../../hooks/useSession'
 import DraftPanel from '../DraftPanel'
 import useDrafts from '../../hooks/useDrafts'
+import Panels from '../../shapes/Panels'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -46,12 +46,8 @@ const Container = styled.section`
   }
 `
 
-enum Panels {
-  Drafts = 'Drafts',
-  Orders = 'Orders',
-}
-
 interface IProps {
+  username: string
   logout: () => void
   sessionCheck: SessionCheckType
 }
@@ -60,19 +56,22 @@ interface IProps {
  * This component is the main section of the application, the home page. It contains the welcome message for the user,
  * the logout button, the active orders component and the drafts component.
  */
-const Home: FC<IProps> = ({ logout, sessionCheck }) => {
+const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
   const [openFirstSidePanel, setOpenFirstSidePanel] = React.useState<boolean>(false)
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
 
   const {
     individualMessage: indDraftMessage,
+    collectiveMessage: colDraftMessage,
     newDraftID,
     draft,
+    drafts,
     addingDraft,
+    setCollectiveMessage: setColDraftMessage,
     setNewDraftID,
     addDraft,
-    getDraft,
+    getDrafts,
   } = useDrafts(sessionCheck)
 
   const handleOpenFirstSidePanel = () => {
@@ -107,22 +106,28 @@ const Home: FC<IProps> = ({ logout, sessionCheck }) => {
       mainPanel = <DraftPanel
         handleCloseSidePanel={ handleCloseFirstSidePanel }
         handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
-        indDraftMessage={ indDraftMessage }
+        message={ indDraftMessage }
         newDraftID={ newDraftID }
-        setNewDraftID={setNewDraftID}
+        setNewDraftID={ setNewDraftID }
         draft={ draft }
         addDraft={ addDraft }
         addingDraft={ addingDraft }
       />
       break
   }
-
+  /*<ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />*/
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
       <HomeWrapper>
-        <WelcomeLayer userName={ 'sandy' } logout={ logout } />
-        <ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />
-        <Drafts />
+        <WelcomeLayer userName={ username } logout={ logout } />
+        <Drafts
+          setFirstSidePanel={ setFirstSidePanel }
+          handleOpenSidePanel={ handleOpenFirstSidePanel }
+          message={ colDraftMessage }
+          setColMessage={ setColDraftMessage }
+          getDrafts={ getDrafts }
+          drafts={ drafts }
+        />
       </HomeWrapper>
       <PanelContainer
         css={ auxPanelStyles }
