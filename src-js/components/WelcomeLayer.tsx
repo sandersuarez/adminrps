@@ -12,6 +12,10 @@ const Container = styled.article`
   p {
     margin: 0;
   }
+  
+  button {
+    white-space: nowrap;
+  }
 
   ${ breakpoints.smallTablet } {
     justify-content: flex-start;

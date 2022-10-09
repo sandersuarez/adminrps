@@ -23,6 +23,13 @@ const MotionInput = styled(motion.input)`
     outline: none;
     box-shadow: none;
   }
+  
+  &:disabled {
+    opacity: 1;
+    box-shadow: none;
+    color: ${ colors.text };
+    background: ${ colors.menu };
+  }
 `
 
 interface IProps extends HTMLMotionProps<'input'> {

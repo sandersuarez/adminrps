@@ -12,7 +12,7 @@ interface NoteContainerProps {
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(24ch, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(20ch, 100%), 1fr));
   grid-auto-flow: row dense;
   gap: ${ margins.mobile.vertical };
 

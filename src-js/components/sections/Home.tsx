@@ -72,6 +72,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
     setNewDraftID,
     addDraft,
     getDrafts,
+    getDraft,
   } = useDrafts(sessionCheck)
 
   const handleOpenFirstSidePanel = () => {
@@ -126,6 +127,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           message={ colDraftMessage }
           setColMessage={ setColDraftMessage }
           getDrafts={ getDrafts }
+          getDraft={ getDraft }
           drafts={ drafts }
         />
       </HomeWrapper>

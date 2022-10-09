@@ -2,22 +2,7 @@ import { SessionCheckType, ForbidReasons } from './useSession'
 import Message from '../shapes/Message'
 import { buildParametrizedUrl, useFetch, useFetchWith } from './useFetch'
 import { useState } from 'react'
-
-// noinspection SpellCheckingInspection
-export type Draft = {
-  coddraft: number,
-  namecustomer?: string,
-  telcustomer?: string,
-}
-
-// noinspection SpellCheckingInspection
-export type DraftContent = {
-  namecustomertmp?: string,
-  telcustomertmp?: string,
-  pickuptime?: string,
-  codcustomer?: number,
-  products?: { codproduct: number, amountproduct: number, }[],
-}
+import Draft, { DraftContent } from '../shapes/Draft'
 
 // noinspection SpellCheckingInspection
 export interface AddDraft {
@@ -42,7 +27,7 @@ export interface GetDrafts {
 export interface GetDraft {
   Request: { coddraft: number },
   Response:
-    { draft: Draft & DraftContent }
+    { draft: (Draft & DraftContent)[] }
     | { message: string }
     | { error: string }
     | ForbidReasons
@@ -68,7 +53,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
 
   // noinspection SpellCheckingInspection
   const { doRequest: doGetDraftRequest } = useFetchWith.urlPlaceholders<GetDraft['Request'], GetDraft['Response']>(
-    buildParametrizedUrl`api/obtain_draft/${ 'coddraft' }`,
+    buildParametrizedUrl`api/obtain_draft?coddraft=${ 'coddraft' }`,
   )
 
   const [newDraftID, setNewDraftID] = useState<number>()
@@ -82,6 +67,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
       setIndividualMessage(undefined)
       doAddDraftRequest(data).then(res => {
         if ('success_message' in res) {
+          setDraft(undefined)
           // noinspection SpellCheckingInspection
           setNewDraftID(res['coddraft'])
         } else if ('message' in res) {
@@ -130,7 +116,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
       doGetDraftRequest({ coddraft: draftID }).then((res) => {
         if ('draft' in res) {
           setNewDraftID(undefined)
-          setDraft(res['draft'])
+          setDraft(res['draft'][0])
         } else if ('message' in res) {
           setIndividualMessage({ content: res['message'], type: DraftMessageTypes.Warning })
         } else if ('error' in res) {

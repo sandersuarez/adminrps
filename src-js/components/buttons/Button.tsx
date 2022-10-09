@@ -27,7 +27,6 @@ const Button = styled.button<IProps>(
     padding: .75em 1.25em;
     border-radius: 999rem;
     font-weight: bold;
-    white-space: nowrap;
 
     &[disabled] {
       opacity: .6

@@ -3,10 +3,11 @@ import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 import OrderProductsTable from './orders/OrderProductsTable'
-import { Draft, DraftContent, DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
+import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
+import Draft, { DraftContent } from '../shapes/Draft'
 
 const PickUpTime = styled.p`
-  --border-distance: .65em;
+  --border-distance: .85em;
   position: absolute;
   line-height: .85em;
   top: var(--border-distance);
@@ -23,11 +24,12 @@ const Container = styled.article`
   display: flex;
   flex-flow: column;
   background: ${ colors.section };
-  padding: .65em;
+  padding: .85em;
+  min-height: 6.05em;
 
   h3 {
     line-height: .8em;
-    margin-bottom: .4em;
+    margin-bottom: .85em;
   }
 
   p {
@@ -39,7 +41,7 @@ const Container = styled.article`
 
     &:nth-of-type(2) {
       line-height: .9em;
-      margin-top: .25em;
+      margin-top: .45em;
       margin-bottom: auto;
     }
   }
@@ -65,6 +67,7 @@ const Container = styled.article`
 
 export interface NoteProps {
   key: Key
+  id: string | undefined
   className?: string
   draft?: Draft & DraftContent
   order?: {}
@@ -78,6 +81,7 @@ export interface NoteProps {
 const Note: FC<NoteProps> = (
   {
     className: className,
+    id,
     draft,
     order,
     setColMessage,
@@ -91,22 +95,35 @@ const Note: FC<NoteProps> = (
       <>
         <h3>{ 'Borrador ' + draft.coddraft }</h3>
         {
-          draft.namecustomer !== undefined &&
+          draft.namecustomer !== null && draft.namecustomer !== undefined &&
           <p>{ draft.namecustomer }</p>
         }
         {
-          draft.namecustomertmp !== undefined &&
+          draft.namecustomertmp !== null && draft.namecustomertmp !== undefined &&
           <p>{ draft.namecustomertmp }</p>
         }
         {
-          draft.namecustomer !== undefined &&
-          <p>{ draft.namecustomer }</p>
+          (draft.namecustomer === null || draft.namecustomer === undefined) &&
+          (draft.namecustomertmp === null || draft.namecustomertmp === undefined) &&
+          <p><i>{ '(Sin nombre)' }</i></p>
         }
         {
-          draft.namecustomertmp !== undefined &&
-          <p>{ draft.namecustomertmp }</p>
+          draft.telcustomer !== null && draft.telcustomer !== undefined &&
+          <p>{ 'Teléfono: ' + draft.telcustomer }</p>
         }
-        <PickUpTime>{ draft.pickuptime }</PickUpTime>
+        {
+          draft.telcustomertmp !== null && draft.telcustomertmp !== undefined &&
+          <p>{ 'Teléfono: ' + draft.telcustomertmp }</p>
+        }
+        {
+          (draft.telcustomer === null || draft.telcustomer === undefined) &&
+          (draft.telcustomertmp === null || draft.telcustomertmp === undefined) &&
+          <p>{'Teléfono: '}<i>{ '(Sin teléfono)' }</i></p>
+        }
+        {
+          draft.pickuptime !== null && draft.pickuptime !== undefined &&
+          <PickUpTime>{ draft.pickuptime.substring(0, 5) }</PickUpTime>
+        }
       </>
   } else if (order !== undefined) {
     children =
@@ -124,7 +141,7 @@ const Note: FC<NoteProps> = (
     }
   }
 
-  return <Container className={ className } onClick={ onClick } children={ children } />
+  return <Container id={ id } className={ className } onClick={ onClick } children={ children } />
 }
 
 export default styled(Note)``

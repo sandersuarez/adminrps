@@ -16,6 +16,7 @@ const Container = styled.article<{ type?: AlertTypes }>(
     padding: .75em;
     border-radius: .5rem;
     border: 1px solid ${ colors.primary };
+    background: ${ colors.background };
 
     p {
       margin: 0;
