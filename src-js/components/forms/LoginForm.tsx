@@ -7,7 +7,7 @@ import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import styled from '@emotion/styled'
 import margins from '../../styles/margins'
-import useValid from '../../hooks/useValid'
+import useValid, { ValidEvents } from '../../hooks/useValid'
 import InputMessage from './InputMessage'
 import Alert from '../Alert'
 import AlertTypes from '../../shapes/AlertTypes'
@@ -62,8 +62,11 @@ interface IProps {
 
 const LoginForm: FC<IProps> = ({ login, message }) => {
 
-  const [serverError, setServerError] = useState<string | undefined>(undefined)
-  const [serverMessage, setServerMessage] = useState<string | undefined>(undefined)
+  const [serverError, setServerError] = useState<string>()
+  const [serverMessage, setServerMessage] = useState<string>()
+
+  const [username, setUsername] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
 
   const doLogin = () => {
     login({
@@ -73,12 +76,12 @@ const LoginForm: FC<IProps> = ({ login, message }) => {
   }
 
   const {
-    handleChange: handleValidChange,
+    validateField,
     values,
     errors1,
     errors2,
     setErrors2,
-    handleSubmit: handleValidSubmit,
+    commit: validateSubmit,
   } = useValid(doLogin)
 
   useEffect(() => {
@@ -95,7 +98,9 @@ const LoginForm: FC<IProps> = ({ login, message }) => {
       } else {
         setServerMessage(message.content)
       }
-    } else if (message?.type === SessionMessageTypes.Error) {
+    }
+
+    if (message?.type === SessionMessageTypes.Error) {
       if (serverMessage) {
         setServerMessage(undefined)
       }
@@ -104,20 +109,56 @@ const LoginForm: FC<IProps> = ({ login, message }) => {
   }, [message])
 
   const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
+    e.persist()
+
     if (serverMessage) {
       setServerMessage(undefined)
     }
-    handleValidChange(e)
+
+    const value = e.currentTarget.value
+    const name = e.currentTarget.name
+
+    let event
+    if (e.type === 'change') {
+      event = ValidEvents.Change
+    }
+    if (e.type === 'blur') {
+      event = ValidEvents.Blur
+    }
+
+    if (name === 'username') {
+      setUsername(value)
+      validateField({ name: 'username', value: username, event: event })
+    }
+    if (name === 'password') {
+      setPassword(value)
+      validateField({ name: 'password', value: password, event: event })
+    }
   }
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
+
     if (serverMessage) {
       setServerMessage(undefined)
     }
     if (serverError) {
       setServerError(undefined)
     }
-    handleValidSubmit(e)
+
+    new FormData(e.currentTarget).forEach((entry, name) => {
+      if (name === 'username') {
+        setUsername(entry.toString())
+      }
+      if (name === 'password') {
+        setPassword(entry.toString())
+      }
+    })
+
+    validateSubmit([
+      { name: 'username', value: username, event: ValidEvents.Submit },
+      { name: 'password', value: password, event: ValidEvents.Submit },
+    ])
   }
 
   return (

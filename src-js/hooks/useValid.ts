@@ -1,7 +1,9 @@
-import { FormEvent, FormEventHandler, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { forEach, omit } from 'lodash'
 
-type FieldsType = { name: string; value: string; e?: FormEvent<HTMLInputElement> }[] | any[]
+export enum ValidEvents { Change = 'Change', Blur = 'Blur', Submit = 'Submit'}
+
+type FieldsType = { name: string, value: string, event?: ValidEvents }
 
 /**
  * Hook that works as a utility to validate data.
@@ -21,7 +23,7 @@ const useValid = (callback: () => void) => {
     }
   }, [values, errors2, submitState])
 
-  const validate = (fields: FieldsType) => {
+  const validate = (fields: FieldsType[]) => {
     if (validate1(fields)) {
       validate2(fields)
     }
@@ -30,20 +32,21 @@ const useValid = (callback: () => void) => {
   /**
    * First stage validation
    */
-  const validate1 = (fields: FieldsType) => {
+  const validate1 = (fields: FieldsType[]) => {
 
     let tmpErrors = { ...errors1 }
 
     forEach(fields, (element) => {
 
       // If the event is from change, the second stage errors get reset
-      if (element.e !== undefined && element.e.type === 'change') {
+      if (element.event === ValidEvents.Change) {
         setErrors2({})
       }
 
       switch (element.name) {
         case 'username':
-          if (element.value.length == 0 && (element.e === undefined || element.e.type === 'blur')) {
+          if (element.value.length == 0 &&
+            (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
             tmpErrors = {
               ...tmpErrors,
               username: 'El nombre de usuario es obligatorio',
@@ -54,7 +57,8 @@ const useValid = (callback: () => void) => {
           break
 
         case 'password':
-          if (element.value.length == 0 && (element.e === undefined || element.e.type === 'blur')) {
+          if (element.value.length == 0 &&
+            (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
             tmpErrors = {
               ...tmpErrors,
               password: 'La contraseña es obligatoria',
@@ -78,14 +82,14 @@ const useValid = (callback: () => void) => {
   /**
    * Second stage validation
    */
-  const validate2 = (fields: FieldsType) => {
+  const validate2 = (fields: FieldsType[]) => {
 
     let tmpErrors = { ...errors2 }
 
     forEach(fields, (element) => {
       switch (element.name) {
         case 'username':
-          if (element.e === undefined && element.value.length > 60) {
+          if (element.event === ValidEvents.Submit && element.value.length > 60) {
             tmpErrors = {
               ...tmpErrors,
               username: 'El nombre usuario o la contraseña son incorrectos',
@@ -96,7 +100,7 @@ const useValid = (callback: () => void) => {
           break
 
         case 'password':
-          if (element.e === undefined && element.value.length != 8) {
+          if (element.event === ValidEvents.Submit && element.value.length != 8) {
             tmpErrors = {
               ...tmpErrors,
               password: 'El nombre usuario o la contraseña son incorrectos',
@@ -115,33 +119,21 @@ const useValid = (callback: () => void) => {
     setErrors2(tmpErrors)
   }
 
-  const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
-    e.persist()
-
-    let name = e.currentTarget.name
-    let value = e.currentTarget.value
-
-    validate1([{ name, value, e }])
+  const validateField = (field: FieldsType) => {
+    validate1([field])
 
     setValues({
       ...values,
-      [name]: value,
+      [field.name]: field.value,
     })
   }
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
-    if (e) e.preventDefault()
+  const commit = (fields: FieldsType[]) => {
 
-    let fields: FieldsType = []
-
-    new FormData(e.currentTarget).forEach((entryVal, name) => {
-      let value = entryVal.toString()
-
-      fields.push({ name, value })
-
+    fields.forEach((field) => {
       setValues({
         ...values,
-        [name]: value,
+        [field.name]: field.value,
       })
     })
 
@@ -155,8 +147,8 @@ const useValid = (callback: () => void) => {
     errors2,
     setErrors1,
     setErrors2,
-    handleChange,
-    handleSubmit,
+    validateField,
+    commit,
   }
 }
 

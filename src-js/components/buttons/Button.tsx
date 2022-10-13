@@ -31,6 +31,12 @@ const Button = styled.button<IProps>(
     &[disabled] {
       opacity: .6
     }
+    
+    &:focus {
+      border: none;
+      outline: none;
+      opacity: inherit;
+    }
   `,
   ({ customType }) => {
     switch (customType) {
