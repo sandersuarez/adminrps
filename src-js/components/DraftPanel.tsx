@@ -9,11 +9,15 @@ import ButtonTypes from '../shapes/ButtonTypes'
 import Label from './forms/Label'
 import Input from './forms/Input'
 import Form from './forms/Form'
-import { AddDraft, DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
+import { AddDraft, DraftMessage, DraftMessageTypes, EditDraft } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import Alert from './Alert'
 import FieldWrapper from './forms/FieldWrapper'
 import Draft, { DraftContent } from '../shapes/Draft'
+import { css } from '@emotion/react'
+import useValid, { ValidEvents } from '../hooks/useValid'
+import drafts from './Drafts'
+import { assign } from 'lodash'
 
 const Container = styled.section`
   display: flex;
@@ -26,13 +30,15 @@ const Container = styled.section`
   }
 
   ${ Options } {
-    margin-top: ${ margins.mobile.mediumVertical };
     flex-direction: initial;
+
+    &:nth-last-of-type(1) {
+      margin-top: ${ margins.mobile.mediumVertical };
+    }
   }
 `
 
 interface DraftSectionProps {
-  draftID?: number
   handleCloseSidePanel: () => void
   handleOpenSecondSidePanel: () => void
   message: DraftMessage | undefined
@@ -40,6 +46,7 @@ interface DraftSectionProps {
   setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
   draft: (Draft & DraftContent) | undefined
   addDraft: (data: AddDraft['Request']) => void
+  editDraft: (data: EditDraft['Request']) => void
   addingDraft: boolean
 }
 
@@ -52,24 +59,100 @@ const DraftPanel: FC<DraftSectionProps> = (
     setNewDraftID,
     draft,
     addDraft,
+    editDraft,
     addingDraft,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>()
-  const [customerNameDisabled, setCustomerNameDisabled] = useState<boolean>(false)
-
   const [customerPhone, setCustomerPhone] = useState<string>()
-  const [customerPhoneDisabled, setCustomerPhoneDisabled] = useState<boolean>(false)
-
   const [pickUpTime, setPickUpTime] = useState<string>()
+  const [canSave, setCanSave] = useState<boolean>(true)
+
+  const doUpdateDraft = () => {
+    if (newDraftID === undefined && draft === undefined && !addingDraft) {
+      addDraft({})
+    } else {
+      if (!addingDraft) {
+        // noinspection SpellCheckingInspection
+        let data: EditDraft['Request'] = { coddraft: 0 }
+
+        if (newDraftID !== undefined) {
+          // noinspection SpellCheckingInspection
+          assign(data, { coddraft: newDraftID })
+
+          if (customerName !== undefined) {
+            // noinspection SpellCheckingInspection
+            assign(data, { namecustomertmp: customerName })
+          }
+
+          if (customerPhone !== undefined) {
+            // noinspection SpellCheckingInspection
+            assign(data, { telcustomertmp: customerPhone })
+          }
+
+          if (pickUpTime !== undefined) {
+            // noinspection SpellCheckingInspection
+            assign(data, { pickuptime: pickUpTime })
+          }
+        }
+
+        if (draft !== undefined) {
+          // noinspection SpellCheckingInspection
+          assign(data, { coddraft: draft.coddraft })
+
+          if (draft.codcustomer === null) {
+            if (customerName !== undefined && draft.namecustomertmp !== customerName.trim()) {
+              // noinspection SpellCheckingInspection
+              assign(data, { namecustomertmp: customerName.trim() })
+            }
+
+            if (customerPhone !== undefined && draft.telcustomertmp !== customerPhone.trim()) {
+              // noinspection SpellCheckingInspection
+              assign(data, { telcustomertmp: customerPhone.trim() })
+            }
+          }
+        }
+
+        editDraft(data)
+      }
+    }
+  }
+
+  const {
+    validateField,
+    values,
+    errors1,
+    errors2,
+    setErrors2,
+    commit,
+  } = useValid(doUpdateDraft)
+
+  const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
+    e.persist()
+
+    const value = e.currentTarget.value
+    const name = e.currentTarget.name
+
+    if (name === 'username') {
+      setCustomerName(value)
+    }
+    if (name === 'password') {
+      setCustomerPhone(value)
+    }
+    if (name === 'password') {
+      setPickUpTime(value)
+    }
+  }
 
   const handleBlur: FormEventHandler<HTMLInputElement> = (e) => {
     if (newDraftID === undefined && draft === undefined && !addingDraft) {
       addDraft({})
+    } else if (!addingDraft) {
+      doUpdateDraft()
     }
   }
 
-  const handleClose = () => {
+  const close = () => {
     handleCloseSidePanel()
     setNewDraftID(undefined)
   }
@@ -79,24 +162,18 @@ const DraftPanel: FC<DraftSectionProps> = (
 
       if (draft.namecustomertmp !== null) {
         setCustomerName(draft.namecustomertmp)
-        setCustomerNameDisabled(false)
       } else if (draft.namecustomer !== null) {
         setCustomerName(draft.namecustomer)
-        setCustomerNameDisabled(true)
       } else {
         setCustomerName(undefined)
-        setCustomerNameDisabled(false)
       }
 
       if (draft.telcustomertmp !== null) {
         setCustomerPhone(draft.telcustomertmp)
-        setCustomerPhoneDisabled(false)
       } else if (draft.telcustomer !== null) {
         setCustomerPhone(draft.telcustomer)
-        setCustomerPhoneDisabled(true)
       } else {
         setCustomerPhone(undefined)
-        setCustomerPhoneDisabled(false)
       }
 
       if (draft.pickuptime !== null) {
@@ -106,18 +183,19 @@ const DraftPanel: FC<DraftSectionProps> = (
       }
     } else if (newDraftID !== undefined) {
       setCustomerName(undefined)
-      setCustomerNameDisabled(false)
       setCustomerPhone(undefined)
-      setCustomerPhoneDisabled(false)
       setPickUpTime(undefined)
     }
   }, [newDraftID, draft])
 
+  const disableCustomerInputs = draft !== undefined && draft.codcustomer !== null
+
+  // noinspection SpellCheckingInspection
   return (
     <Container>
       <TitleWrapper>
         <h2>{ draft !== undefined ? 'Borrador ' + draft.coddraft : 'Nuevo pedido' }</h2>
-        <ExitButton onClick={ handleClose }>
+        <ExitButton onClick={ close }>
           <i className={ 'bi bi-x' } />
         </ExitButton>
       </TitleWrapper>
@@ -140,9 +218,10 @@ const DraftPanel: FC<DraftSectionProps> = (
               name={ 'customer-name' }
               id={ 'customer-name' }
               maxLength={ 60 }
+              onChange={ handleChange }
               onBlur={ handleBlur }
               defaultValue={ customerName }
-              disabled={ customerNameDisabled }
+              disabled={ disableCustomerInputs }
             />
           </FieldWrapper>
           <FieldWrapper>
@@ -152,19 +231,32 @@ const DraftPanel: FC<DraftSectionProps> = (
               name={ 'customer-phone' }
               id={ 'customer-phone' }
               maxLength={ 9 }
+              onChange={ handleChange }
               onBlur={ handleBlur }
               defaultValue={ customerPhone }
-              disabled={ customerPhoneDisabled }
+              disabled={ disableCustomerInputs }
             />
           </FieldWrapper>
-          <Button customType={ ButtonTypes.Primary }>{ 'Buscar cliente' }</Button>
-          <FieldWrapper>
+          <Options>
+            <Button customType={ ButtonTypes.Primary }>{ 'Buscar cliente' }</Button>
+            {
+              disableCustomerInputs &&
+              <Button customType={ ButtonTypes.Primary }>{ 'Nuevo cliente' }</Button>
+            }
+          </Options>
+          <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-hour' }>{ 'Hora aproximada de recogida:' }</Label>
-            <Input type={ 'time' } name={ 'pick-up-hour' } id={ 'pick-up-hour' } defaultValue={ pickUpTime } />
+            <Input
+              type={ 'time' }
+              name={ 'pick-up-hour' }
+              id={ 'pick-up-hour' }
+              defaultValue={ pickUpTime }
+              onChange={ handleChange }
+            />
           </FieldWrapper>
           <Options>
             <Button customType={ ButtonTypes.Danger }>{ 'Cancelar' }</Button>
-            <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
+            <Button customType={ ButtonTypes.Primary } disabled={ canSave }>{ 'Guardar pedido' }</Button>
           </Options>
         </Form>
       }
