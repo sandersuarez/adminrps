@@ -18,51 +18,51 @@ const Container = styled.article`
 `
 
 interface IProps {
-  handleCloseSidePanel: () => void
+  closeSidePanel: () => void
 }
 
-const Customers: FC<IProps> = ({ handleCloseSidePanel }) => {
+const Customers: FC<IProps> = ({ closeSidePanel }) => {
   return (
     <Container>
       <SearchBar />
       <Options>
         <Button customType={ ButtonTypes.Primary }>{ 'Seleccionar' }</Button>
-        <Button customType={ ButtonTypes.Secondary } onClick={ handleCloseSidePanel }>{ 'Cancelar' }</Button>
+        <Button customType={ ButtonTypes.Secondary } onClick={ closeSidePanel }>{ 'Cancelar' }</Button>
       </Options>
       <Alert message={ 'error' } type={ 'error' } />
       <CustomersContainer
         customerList=
           { [
             <Customer key={ 0 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 1 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 2 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 3 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 4 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 5 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 6 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 7 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 8 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 9 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 10 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 11 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 12 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 13 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
             <Customer key={ 14 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ handleCloseSidePanel } />,
+                      handleCloseSidePanel={ closeSidePanel } />,
           ] }
       />
       <Pagination />

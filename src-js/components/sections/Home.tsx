@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import WelcomeLayer from '../WelcomeLayer'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
@@ -60,6 +60,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
   const [openFirstSidePanel, setOpenFirstSidePanel] = React.useState<boolean>(false)
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
+  const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
 
   const {
     individualMessage: indDraftMessage,
@@ -96,6 +97,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
 
   }
 
+  useEffect(getDrafts, [draft, newDraftID])
+
   let mainPanel
   switch (firstSidePanel) {
     case Panels.Orders:
@@ -104,10 +107,11 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
         handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
       />
       break
-    default:
+    case Panels.Drafts:
       mainPanel = <DraftPanel
-        handleCloseSidePanel={ handleCloseFirstSidePanel }
-        handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+        closeSidePanel={ handleCloseFirstSidePanel }
+        openSecondSidePanel={ handleOpenSecondSidePanel }
+        changeSecondSidePanel={ setSecondSidePanel }
         message={ indDraftMessage }
         newDraftID={ newDraftID }
         setNewDraftID={ setNewDraftID }
@@ -118,6 +122,13 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
       />
       break
   }
+
+  let sidePanel
+  switch (secondSidePanel) {
+    case Panels.Customers:
+      sidePanel = <CustomersSelection closeSidePanel={ handleCloseSecondSidePanel } />
+  }
+
   /*<ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />*/
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
@@ -137,7 +148,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
         css={ auxPanelStyles }
         open={ openFirstSidePanel }
         mainChildren={ mainPanel }
-        sideChildren={ <CustomersSelection handleCloseSidePanel={ handleCloseSecondSidePanel } /> }
+        sideChildren={ sidePanel }
         openSidePanel={ openSecondSidePanel }
         border={ false }
       />

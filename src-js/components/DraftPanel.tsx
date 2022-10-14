@@ -18,6 +18,7 @@ import { css } from '@emotion/react'
 import useValid, { ValidEvents } from '../hooks/useValid'
 import drafts from './Drafts'
 import { assign } from 'lodash'
+import Panels from '../shapes/Panels'
 
 const Container = styled.section`
   display: flex;
@@ -39,8 +40,9 @@ const Container = styled.section`
 `
 
 interface DraftSectionProps {
-  handleCloseSidePanel: () => void
-  handleOpenSecondSidePanel: () => void
+  closeSidePanel: () => void
+  openSecondSidePanel: () => void
+  changeSecondSidePanel: (panel: Panels) => void
   message: DraftMessage | undefined
   newDraftID: number | undefined
   setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
@@ -52,8 +54,9 @@ interface DraftSectionProps {
 
 const DraftPanel: FC<DraftSectionProps> = (
   {
-    handleCloseSidePanel,
-    handleOpenSecondSidePanel,
+    closeSidePanel,
+    openSecondSidePanel,
+    changeSecondSidePanel,
     message,
     newDraftID,
     setNewDraftID,
@@ -63,9 +66,9 @@ const DraftPanel: FC<DraftSectionProps> = (
     addingDraft,
   }) => {
 
-  const [customerName, setCustomerName] = useState<string>()
-  const [customerPhone, setCustomerPhone] = useState<string>()
-  const [pickUpTime, setPickUpTime] = useState<string>()
+  const [customerName, setCustomerName] = useState<string>('')
+  const [customerPhone, setCustomerPhone] = useState<string>('')
+  const [pickUpTime, setPickUpTime] = useState<string>('')
   const [canSave, setCanSave] = useState<boolean>(true)
 
   const doUpdateDraft = () => {
@@ -75,24 +78,37 @@ const DraftPanel: FC<DraftSectionProps> = (
       if (!addingDraft) {
         // noinspection SpellCheckingInspection
         let data: EditDraft['Request'] = { coddraft: 0 }
+        let modified = false
+
+        let customerNameTrimmed: null | string = customerName.trim()
+        let customerPhoneTrimmed: null | string = customerPhone.trim()
+        customerNameTrimmed = customerNameTrimmed === '' ? null : customerNameTrimmed
+        customerPhoneTrimmed = customerPhoneTrimmed === '' ? null : customerPhoneTrimmed
+
+        let pickUpTimeSet = pickUpTime === '' ? null : pickUpTime
 
         if (newDraftID !== undefined) {
           // noinspection SpellCheckingInspection
           assign(data, { coddraft: newDraftID })
 
-          if (customerName !== undefined) {
-            // noinspection SpellCheckingInspection
-            assign(data, { namecustomertmp: customerName })
-          }
+          if (customerNameTrimmed !== null || customerPhoneTrimmed !== null || pickUpTimeSet !== null) {
 
-          if (customerPhone !== undefined) {
-            // noinspection SpellCheckingInspection
-            assign(data, { telcustomertmp: customerPhone })
-          }
+            if (customerNameTrimmed !== null) {
+              // noinspection SpellCheckingInspection
+              assign(data, { namecustomertmp: customerNameTrimmed })
+            }
 
-          if (pickUpTime !== undefined) {
-            // noinspection SpellCheckingInspection
-            assign(data, { pickuptime: pickUpTime })
+            if (customerPhoneTrimmed !== null) {
+              // noinspection SpellCheckingInspection
+              assign(data, { telcustomertmp: customerPhoneTrimmed })
+            }
+
+            if (pickUpTimeSet !== null) {
+              // noinspection SpellCheckingInspection
+              assign(data, { pickuptime: pickUpTime })
+            }
+
+            modified = true
           }
         }
 
@@ -100,20 +116,32 @@ const DraftPanel: FC<DraftSectionProps> = (
           // noinspection SpellCheckingInspection
           assign(data, { coddraft: draft.coddraft })
 
-          if (draft.codcustomer === null) {
-            if (customerName !== undefined && draft.namecustomertmp !== customerName.trim()) {
+          if (draft.codcustomer === null || draft.codcustomer === undefined) {
+            if (draft.namecustomertmp !== customerNameTrimmed) {
               // noinspection SpellCheckingInspection
-              assign(data, { namecustomertmp: customerName.trim() })
+              assign(data, { namecustomertmp: customerNameTrimmed })
+              modified = true
             }
 
-            if (customerPhone !== undefined && draft.telcustomertmp !== customerPhone.trim()) {
+            if (draft.telcustomertmp !== customerPhoneTrimmed) {
               // noinspection SpellCheckingInspection
-              assign(data, { telcustomertmp: customerPhone.trim() })
+              assign(data, { telcustomertmp: customerPhoneTrimmed })
+              modified = true
             }
+          } else {
+
+          }
+
+          if (draft.pickuptime !== pickUpTimeSet) {
+            // noinspection SpellCheckingInspection
+            assign(data, { pickuptime: pickUpTimeSet })
+            modified = true
           }
         }
 
-        editDraft(data)
+        if (modified) {
+          editDraft(data)
+        }
       }
     }
   }
@@ -133,13 +161,13 @@ const DraftPanel: FC<DraftSectionProps> = (
     const value = e.currentTarget.value
     const name = e.currentTarget.name
 
-    if (name === 'username') {
+    if (name === 'customer-name') {
       setCustomerName(value)
     }
-    if (name === 'password') {
+    if (name === 'customer-phone') {
       setCustomerPhone(value)
     }
-    if (name === 'password') {
+    if (name === 'pick-up-time') {
       setPickUpTime(value)
     }
   }
@@ -152,43 +180,52 @@ const DraftPanel: FC<DraftSectionProps> = (
     }
   }
 
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
+  }
+
   const close = () => {
-    handleCloseSidePanel()
+    closeSidePanel()
     setNewDraftID(undefined)
+  }
+
+  const handleOpenSecondSidePanel = () => {
+    changeSecondSidePanel(Panels.Customers)
+    openSecondSidePanel()
   }
 
   useEffect(() => {
     if (draft !== undefined) {
 
-      if (draft.namecustomertmp !== null) {
+      if (draft.namecustomertmp !== null && draft.namecustomertmp !== undefined) {
         setCustomerName(draft.namecustomertmp)
-      } else if (draft.namecustomer !== null) {
+      } else if (draft.namecustomer !== null && draft.namecustomer !== undefined) {
         setCustomerName(draft.namecustomer)
       } else {
-        setCustomerName(undefined)
+        setCustomerName('')
       }
 
-      if (draft.telcustomertmp !== null) {
+      if (draft.telcustomertmp !== null && draft.telcustomertmp !== undefined) {
         setCustomerPhone(draft.telcustomertmp)
-      } else if (draft.telcustomer !== null) {
+      } else if (draft.telcustomer !== null && draft.telcustomer !== undefined) {
         setCustomerPhone(draft.telcustomer)
       } else {
-        setCustomerPhone(undefined)
+        setCustomerPhone('')
       }
 
-      if (draft.pickuptime !== null) {
+      if (draft.pickuptime !== null && draft.pickuptime !== undefined) {
         setPickUpTime(draft.pickuptime)
       } else {
-        setPickUpTime(undefined)
+        setPickUpTime('')
       }
     } else if (newDraftID !== undefined) {
-      setCustomerName(undefined)
-      setCustomerPhone(undefined)
-      setPickUpTime(undefined)
+      setCustomerName('')
+      setCustomerPhone('')
+      setPickUpTime('')
     }
   }, [newDraftID, draft])
 
-  const disableCustomerInputs = draft !== undefined && draft.codcustomer !== null
+  const disableCustomerInputs = draft !== undefined && draft.codcustomer !== null && draft.codcustomer !== undefined
 
   // noinspection SpellCheckingInspection
   return (
@@ -210,7 +247,7 @@ const DraftPanel: FC<DraftSectionProps> = (
       }
       {
         message === undefined &&
-        <Form>
+        <Form onSubmit={ handleSubmit }>
           <FieldWrapper>
             <Label htmlFor={ 'customer-name' }>{ 'Nombre del cliente:' }</Label>
             <Input
@@ -220,7 +257,7 @@ const DraftPanel: FC<DraftSectionProps> = (
               maxLength={ 60 }
               onChange={ handleChange }
               onBlur={ handleBlur }
-              defaultValue={ customerName }
+              value={ customerName }
               disabled={ disableCustomerInputs }
             />
           </FieldWrapper>
@@ -233,25 +270,31 @@ const DraftPanel: FC<DraftSectionProps> = (
               maxLength={ 9 }
               onChange={ handleChange }
               onBlur={ handleBlur }
-              defaultValue={ customerPhone }
+              value={ customerPhone }
               disabled={ disableCustomerInputs }
             />
           </FieldWrapper>
           <Options>
-            <Button customType={ ButtonTypes.Primary }>{ 'Buscar cliente' }</Button>
+            <Button
+              customType={ ButtonTypes.Primary }
+              onClick={ handleOpenSecondSidePanel }
+            >
+              { 'Buscar cliente' }
+            </Button>
             {
               disableCustomerInputs &&
               <Button customType={ ButtonTypes.Primary }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
-            <Label htmlFor={ 'pick-up-hour' }>{ 'Hora aproximada de recogida:' }</Label>
+            <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
             <Input
               type={ 'time' }
-              name={ 'pick-up-hour' }
-              id={ 'pick-up-hour' }
-              defaultValue={ pickUpTime }
+              name={ 'pick-up-time' }
+              id={ 'pick-up-time' }
+              value={ pickUpTime }
               onChange={ handleChange }
+              onBlur={ handleBlur }
             />
           </FieldWrapper>
           <Options>
