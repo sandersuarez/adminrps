@@ -40,7 +40,6 @@ export interface EditDraft {
     { success_message: string }
     | { message: string }
     | { error: string }
-    | ForbidReasons
 }
 
 export enum DraftMessageTypes {
@@ -165,7 +164,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     sessionCheck(() => {
       setIndividualMessage(undefined)
       doEditDraftRequest(data).then(res => {
-
+        console.log(res)
         if ('success_message' in res) {
           setNewDraftID(undefined)
           getDraft(data.coddraft)
@@ -180,8 +179,6 @@ function useDrafts(sessionCheck: SessionCheckType) {
           if (console && console.error) {
             console.error(res['error'])
           }
-        } else {
-          console.log(res)
         }
       }).catch(reason => {
         setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
