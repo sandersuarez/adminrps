@@ -3,14 +3,14 @@ import Message from '../shapes/Message'
 import { buildParametrizedUrl, useFetch, useFetchWith } from './useFetch'
 import { useState } from 'react'
 import Draft, { DraftContent } from '../shapes/Draft'
+import Errors from '../shapes/Errors'
 
 // noinspection SpellCheckingInspection
 export interface AddDraft {
   Request: DraftContent,
   Response:
     { success_message: string, coddraft: number }
-    | { message: string }
-    | { error: string }
+    | Errors
     | { overflow: string }
     | ForbidReasons
 }
@@ -18,8 +18,7 @@ export interface AddDraft {
 export interface GetDrafts {
   Response:
     { drafts: (Draft & DraftContent)[] }
-    | { message: string }
-    | { error: string }
+    | Errors
     | ForbidReasons
 }
 
@@ -28,8 +27,7 @@ export interface GetDraft {
   Request: { coddraft: number },
   Response:
     { draft: (Draft & DraftContent)[] }
-    | { message: string }
-    | { error: string }
+    | Errors
     | ForbidReasons
 }
 
@@ -38,8 +36,7 @@ export interface EditDraft {
   Request: { coddraft: number & DraftContent },
   Response:
     { success_message: string }
-    | { message: string }
-    | { error: string }
+    | Errors
 }
 
 export enum DraftMessageTypes {
@@ -85,20 +82,11 @@ function useDrafts(sessionCheck: SessionCheckType) {
           setNewDraftID(res['coddraft'])
         }
 
-        if ('message' in res) {
-          setIndividualMessage({ content: res['message'], type: DraftMessageTypes.Warning })
-        }
-
-        if ('error' in res) {
-          setIndividualMessage({ content: res['error'], type: DraftMessageTypes.Error })
-          if (console && console.error) {
-            console.error(res['error'])
-          }
-        }
-
         if ('overflow' in res) {
           setIndividualMessage({ content: res['overflow'], type: DraftMessageTypes.Error })
         }
+        manageErrors(res, setIndividualMessage)
+
       }).catch(reason => {
         setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
         if (console && console.error) {
@@ -117,19 +105,15 @@ function useDrafts(sessionCheck: SessionCheckType) {
           setDrafts(res['drafts'])
         }
 
-        if ('message' in res) {
-          setCollectiveMessage({ content: res['message'], type: DraftMessageTypes.Warning })
-        }
-
         if ('empty' in res) {
           setCollectiveMessage({ content: res['empty'], type: DraftMessageTypes.Info })
         }
+        manageErrors(res, setCollectiveMessage)
 
-        if ('error' in res) {
-          setCollectiveMessage({ content: res['error'], type: DraftMessageTypes.Error })
-          if (console && console.error) {
-            console.error(res['error'])
-          }
+      }).catch(reason => {
+        setCollectiveMessage({ content: reason, type: DraftMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
         }
       })
     })
@@ -145,16 +129,12 @@ function useDrafts(sessionCheck: SessionCheckType) {
           setNewDraftID(undefined)
           setDraft(res['draft'][0])
         }
+        manageErrors(res, setIndividualMessage)
 
-        if ('message' in res) {
-          setIndividualMessage({ content: res['message'], type: DraftMessageTypes.Warning })
-        }
-
-        if ('error' in res) {
-          setIndividualMessage({ content: res['error'], type: DraftMessageTypes.Error })
-          if (console && console.error) {
-            console.error(res['error'])
-          }
+      }).catch(reason => {
+        setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
         }
       })
     })
@@ -164,22 +144,13 @@ function useDrafts(sessionCheck: SessionCheckType) {
     sessionCheck(() => {
       setIndividualMessage(undefined)
       doEditDraftRequest(data).then(res => {
-        console.log(res)
+
         if ('success_message' in res) {
           setNewDraftID(undefined)
           getDraft(data.coddraft)
         }
+        manageErrors(res, setIndividualMessage)
 
-        if ('message' in res) {
-          setIndividualMessage({ content: res['message'], type: DraftMessageTypes.Warning })
-        }
-
-        if ('error' in res) {
-          setIndividualMessage({ content: res['error'], type: DraftMessageTypes.Error })
-          if (console && console.error) {
-            console.error(res['error'])
-          }
-        }
       }).catch(reason => {
         setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
         if (console && console.error) {
@@ -187,6 +158,19 @@ function useDrafts(sessionCheck: SessionCheckType) {
         }
       })
     })
+  }
+
+  const manageErrors = (res: Errors | {}, callback: (DraftMessage: DraftMessage | undefined) => void) => {
+    if ('message' in res) {
+      callback({ content: res['message'], type: DraftMessageTypes.Warning })
+    }
+
+    if ('error' in res) {
+      callback({ content: res['error'], type: DraftMessageTypes.Error })
+      if (console && console.error) {
+        console.error(res['error'])
+      }
+    }
   }
 
   return {
