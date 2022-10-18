@@ -11,7 +11,7 @@ const Container = styled.div`
 `
 
 interface IProps {
-  customerList: ReactElement<EditableCustomerProps | CustomerProps>[]
+  customerList: ReactElement<EditableCustomerProps | CustomerProps>[] | undefined
 }
 
 const CustomersContainer: FC<IProps> = ({ customerList }) => {

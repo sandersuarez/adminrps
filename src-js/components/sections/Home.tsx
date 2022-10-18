@@ -13,6 +13,7 @@ import { SessionCheckType } from '../../hooks/useSession'
 import DraftPanel from '../DraftPanel'
 import useDrafts from '../../hooks/useDrafts'
 import Panels from '../../shapes/Panels'
+import useCustomers from '../../hooks/useCustomers'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -77,6 +78,15 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
     editDraft,
   } = useDrafts(sessionCheck)
 
+  const {
+    collectiveMessage: colCustomerMessage,
+    customers,
+    activePage: customersActivePage,
+    totalPages: customersTotalPages,
+    setActivePage: customersSetActivePage,
+    getCustomers,
+  } = useCustomers(sessionCheck)
+
   const handleOpenFirstSidePanel = () => {
     setOpenFirstSidePanel(true)
   }
@@ -102,31 +112,42 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
   let mainPanel
   switch (firstSidePanel) {
     case Panels.Orders:
-      mainPanel = <OrderPanel
-        handleCloseSidePanel={ handleCloseFirstSidePanel }
-        handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
-      />
+      mainPanel =
+        <OrderPanel
+          handleCloseSidePanel={ handleCloseFirstSidePanel }
+          handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+        />
       break
     case Panels.Drafts:
-      mainPanel = <DraftPanel
-        closeSidePanel={ handleCloseFirstSidePanel }
-        openSecondSidePanel={ handleOpenSecondSidePanel }
-        changeSecondSidePanel={ setSecondSidePanel }
-        message={ indDraftMessage }
-        newDraftID={ newDraftID }
-        setNewDraftID={ setNewDraftID }
-        draft={ draft }
-        addDraft={ addDraft }
-        editDraft={ editDraft }
-        addingDraft={ addingDraft }
-      />
+      mainPanel =
+        <DraftPanel
+          closeSidePanel={ handleCloseFirstSidePanel }
+          openSecondSidePanel={ handleOpenSecondSidePanel }
+          changeSecondSidePanel={ setSecondSidePanel }
+          message={ indDraftMessage }
+          newDraftID={ newDraftID }
+          setNewDraftID={ setNewDraftID }
+          draft={ draft }
+          addDraft={ addDraft }
+          editDraft={ editDraft }
+          addingDraft={ addingDraft }
+          getCustomers={ getCustomers }
+        />
       break
   }
 
   let sidePanel
   switch (secondSidePanel) {
     case Panels.Customers:
-      sidePanel = <CustomersSelection closeSidePanel={ handleCloseSecondSidePanel } />
+      sidePanel =
+        <CustomersSelection
+          closeSidePanel={ handleCloseSecondSidePanel }
+          message={ colCustomerMessage }
+          customers={ customers }
+          activePage={ customersActivePage }
+          totalPages={ customersTotalPages }
+          setActivePage={ customersSetActivePage }
+        />
   }
 
   /*<ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />*/

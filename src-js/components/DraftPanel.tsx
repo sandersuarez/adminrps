@@ -15,10 +15,10 @@ import Alert from './Alert'
 import FieldWrapper from './forms/FieldWrapper'
 import Draft, { DraftContent } from '../shapes/Draft'
 import { css } from '@emotion/react'
-import useValid, { ValidEvents } from '../hooks/useValid'
-import drafts from './Drafts'
+import useValid from '../hooks/useValid'
 import { assign } from 'lodash'
 import Panels from '../shapes/Panels'
+import { GetCustomers } from '../hooks/useCustomers'
 
 const Container = styled.section`
   display: flex;
@@ -50,6 +50,7 @@ interface DraftSectionProps {
   addDraft: (data: AddDraft['Request']) => void
   editDraft: (data: EditDraft['Request']) => void
   addingDraft: boolean
+  getCustomers: (data: GetCustomers['Request']) => void
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -64,6 +65,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     addDraft,
     editDraft,
     addingDraft,
+    getCustomers,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
@@ -189,7 +191,14 @@ const DraftPanel: FC<DraftSectionProps> = (
     setNewDraftID(undefined)
   }
 
-  const handleOpenSecondSidePanel = () => {
+
+  const searchCustomer = () => {
+    // noinspection SpellCheckingInspection
+    getCustomers({
+      telname: '',
+      page: 1,
+      customers_number: 15,
+    })
     changeSecondSidePanel(Panels.Customers)
     openSecondSidePanel()
   }
@@ -246,7 +255,7 @@ const DraftPanel: FC<DraftSectionProps> = (
         <Alert message={ message.content } type={ AlertTypes.Warning } />
       }
       {
-        message === undefined &&
+        (draft !== undefined || newDraftID !== undefined) &&
         <Form onSubmit={ handleSubmit }>
           <FieldWrapper>
             <Label htmlFor={ 'customer-name' }>{ 'Nombre del cliente:' }</Label>
@@ -277,7 +286,7 @@ const DraftPanel: FC<DraftSectionProps> = (
           <Options>
             <Button
               customType={ ButtonTypes.Primary }
-              onClick={ handleOpenSecondSidePanel }
+              onClick={ searchCustomer }
             >
               { 'Buscar cliente' }
             </Button>

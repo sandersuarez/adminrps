@@ -50,19 +50,19 @@ function obtain_customers(array $requirements): array
 
     $query->execute();
     $result = $query->fetch(PDO::FETCH_ASSOC);
-    if ($result && $result[0]) {
+    if ($result && $result['count(codcustomer)']) {
 
       // If the page is out of bounds, the page it is redirected to the last posible one
-      if ($result[0] <= $begin) {
+      if ($result['count(codcustomer)'] <= $begin) {
         // Pagination calculation
-        $redirect_page = ceil($result[0] / $customers_number);
+        $redirect_page = ceil($result['count(codcustomer)'] / $customers_number);
         $begin = $redirect_page - 1;
         $begin = $begin * $customers_number;
         $end = $begin + $customers_number;
       }
 
       // The posible pages number
-      $posible_pages = ceil($result[0] / $customers_number);
+      $posible_pages = ceil($result['count(codcustomer)'] / $customers_number);
 
       // SQL Query to search customers in alphabetic order
       $query = $connection->prepare("SELECT codcustomer, namecustomer, telcustomer FROM " . CUSTOMERS .
@@ -105,10 +105,10 @@ function obtain_customers(array $requirements): array
           $answer['pages'] = $posible_pages;
         }
       } else {
-        $answer = array('empty' => 'There are no coincident customers');
+        $answer = array('empty' => 'No hay clientes registrados');
       }
     } else {
-      $answer = array('empty' => 'There are no coincident customers');
+      $answer = array('empty' => 'No hay clientes registrados');
     }
 
     clear_query_data($query, $connection);

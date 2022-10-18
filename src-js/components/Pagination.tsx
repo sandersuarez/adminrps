@@ -30,7 +30,7 @@ const pagButtonStyles = css`
 
 const firstButtonStyles = css`
   margin-right: ${ margins.mobile.littleGap };
-  
+
   @media only screen and (min-width: 26.68em) {
     margin: 0;
   }
@@ -73,7 +73,14 @@ const PaginationButton: FC<{ className?: string, customType: ButtonTypes, childr
     )
   }
 
-const Pagination = () => {
+interface IProps {
+  activePage: number
+  totalPages: number
+  setActivePage: (page: number) => void
+}
+
+const Pagination: FC<IProps> = ({ totalPages, activePage, setActivePage }) => {
+
   return (
     <Container>
       <PaginationButton customType={ ButtonTypes.Auxiliar } css={ firstButtonStyles }>{ 1 }</PaginationButton>

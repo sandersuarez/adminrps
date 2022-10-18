@@ -9,9 +9,9 @@ import Errors from '../shapes/Errors'
 // noinspection SpellCheckingInspection
 export interface GetCustomers {
   Request: {
-    telname?: string
-    page?: number
-    customers_number?: number
+    telname: string
+    page: number
+    customers_number: number
   }
   Response:
     { customers: CustomerShape[], pages: number }
@@ -49,7 +49,7 @@ function useCustomers(sessionCheck: SessionCheckType) {
       setCollectiveMessage(undefined)
       doGetCustomerRequest(assign(data, { page: activePage }))
         .then((res) => {
-
+console.log(res)
           if ('customers' in res && 'pages' in res) {
             setCustomers(res['customers'])
             setTotalPages(res['pages'])

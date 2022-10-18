@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, ReactElement, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import SearchBar from '../SearchBar'
 import Alert from '../Alert'
@@ -8,64 +8,85 @@ import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Options from '../buttons/Options'
-import Customer from './Customer'
+import Customer, { CustomerProps } from './Customer'
+import { CustomerMessage, CustomerMessageTypes } from '../../hooks/useCustomers'
+import AlertTypes from '../../shapes/AlertTypes'
+import CustomerShape from '../../shapes/CustomerShape'
 
 const Container = styled.article`
+  --vertical-margin: ${ margins.mobile.mediumVertical };
+  --horizontal-margin: ${ margins.mobile.lateral };
+
   display: flex;
   flex-direction: column;
   row-gap: ${ margins.mobile.mediumVertical };
-  padding: ${ margins.mobile.lateral };
+  padding: var(--vertical-margin) var(--horizontal-margin);
 `
 
 interface IProps {
   closeSidePanel: () => void
+  activePage: number
+  totalPages: number
+  setActivePage: (page: number) => void
+  message: CustomerMessage | undefined
+  customers: CustomerShape[] | undefined
 }
 
-const Customers: FC<IProps> = ({ closeSidePanel }) => {
+const Customers: FC<IProps> = (
+  {
+    closeSidePanel,
+    activePage,
+    totalPages,
+    setActivePage,
+    message,
+    customers,
+  }) => {
+
+  const [customerList, setCustomerList] = useState<ReactElement<CustomerProps>[]>()
+
+  const cancel = () => {
+    closeSidePanel()
+  }
+
+  useEffect(() => {
+    if (customers !== undefined) {
+      let list: ReactElement<CustomerProps>[] = []
+      customers.forEach((customer, index) => {
+        // noinspection SpellCheckingInspection
+        list.push(
+          <Customer key={ index } name={ customer.namecustomer } phoneNumber={ customer.telcustomer } />,
+        )
+      })
+      setCustomerList(list)
+    }
+  }, [customers])
+
   return (
     <Container>
-      <SearchBar />
+      {
+        message !== undefined && message.type === CustomerMessageTypes.Info &&
+        <Alert message={ message.content } type={ AlertTypes.Empty } />
+      }
+      {
+        message !== undefined && message.type === CustomerMessageTypes.Warning &&
+        <Alert message={ message.content } type={ AlertTypes.Warning } />
+      }
+      {
+        customers !== undefined && <SearchBar />
+      }
       <Options>
-        <Button customType={ ButtonTypes.Primary }>{ 'Seleccionar' }</Button>
-        <Button customType={ ButtonTypes.Secondary } onClick={ closeSidePanel }>{ 'Cancelar' }</Button>
+        {
+          customers !== undefined && <Button customType={ ButtonTypes.Primary }>{ 'Seleccionar' }</Button>
+        }
+        <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
       </Options>
-      <Alert message={ 'error' } type={ 'error' } />
-      <CustomersContainer
-        customerList=
-          { [
-            <Customer key={ 0 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 1 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 2 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 3 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 4 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 5 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 6 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 7 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 8 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 9 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 10 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 11 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 12 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 13 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-            <Customer key={ 14 } name={ 'Luisa Santos' } phoneNumber={ '640000000' }
-                      handleCloseSidePanel={ closeSidePanel } />,
-          ] }
-      />
-      <Pagination />
+      {
+        customers !== undefined &&
+        <>
+          <CustomersContainer customerList={ customerList } />
+          <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
+        </>
+      }
     </Container>
   )
 }
