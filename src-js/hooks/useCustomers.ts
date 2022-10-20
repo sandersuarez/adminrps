@@ -2,7 +2,7 @@ import { ForbidReasons, SessionCheckType } from './useSession'
 import CustomerShape from '../shapes/CustomerShape'
 import { buildParametrizedUrl, useFetchWith } from './useFetch'
 import Message from '../shapes/Message'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { assign } from 'lodash'
 import Errors from '../shapes/Errors'
 

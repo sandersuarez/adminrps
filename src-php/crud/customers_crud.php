@@ -25,7 +25,6 @@ function obtain_customers(array $requirements): array
   };
 
   $begin = $begin * $customers_number;
-  $end = $begin + $customers_number;
 
   try {
     $connection = create_pdo_object();
@@ -58,7 +57,6 @@ function obtain_customers(array $requirements): array
         $redirect_page = ceil($result['count(codcustomer)'] / $customers_number);
         $begin = $redirect_page - 1;
         $begin = $begin * $customers_number;
-        $end = $begin + $customers_number;
       }
 
       // The posible pages number
@@ -71,7 +69,7 @@ function obtain_customers(array $requirements): array
       // Parameters binding and execution
       $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
       $query->bindParam(':begin', $begin, PDO::PARAM_INT);
-      $query->bindParam(':end', $end, PDO::PARAM_INT);
+      $query->bindParam(':end', $customers_number, PDO::PARAM_INT);
 
       if ($requirements['telname'] != '') {
         $query->bindParam(':telnamecustomer', $requirements['telname'], PDO::PARAM_STR);

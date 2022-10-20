@@ -191,7 +191,6 @@ const DraftPanel: FC<DraftSectionProps> = (
     setNewDraftID(undefined)
   }
 
-
   const searchCustomer = () => {
     // noinspection SpellCheckingInspection
     getCustomers({

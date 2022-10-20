@@ -147,6 +147,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           activePage={ customersActivePage }
           totalPages={ customersTotalPages }
           setActivePage={ customersSetActivePage }
+          getCustomers={getCustomers}
         />
   }
 

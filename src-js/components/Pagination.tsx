@@ -1,9 +1,9 @@
-import React, { FC, ReactNode } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import { css } from '@emotion/react'
-import Button from './buttons/Button'
 import ButtonTypes from '../shapes/ButtonTypes'
 import margins from '../styles/margins'
+import PaginationButton from './buttons/PaginationButton'
 
 const Container = styled.div`
   display: flex;
@@ -11,37 +11,6 @@ const Container = styled.div`
   align-self: center;
   row-gap: ${ margins.mobile.vertical };
   column-gap: ${ margins.mobile.littleGap };
-`
-
-const pagButtonStyles = css`
-  position: relative;
-  border-radius: 0;
-  padding: 1.4em;
-
-  p {
-    position: absolute;
-    font-weight: normal;
-    margin: 0;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-`
-
-const firstButtonStyles = css`
-  margin-right: ${ margins.mobile.littleGap };
-
-  @media only screen and (min-width: 26.68em) {
-    margin: 0;
-  }
-`
-
-const lastButtonStyles = css`
-  margin-left: ${ margins.mobile.littleGap };
-
-  @media only screen and (min-width: 26.68em) {
-    margin: 0;
-  }
 `
 
 const firstAuxButtonsStyles = css`
@@ -60,19 +29,6 @@ const lastAuxButtonsStyles = css`
   }
 `
 
-const PaginationButton: FC<{ className?: string, customType: ButtonTypes, children?: ReactNode }> =
-  ({
-     className,
-     customType,
-     children,
-   }) => {
-    return (
-      <Button className={ className } customType={ customType } css={ pagButtonStyles }>
-        <p>{ children }</p>
-      </Button>
-    )
-  }
-
 interface IProps {
   activePage: number
   totalPages: number
@@ -81,19 +37,94 @@ interface IProps {
 
 const Pagination: FC<IProps> = ({ totalPages, activePage, setActivePage }) => {
 
-  return (
-    <Container>
-      <PaginationButton customType={ ButtonTypes.Auxiliar } css={ firstButtonStyles }>{ 1 }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Empty } css={ firstAuxButtonsStyles }>{ '...' }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Auxiliar } css={ lastAuxButtonsStyles }>{ 2 }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Auxiliar }>{ 3 }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Primary }>{ 4 }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Auxiliar }>{ 5 }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Auxiliar } css={ lastAuxButtonsStyles }>{ 6 }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Empty } css={ firstAuxButtonsStyles }>{ '...' }</PaginationButton>
-      <PaginationButton customType={ ButtonTypes.Auxiliar } css={ lastButtonStyles }>{ 10 }</PaginationButton>
-    </Container>
-  )
+  const [breakpoint, setBreakpoint] = useState<string>(totalPages > 4 ? '33.56em' : '26.68em')
+  const [matches, setMatches] = useState<boolean>(window.matchMedia('(min-width: ' + breakpoint + ')').matches)
+
+  useEffect(() => {
+    window
+      .matchMedia('(min-width: ' + breakpoint + ')')
+      .addEventListener('change', e => setMatches(e.matches))
+  }, [])
+
+  if (totalPages > 1) {
+
+    const spaceToBegin = activePage - 1
+    const spaceToTotal = totalPages - activePage
+
+    return (
+      <Container>
+        {
+          (spaceToBegin > 0) &&
+          <PaginationButton
+            customType={ ButtonTypes.Auxiliar }
+            css={ (!matches && spaceToBegin > 2) ? css`margin-right: ${ margins.mobile.littleGap }` : null }
+            onClick={ () => setActivePage(1) }
+          >
+            { 1 }
+          </PaginationButton>
+        }
+        {
+          ((!matches && spaceToBegin > 2) || (matches && spaceToBegin > 3)) &&
+          <PaginationButton customType={ ButtonTypes.Empty } css={ firstAuxButtonsStyles }>{ '...' }</PaginationButton>
+        }
+        {
+          (spaceToBegin > 2) &&
+          <PaginationButton
+            customType={ ButtonTypes.Auxiliar }
+            css={ lastAuxButtonsStyles }
+            onClick={ () => setActivePage(activePage - 2) }
+          >
+            { activePage - 2 }
+          </PaginationButton>
+        }
+        {
+          (spaceToBegin > 1) &&
+          <PaginationButton
+            customType={ ButtonTypes.Auxiliar }
+            onClick={ () => setActivePage(activePage - 1) }
+          >
+            { activePage - 1 }
+          </PaginationButton>
+        }
+        <PaginationButton customType={ ButtonTypes.Primary }>{ activePage }</PaginationButton>
+        {
+          (spaceToTotal > 1) &&
+          <PaginationButton
+            customType={ ButtonTypes.Auxiliar }
+            onClick={ () => setActivePage(activePage + 1) }
+          >
+            { activePage + 1 }
+          </PaginationButton>
+        }
+        {
+          (spaceToTotal > 2) &&
+          <PaginationButton
+            customType={ ButtonTypes.Auxiliar }
+            css={ lastAuxButtonsStyles }
+            onClick={ () => setActivePage(activePage + 2) }
+          >
+            { activePage + 2 }
+          </PaginationButton>
+        }
+        {
+          ((!matches && spaceToTotal > 2) || (matches && spaceToTotal > 3)) &&
+          <PaginationButton customType={ ButtonTypes.Empty } css={ firstAuxButtonsStyles }>{ '...' }</PaginationButton>
+        }
+        {
+          (spaceToTotal > 0) &&
+          <PaginationButton
+            customType={ ButtonTypes.Auxiliar }
+            css={ (!matches && spaceToTotal > 2) ? css`margin-left: ${ margins.mobile.littleGap }` : null }
+            onClick={ () => setActivePage(totalPages) }
+          >
+            { totalPages }
+          </PaginationButton>
+        }
+      </Container>
+    )
+  } else {
+    return (<></>)
+  }
 }
 
 export default Pagination

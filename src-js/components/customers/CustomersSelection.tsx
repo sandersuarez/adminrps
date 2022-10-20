@@ -9,7 +9,7 @@ import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Options from '../buttons/Options'
 import Customer, { CustomerProps } from './Customer'
-import { CustomerMessage, CustomerMessageTypes } from '../../hooks/useCustomers'
+import { CustomerMessage, CustomerMessageTypes, GetCustomers } from '../../hooks/useCustomers'
 import AlertTypes from '../../shapes/AlertTypes'
 import CustomerShape from '../../shapes/CustomerShape'
 
@@ -30,6 +30,7 @@ interface IProps {
   setActivePage: (page: number) => void
   message: CustomerMessage | undefined
   customers: CustomerShape[] | undefined
+  getCustomers: (data: GetCustomers['Request']) => void
 }
 
 const Customers: FC<IProps> = (
@@ -40,6 +41,7 @@ const Customers: FC<IProps> = (
     setActivePage,
     message,
     customers,
+    getCustomers,
   }) => {
 
   const [customerList, setCustomerList] = useState<ReactElement<CustomerProps>[]>()
@@ -60,6 +62,15 @@ const Customers: FC<IProps> = (
       setCustomerList(list)
     }
   }, [customers])
+
+  useEffect(() => {
+    // noinspection SpellCheckingInspection
+    getCustomers({
+      telname: '',
+      customers_number: 15,
+      page: 1,
+    })
+  }, [activePage])
 
   return (
     <Container>
