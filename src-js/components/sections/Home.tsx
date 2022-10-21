@@ -62,6 +62,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
   const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
+  const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
 
   const {
     individualMessage: indDraftMessage,
@@ -132,6 +133,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           editDraft={ editDraft }
           addingDraft={ addingDraft }
           getCustomers={ getCustomers }
+          setDraftCustomerID={ setDraftCustomerID }
+          draftCustomerID={ draftCustomerID }
         />
       break
   }
@@ -147,7 +150,9 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           activePage={ customersActivePage }
           totalPages={ customersTotalPages }
           setActivePage={ customersSetActivePage }
-          getCustomers={getCustomers}
+          getCustomers={ getCustomers }
+          setDraftCustomerID={ setDraftCustomerID }
+          draftCustomerID={ draftCustomerID }
         />
   }
 

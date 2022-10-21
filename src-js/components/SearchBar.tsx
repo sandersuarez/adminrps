@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ChangeEventHandler, FC } from 'react'
 import IconSearch from './svg/IconSearch'
 import styled from '@emotion/styled'
 import Input from './forms/Input'
@@ -35,14 +35,24 @@ const Container = styled.div`
   }
 `
 
+interface IProps {
+  searchString: string
+  setSearchString: (searchString: string) => void
+}
+
 /**
  * Component that contains an input that accepts text to search elements.
  */
-const SearchBar = () => {
+const SearchBar: FC<IProps> = ({ searchString, setSearchString }) => {
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setSearchString(e.currentTarget.value.trim())
+  }
+
   return (
     <Container>
       <IconSearch />
-      <Input type={ 'text' } maxLength={ 300 } />
+      <Input type={ 'text' } maxLength={ 300 } value={ searchString } onChange={ handleChange } />
     </Container>
   )
 }

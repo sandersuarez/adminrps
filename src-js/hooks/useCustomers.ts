@@ -2,7 +2,7 @@ import { ForbidReasons, SessionCheckType } from './useSession'
 import CustomerShape from '../shapes/CustomerShape'
 import { buildParametrizedUrl, useFetchWith } from './useFetch'
 import Message from '../shapes/Message'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { assign } from 'lodash'
 import Errors from '../shapes/Errors'
 
@@ -49,16 +49,21 @@ function useCustomers(sessionCheck: SessionCheckType) {
       setCollectiveMessage(undefined)
       doGetCustomerRequest(assign(data, { page: activePage }))
         .then((res) => {
-console.log(res)
+          console.log(res)
           if ('customers' in res && 'pages' in res) {
             setCustomers(res['customers'])
             setTotalPages(res['pages'])
           }
 
           if ('empty' in res) {
+            setCustomers(undefined)
+            setTotalPages(1)
             setCollectiveMessage({ content: res['empty'], type: CustomerMessageTypes.Info })
           }
-          manageErrors(res, setCollectiveMessage)
+          manageErrors(res, setCollectiveMessage, () => {
+            setCustomers(undefined)
+            setTotalPages(1)
+          })
 
         }).catch(reason => {
         setCollectiveMessage({ content: reason, type: CustomerMessageTypes.Error })
@@ -69,7 +74,12 @@ console.log(res)
     })
   }
 
-  const manageErrors = (res: Errors | {}, callback: (CustomerMessage: CustomerMessage | undefined) => void) => {
+  const manageErrors = (
+    res: Errors | {},
+    callback: (CustomerMessage: CustomerMessage | undefined) => void,
+    finalFunction?: () => void,
+  ) => {
+
     if ('message' in res) {
       callback({ content: res['message'], type: CustomerMessageTypes.Warning })
     }
@@ -79,6 +89,10 @@ console.log(res)
       if (console && console.error) {
         console.error(res['error'])
       }
+    }
+
+    if (('message' in res || 'error' in res) && finalFunction) {
+      finalFunction()
     }
   }
 

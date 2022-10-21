@@ -51,6 +51,8 @@ interface DraftSectionProps {
   editDraft: (data: EditDraft['Request']) => void
   addingDraft: boolean
   getCustomers: (data: GetCustomers['Request']) => void
+  setDraftCustomerID: (id: number | undefined) => void
+  draftCustomerID: number | undefined
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -66,12 +68,17 @@ const DraftPanel: FC<DraftSectionProps> = (
     editDraft,
     addingDraft,
     getCustomers,
+    setDraftCustomerID,
+    draftCustomerID,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
   const [customerPhone, setCustomerPhone] = useState<string>('')
   const [pickUpTime, setPickUpTime] = useState<string>('')
   const [canSave, setCanSave] = useState<boolean>(true)
+
+  const [matches, setMatches] =
+    useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
 
   const doUpdateDraft = () => {
     if (newDraftID === undefined && draft === undefined && !addingDraft) {
@@ -118,7 +125,7 @@ const DraftPanel: FC<DraftSectionProps> = (
           // noinspection SpellCheckingInspection
           assign(data, { coddraft: draft.coddraft })
 
-          if (draft.codcustomer === null || draft.codcustomer === undefined) {
+          if (draft.codcustomer === null) {
             if (draft.namecustomertmp !== customerNameTrimmed) {
               // noinspection SpellCheckingInspection
               assign(data, { namecustomertmp: customerNameTrimmed })
@@ -130,8 +137,18 @@ const DraftPanel: FC<DraftSectionProps> = (
               assign(data, { telcustomertmp: customerPhoneTrimmed })
               modified = true
             }
-          } else {
 
+            if (draftCustomerID !== undefined) {
+              // noinspection SpellCheckingInspection
+              assign(data, { namecustomertmp: '', telcustomertmp: '', codcustomer: draftCustomerID })
+              modified = true
+            }
+          } else {
+            if (draft.codcustomer !== draftCustomerID) {
+              // noinspection SpellCheckingInspection
+              assign(data, { codcustomer: draftCustomerID })
+              modified = true
+            }
           }
 
           if (draft.pickuptime !== pickUpTimeSet) {
@@ -192,11 +209,12 @@ const DraftPanel: FC<DraftSectionProps> = (
   }
 
   const searchCustomer = () => {
+    doUpdateDraft()
     // noinspection SpellCheckingInspection
     getCustomers({
       telname: '',
+      customers_number: matches ? 30 : 15,
       page: 1,
-      customers_number: 15,
     })
     changeSecondSidePanel(Panels.Customers)
     openSecondSidePanel()
@@ -204,6 +222,24 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   useEffect(() => {
     if (draft !== undefined) {
+      doUpdateDraft()
+    }
+  }, [draftCustomerID])
+
+  useEffect(() => {
+    window
+      .matchMedia('(min-width: 700px)')
+      .addEventListener('change', e => setMatches(e.matches))
+  }, [])
+
+  useEffect(() => {
+    if (draft !== undefined) {
+
+      if (draft.codcustomer !== null && draft.codcustomer !== undefined) {
+        setDraftCustomerID(draft.codcustomer)
+      } else {
+        setDraftCustomerID(undefined)
+      }
 
       if (draft.namecustomertmp !== null && draft.namecustomertmp !== undefined) {
         setCustomerName(draft.namecustomertmp)
@@ -230,6 +266,7 @@ const DraftPanel: FC<DraftSectionProps> = (
       setCustomerName('')
       setCustomerPhone('')
       setPickUpTime('')
+      setDraftCustomerID(undefined)
     }
   }, [newDraftID, draft])
 

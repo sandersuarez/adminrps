@@ -12,6 +12,8 @@ import Customer, { CustomerProps } from './Customer'
 import { CustomerMessage, CustomerMessageTypes, GetCustomers } from '../../hooks/useCustomers'
 import AlertTypes from '../../shapes/AlertTypes'
 import CustomerShape from '../../shapes/CustomerShape'
+import { css } from '@emotion/react'
+import colors from '../../styles/colors'
 
 const Container = styled.article`
   --vertical-margin: ${ margins.mobile.mediumVertical };
@@ -31,6 +33,8 @@ interface IProps {
   message: CustomerMessage | undefined
   customers: CustomerShape[] | undefined
   getCustomers: (data: GetCustomers['Request']) => void
+  setDraftCustomerID: (id: number) => void
+  draftCustomerID: number | undefined
 }
 
 const Customers: FC<IProps> = (
@@ -42,59 +46,83 @@ const Customers: FC<IProps> = (
     message,
     customers,
     getCustomers,
+    draftCustomerID,
+    setDraftCustomerID,
   }) => {
 
-  const [customerList, setCustomerList] = useState<ReactElement<CustomerProps>[]>()
+  const [searchString, setSearchString] = useState<string>('')
+  const [selectedCustomer, setSelectedCustomer] = useState<number>()
 
-  const cancel = () => {
-    closeSidePanel()
+  const [matches, setMatches] =
+    useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
+
+  const handleCustomerClick = (id: number) => {
+    setSelectedCustomer(id)
+  }
+
+  const select = () => {
+    if (selectedCustomer !== undefined && selectedCustomer !== draftCustomerID) {
+      setDraftCustomerID(selectedCustomer)
+      closeSidePanel()
+    }
   }
 
   useEffect(() => {
-    if (customers !== undefined) {
-      let list: ReactElement<CustomerProps>[] = []
-      customers.forEach((customer, index) => {
-        // noinspection SpellCheckingInspection
-        list.push(
-          <Customer key={ index } name={ customer.namecustomer } phoneNumber={ customer.telcustomer } />,
-        )
-      })
-      setCustomerList(list)
-    }
-  }, [customers])
+    window
+      .matchMedia('(min-width: 700px)')
+      .addEventListener('change', e => setMatches(e.matches))
+  }, [])
 
   useEffect(() => {
     // noinspection SpellCheckingInspection
     getCustomers({
-      telname: '',
-      customers_number: 15,
+      telname: searchString,
+      customers_number: matches ? 30 : 15,
       page: 1,
     })
-  }, [activePage])
+  }, [activePage, searchString, matches])
 
   return (
     <Container>
+      {
+        message !== undefined && message.type === CustomerMessageTypes.Warning &&
+        <Alert message={ message.content } type={ AlertTypes.Warning } />
+      }
+      <SearchBar searchString={ searchString } setSearchString={ setSearchString } />
+      <Options>
+        {
+          customers !== undefined &&
+          <Button
+            customType={ ButtonTypes.Primary }
+            onClick={ select }
+            disabled={ selectedCustomer === undefined }
+          >
+            { 'Seleccionar' }
+          </Button>
+        }
+        <Button customType={ ButtonTypes.Secondary } onClick={ closeSidePanel }>{ 'Cancelar' }</Button>
+      </Options>
       {
         message !== undefined && message.type === CustomerMessageTypes.Info &&
         <Alert message={ message.content } type={ AlertTypes.Empty } />
       }
       {
-        message !== undefined && message.type === CustomerMessageTypes.Warning &&
-        <Alert message={ message.content } type={ AlertTypes.Warning } />
-      }
-      {
-        customers !== undefined && <SearchBar />
-      }
-      <Options>
-        {
-          customers !== undefined && <Button customType={ ButtonTypes.Primary }>{ 'Seleccionar' }</Button>
-        }
-        <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
-      </Options>
-      {
         customers !== undefined &&
         <>
-          <CustomersContainer customerList={ customerList } />
+          <CustomersContainer customerList={
+            customers.map((customer, index) => {
+              return <Customer
+                key={ index }
+                id={ customer.codcustomer }
+                name={ customer.namecustomer }
+                phoneNumber={ customer.telcustomer }
+                setSelected={ handleCustomerClick }
+                selectedCustomer={ selectedCustomer }
+                draftCustomerID={ draftCustomerID }
+              />
+            })
+          }
+          />
           <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
         </>
       }

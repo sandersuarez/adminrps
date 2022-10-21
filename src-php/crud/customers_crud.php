@@ -20,7 +20,7 @@ function obtain_customers(array $requirements): array
   $begin = $requirements['page'] - 1;
 
   $customers_number = match ($requirements['customers_number']) {
-    30 => 30,
+    '30' => 30,
     default => 15,
   };
 

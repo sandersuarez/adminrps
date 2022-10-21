@@ -1,6 +1,7 @@
-import React, { FC, Key } from 'react'
+import React, { FC, Key, MouseEventHandler, useEffect } from 'react'
 import styled from '@emotion/styled'
 import colors from '../../styles/colors'
+import { css } from '@emotion/react'
 
 const Container = styled.div`
   display: flex;
@@ -17,18 +18,31 @@ const Container = styled.div`
 
 export interface CustomerProps {
   key: Key
+  id: number
   name: string
   phoneNumber: string
+  setSelected: (id: number) => void
+  selectedCustomer: number | undefined
+  draftCustomerID: number | undefined
 }
 
 const Customer: FC<CustomerProps> = (
   {
     name,
+    id,
     phoneNumber,
+    setSelected,
+    selectedCustomer,
+    draftCustomerID,
   },
 ) => {
+
+  const handleClick: MouseEventHandler<HTMLElement> = (e) => {
+    setSelected(id)
+  }
+
   return (
-    <Container>
+    <Container onClick={ handleClick } css={ selectedCustomer === id ? css`background: ${ colors.section }` : null }>
       <p>{ name } ({ phoneNumber })</p>
     </Container>
   )
