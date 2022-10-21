@@ -13,22 +13,6 @@ const Container = styled.div`
   column-gap: ${ margins.mobile.littleGap };
 `
 
-const firstAuxButtonsStyles = css`
-  display: none;
-
-  @media only screen and (min-width: 26.68em) {
-    display: inherit;
-  }
-`
-
-const lastAuxButtonsStyles = css`
-  display: none;
-
-  @media only screen and (min-width: 33.56em) {
-    display: inherit;
-  }
-`
-
 interface IProps {
   activePage: number
   totalPages: number
@@ -37,7 +21,7 @@ interface IProps {
 
 const Pagination: FC<IProps> = ({ totalPages, activePage, setActivePage }) => {
 
-  const [breakpoint, setBreakpoint] = useState<string>(totalPages > 4 ? '33.56em' : '26.68em')
+  const [breakpoint] = useState<string>(totalPages > 4 ? '33.56em' : '26.68em')
   const [matches, setMatches] = useState<boolean>(window.matchMedia('(min-width: ' + breakpoint + ')').matches)
 
   useEffect(() => {
@@ -65,13 +49,14 @@ const Pagination: FC<IProps> = ({ totalPages, activePage, setActivePage }) => {
         }
         {
           ((!matches && spaceToBegin > 2) || (matches && spaceToBegin > 3)) &&
-          <PaginationButton customType={ ButtonTypes.Empty } css={ firstAuxButtonsStyles }>{ '...' }</PaginationButton>
+          <PaginationButton customType={ ButtonTypes.Empty }
+                            css={ !matches ? css`display: none` : null }>{ '...' }</PaginationButton>
         }
         {
           (spaceToBegin > 2) &&
           <PaginationButton
             customType={ ButtonTypes.Auxiliar }
-            css={ lastAuxButtonsStyles }
+            css={ !matches ? css`display: none` : null }
             onClick={ () => setActivePage(activePage - 2) }
           >
             { activePage - 2 }
@@ -100,7 +85,7 @@ const Pagination: FC<IProps> = ({ totalPages, activePage, setActivePage }) => {
           (spaceToTotal > 2) &&
           <PaginationButton
             customType={ ButtonTypes.Auxiliar }
-            css={ lastAuxButtonsStyles }
+            css={ !matches ? css`display: none` : null }
             onClick={ () => setActivePage(activePage + 2) }
           >
             { activePage + 2 }
@@ -108,7 +93,8 @@ const Pagination: FC<IProps> = ({ totalPages, activePage, setActivePage }) => {
         }
         {
           ((!matches && spaceToTotal > 2) || (matches && spaceToTotal > 3)) &&
-          <PaginationButton customType={ ButtonTypes.Empty } css={ firstAuxButtonsStyles }>{ '...' }</PaginationButton>
+          <PaginationButton customType={ ButtonTypes.Empty }
+                            css={ !matches ? css`display: none` : null }>{ '...' }</PaginationButton>
         }
         {
           (spaceToTotal > 0) &&
