@@ -35,6 +35,8 @@ interface IProps {
   getCustomers: (data: GetCustomers['Request']) => void
   setDraftCustomerID: (id: number) => void
   draftCustomerID: number | undefined
+  setSelectedCustomer: (id: number | undefined) => void
+  selectedCustomer: number | undefined
 }
 
 const Customers: FC<IProps> = (
@@ -48,10 +50,11 @@ const Customers: FC<IProps> = (
     getCustomers,
     draftCustomerID,
     setDraftCustomerID,
+    setSelectedCustomer,
+    selectedCustomer,
   }) => {
 
   const [searchString, setSearchString] = useState<string>('')
-  const [selectedCustomer, setSelectedCustomer] = useState<number>()
 
   const [matches, setMatches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)

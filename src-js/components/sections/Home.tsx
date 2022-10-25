@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import WelcomeLayer from '../WelcomeLayer'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
@@ -63,6 +63,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
   const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
   const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
+  const [selectedCustomer, setSelectedCustomer] = useState<number>()
 
   const {
     individualMessage: indDraftMessage,
@@ -135,6 +136,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           getCustomers={ getCustomers }
           setDraftCustomerID={ setDraftCustomerID }
           draftCustomerID={ draftCustomerID }
+          setSelectedCustomer={ setSelectedCustomer }
         />
       break
   }
@@ -153,6 +155,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           getCustomers={ getCustomers }
           setDraftCustomerID={ setDraftCustomerID }
           draftCustomerID={ draftCustomerID }
+          setSelectedCustomer={ setSelectedCustomer }
+          selectedCustomer={ selectedCustomer }
         />
   }
 

@@ -16,7 +16,7 @@ import FieldWrapper from './forms/FieldWrapper'
 import Draft, { DraftContent } from '../shapes/Draft'
 import { css } from '@emotion/react'
 import useValid from '../hooks/useValid'
-import { assign } from 'lodash'
+import { assign, omit } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
 
@@ -53,6 +53,7 @@ interface DraftSectionProps {
   getCustomers: (data: GetCustomers['Request']) => void
   setDraftCustomerID: (id: number | undefined) => void
   draftCustomerID: number | undefined
+  setSelectedCustomer: (id: number | undefined) => void
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -70,6 +71,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     getCustomers,
     setDraftCustomerID,
     draftCustomerID,
+    setSelectedCustomer,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
@@ -146,7 +148,7 @@ const DraftPanel: FC<DraftSectionProps> = (
           } else {
             if (draft.codcustomer !== draftCustomerID) {
               // noinspection SpellCheckingInspection
-              assign(data, { codcustomer: draftCustomerID })
+              assign(data, { codcustomer: draftCustomerID === undefined ? 0 : draftCustomerID })
               modified = true
             }
           }
@@ -218,6 +220,11 @@ const DraftPanel: FC<DraftSectionProps> = (
     })
     changeSecondSidePanel(Panels.Customers)
     openSecondSidePanel()
+  }
+
+  const resetCustomer = () => {
+    setSelectedCustomer(undefined)
+    setDraftCustomerID(undefined)
   }
 
   useEffect(() => {
@@ -328,7 +335,7 @@ const DraftPanel: FC<DraftSectionProps> = (
             </Button>
             {
               disableCustomerInputs &&
-              <Button customType={ ButtonTypes.Primary }>{ 'Nuevo cliente' }</Button>
+              <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>

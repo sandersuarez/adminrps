@@ -37,12 +37,23 @@ const Customer: FC<CustomerProps> = (
   },
 ) => {
 
-  const handleClick: MouseEventHandler<HTMLElement> = (e) => {
-    setSelected(id)
+  const handleClick: MouseEventHandler<HTMLElement> = () => {
+    if (draftCustomerID !== id) {
+      setSelected(id)
+    }
   }
 
   return (
-    <Container onClick={ handleClick } css={ selectedCustomer === id ? css`background: ${ colors.section }` : null }>
+    <Container
+      onClick={ handleClick }
+      css=
+        {
+          draftCustomerID === id ?
+            css`background: ${ colors.secondary }`
+            :
+            selectedCustomer === id ? css`background: ${ colors.section }` : null
+        }
+    >
       <p>{ name } ({ phoneNumber })</p>
     </Container>
   )

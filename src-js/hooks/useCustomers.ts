@@ -49,7 +49,6 @@ function useCustomers(sessionCheck: SessionCheckType) {
       setCollectiveMessage(undefined)
       doGetCustomerRequest(assign(data, { page: activePage }))
         .then((res) => {
-          console.log(res)
           if ('customers' in res && 'pages' in res) {
             setCustomers(res['customers'])
             setTotalPages(res['pages'])
