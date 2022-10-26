@@ -6,6 +6,7 @@ import margins from '../../styles/margins'
 import { css } from '@emotion/react'
 import IconDown from '../svg/IconDown'
 import IconUp from '../svg/IconUp'
+import ProductShape from '../../shapes/ProductShape'
 
 const ArrowButton = styled.button`
   // reset styles
@@ -13,7 +14,7 @@ const ArrowButton = styled.button`
   font: inherit;
   opacity: 1;
   appearance: none;
-  
+
   display: flex;
   background: ${ colors.primary };
   border-radius: 999em;
@@ -68,7 +69,12 @@ const Table = styled.table`
     text-align: right;
   }
 
-  th, td {
+  th {
+    padding-top: 0.4rem;
+    padding-bottom: ${ margins.mobile.littleGap };
+  }
+  
+  td {
     padding: ${ margins.mobile.tinyLateral } ${ margins.mobile.littleGap };
   }
 
@@ -78,6 +84,11 @@ const Table = styled.table`
 
   tr:nth-last-of-type(2) td {
     padding-bottom: ${ margins.mobile.mediumVertical };
+  }
+
+  tr:last-of-type td {
+    padding-top: ${ margins.mobile.littleGap };
+    padding-bottom: 0.4rem;
   }
 
   span {
@@ -108,14 +119,22 @@ const Container = styled.div`
 interface OrderProductsTableProps {
   className?: string
   editable: boolean
+  products: ProductShape[] | undefined
 }
 
 /**
  * Component that renders a products resume table for an order. The resume table may let the user edit the list. It
  * contains the name of the product with the unitary price, the amount, and the total price.
  */
-const OrderProductsTable: FC<OrderProductsTableProps> = ({ className, editable }) => {
-  // todo: render table depending on a products prop
+const OrderProductsTable: FC<OrderProductsTableProps> = (
+  {
+    className,
+    editable,
+    products,
+  }) => {
+
+  const formatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+
   return (
     <Container className={ className }>
       <TableContainer>
@@ -127,73 +146,48 @@ const OrderProductsTable: FC<OrderProductsTableProps> = ({ className, editable }
               <th scope={ 'col' }>{ 'Precio' }</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td scope={ 'row' }>{ 'Agua ' }<span>{ '(1,00 €)' }</span></td>
-              <td>
-                {
-                  editable ?
-                    <CellWrapper css={ css`justify-content: center` }>
-                      <ArrowButton>
-                        <IconDown />
-                      </ArrowButton>
-                      { 1 }
-                      <ArrowButton>
-                        <IconUp />
-                      </ArrowButton>
-                    </CellWrapper>
-                    :
-                    1
-                }
-              </td>
-              <td>{ '1,00 €' }</td>
-            </tr>
-            <tr>
-              <td scope={ 'row' }>{ 'Pollo ' }<span>{ '(5,00 €)' }</span></td>
-              <td>
-                {
-                  editable ?
-                    <CellWrapper css={ css`justify-content: center` }>
-                      <ArrowButton>
-                        <IconDown />
-                      </ArrowButton>
-                      { 1 }
-                      <ArrowButton>
-                        <IconUp />
-                      </ArrowButton>
-                    </CellWrapper>
-                    :
-                    1
-                }
-              </td>
-              <td>{ '5,00 €' }</td>
-            </tr>
-            <tr>
-              <td scope={ 'row' }>{ 'Patatas ' }<span>{ '(5,00 €)' }</span></td>
-              <td>
-                {
-                  editable ?
-                    <CellWrapper css={ css`justify-content: center` }>
-                      <ArrowButton>
-                        <IconDown />
-                      </ArrowButton>
-                      { 1 }
-                      <ArrowButton>
-                        <IconUp />
-                      </ArrowButton>
-                    </CellWrapper>
-                    :
-                    1
-                }
-              </td>
-              <td>{ '5,00 €' }</td>
-            </tr>
-            <tr>
-              <td scope={ 'row' }></td>
-              <td>{ 'Total' }</td>
-              <td>{ '11,00 €' }</td>
-            </tr>
-          </tbody>
+          <tbody children={
+            <>
+              {
+                products !== undefined ?
+                  products.map((product, index) => {
+                    return (
+                      <tr>
+                        <td scope={ 'row' }>{ product.nameproduct }<span>{ product.priceproduct }</span></td>
+                        <td>
+                          {
+                            editable ?
+                              <CellWrapper css={ css`justify-content: center` }>
+                                <ArrowButton>
+                                  <IconDown />
+                                </ArrowButton>
+                                { product.amountproductdraft }
+                                <ArrowButton>
+                                  <IconUp />
+                                </ArrowButton>
+                              </CellWrapper>
+                              :
+                              product.amountproductdraft
+                          }
+                        </td>
+                        <td>{ formatter.format(parseFloat(product.priceproduct) * product.amountproductdraft) }</td>
+                      </tr>
+                    )
+                  })
+                  :
+                  <tr>
+                    <td scope={ 'row' }></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+              }
+              <tr>
+                <td scope={ 'row' }></td>
+                <td>{ 'Total' }</td>
+                <td></td>
+              </tr>
+            </>
+          } />
         </Table>
       </TableContainer>
       <Gradient />

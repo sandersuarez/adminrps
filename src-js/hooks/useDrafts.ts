@@ -2,12 +2,12 @@ import { SessionCheckType, ForbidReasons } from './useSession'
 import Message from '../shapes/Message'
 import { buildParametrizedUrl, useFetch, useFetchWith } from './useFetch'
 import { useState } from 'react'
-import Draft, { DraftContent } from '../shapes/Draft'
+import DraftShape, { DraftContent, DraftReqData } from '../shapes/DraftShape'
 import Errors from '../shapes/Errors'
 
 // noinspection SpellCheckingInspection
 export interface AddDraft {
-  Request: DraftContent,
+  Request: DraftReqData,
   Response:
     { success_message: string, coddraft: number }
     | Errors
@@ -17,7 +17,7 @@ export interface AddDraft {
 
 export interface GetDrafts {
   Response:
-    { drafts: (Draft & DraftContent)[] }
+    { drafts: (DraftShape & DraftContent)[] }
     | Errors
     | ForbidReasons
 }
@@ -26,14 +26,14 @@ export interface GetDrafts {
 export interface GetDraft {
   Request: { coddraft: number },
   Response:
-    { draft: (Draft & DraftContent)[] }
+    { draft: (DraftShape & DraftContent)[] }
     | Errors
     | ForbidReasons
 }
 
 // noinspection SpellCheckingInspection
 export interface EditDraft {
-  Request: { coddraft: number & DraftContent },
+  Request: { coddraft: number & DraftReqData },
   Response:
     { success_message: string }
     | Errors
@@ -68,8 +68,8 @@ function useDrafts(sessionCheck: SessionCheckType) {
   const [newDraftID, setNewDraftID] = useState<number>()
   const [individualMessage, setIndividualMessage] = useState<DraftMessage>()
   const [collectiveMessage, setCollectiveMessage] = useState<DraftMessage>()
-  const [draft, setDraft] = useState<Draft & DraftContent>()
-  const [drafts, setDrafts] = useState<(Draft & DraftContent)[]>()
+  const [draft, setDraft] = useState<DraftShape & DraftContent>()
+  const [drafts, setDrafts] = useState<(DraftShape & DraftContent)[]>()
 
   const addDraft = (data: AddDraft['Request']) => {
     sessionCheck(() => {

@@ -77,7 +77,7 @@ const Product: FC<ProductProps> = (
           <p>{ 'Stock: ' }{ stock }</p>
         }
         <DetailsArrow
-          animate={ (openedElement === index) ? { rotate: 180 } : null }
+          animate={ (openedElement === index) ? { rotate: 180 } : {} }
           transition={ { ease: 'easeOut', duration: .3 } }
         >
           <IconDown />

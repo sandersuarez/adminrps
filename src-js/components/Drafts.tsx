@@ -12,7 +12,7 @@ import Panels from '../shapes/Panels'
 import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import { forEach } from 'lodash'
-import Draft, { DraftContent } from '../shapes/Draft'
+import DraftShape, { DraftReqData } from '../shapes/DraftShape'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -36,7 +36,7 @@ interface IProps {
   setColMessage: React.Dispatch<React.SetStateAction<DraftMessage | undefined>>
   getDrafts: () => void
   getDraft: (draftID: number) => void
-  drafts: (Draft & DraftContent)[] | undefined
+  drafts: (DraftShape & DraftReqData)[] | undefined
 }
 
 const Drafts: FC<IProps> = (

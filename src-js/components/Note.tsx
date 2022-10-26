@@ -4,7 +4,7 @@ import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 import OrderProductsTable from './orders/OrderProductsTable'
 import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
-import Draft, { DraftContent } from '../shapes/Draft'
+import DraftShape, { DraftReqData } from '../shapes/DraftShape'
 
 const PickUpTime = styled.p`
   --border-distance: .85em;
@@ -69,7 +69,7 @@ export interface NoteProps {
   key: Key
   id: string | undefined
   className?: string
-  draft?: Draft & DraftContent
+  draft?: DraftShape & DraftReqData
   order?: {}
   setColMessage: React.Dispatch<React.SetStateAction<DraftMessage | undefined>>
   onClick: MouseEventHandler<HTMLElement>

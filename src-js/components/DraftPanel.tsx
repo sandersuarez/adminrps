@@ -13,12 +13,13 @@ import { AddDraft, DraftMessage, DraftMessageTypes, EditDraft } from '../hooks/u
 import AlertTypes from '../shapes/AlertTypes'
 import Alert from './Alert'
 import FieldWrapper from './forms/FieldWrapper'
-import Draft, { DraftContent } from '../shapes/Draft'
+import DraftShape, { DraftContent, DraftReqData } from '../shapes/DraftShape'
 import { css } from '@emotion/react'
 import useValid from '../hooks/useValid'
 import { assign, omit } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
+import OrderProductsTable from './orders/OrderProductsTable'
 
 const Container = styled.section`
   display: flex;
@@ -46,7 +47,7 @@ interface DraftSectionProps {
   message: DraftMessage | undefined
   newDraftID: number | undefined
   setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
-  draft: (Draft & DraftContent) | undefined
+  draft: (DraftShape & DraftContent) | undefined
   addDraft: (data: AddDraft['Request']) => void
   editDraft: (data: EditDraft['Request']) => void
   addingDraft: boolean
@@ -338,6 +339,7 @@ const DraftPanel: FC<DraftSectionProps> = (
               <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
+          <OrderProductsTable products={ draft?.products } editable={ true } />
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
             <Input
