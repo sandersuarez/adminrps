@@ -44,7 +44,7 @@ function obtain_customers(array $requirements): array
     $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
     if ($requirements['telname'] != '') {
-      $query->bindParam(':telnamecustomer', $requirements['telname'], PDO::PARAM_STR);
+      $query->bindParam(':telnamecustomer', $requirements['telname']);
     }
 
     $query->execute();
@@ -100,13 +100,14 @@ function obtain_customers(array $requirements): array
           } else {
             $answer['customers'][$i]['canbedeleted'] = 1;
           }
-          $answer['pages'] = $posible_pages;
         }
+
+        $answer['pages'] = $posible_pages;
       } else {
-        $answer = array('empty' => 'No hay clientes registrados');
+        $answer = array('empty' => 'No hay clientes que coincidan con la búsqueda');
       }
     } else {
-      $answer = array('empty' => 'No hay clientes registrados');
+      $answer = array('empty' => 'No hay clientes que coincidan con la búsqueda');
     }
 
     clear_query_data($query, $connection);

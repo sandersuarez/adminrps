@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import SearchBar from '../SearchBar'
 import Alert from '../Alert'
@@ -8,12 +8,10 @@ import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Options from '../buttons/Options'
-import Customer, { CustomerProps } from './Customer'
+import Customer from './Customer'
 import { CustomerMessage, CustomerMessageTypes, GetCustomers } from '../../hooks/useCustomers'
 import AlertTypes from '../../shapes/AlertTypes'
 import CustomerShape from '../../shapes/CustomerShape'
-import { css } from '@emotion/react'
-import colors from '../../styles/colors'
 
 const Container = styled.article`
   --vertical-margin: ${ margins.mobile.mediumVertical };
@@ -39,7 +37,7 @@ interface IProps {
   selectedCustomer: number | undefined
 }
 
-const Customers: FC<IProps> = (
+const CustomersSelection: FC<IProps> = (
   {
     closeSidePanel,
     activePage,
@@ -133,4 +131,4 @@ const Customers: FC<IProps> = (
   )
 }
 
-export default Customers
+export default CustomersSelection

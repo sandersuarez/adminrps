@@ -7,30 +7,7 @@ import { css } from '@emotion/react'
 import IconDown from '../svg/IconDown'
 import IconUp from '../svg/IconUp'
 import ProductShape from '../../shapes/ProductShape'
-
-const ArrowButton = styled.button`
-  // reset styles
-  border: none;
-  font: inherit;
-  opacity: 1;
-  appearance: none;
-
-  display: flex;
-  background: ${ colors.primary };
-  border-radius: 999em;
-  padding: .85em .7em;
-
-  svg {
-    fill: ${ colors.background };
-    width: .8em;
-  }
-`
-
-const CellWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${ margins.mobile.littleGap };
-`
+import AmountInput from '../buttons/AmountInput'
 
 const Gradient = styled.div`
   position: absolute;
@@ -157,15 +134,7 @@ const OrderProductsTable: FC<OrderProductsTableProps> = (
                         <td>
                           {
                             editable ?
-                              <CellWrapper css={ css`justify-content: center` }>
-                                <ArrowButton>
-                                  <IconDown />
-                                </ArrowButton>
-                                { product.amountproductdraft }
-                                <ArrowButton>
-                                  <IconUp />
-                                </ArrowButton>
-                              </CellWrapper>
+                              <AmountInput css={ css`justify-content: center` }/>
                               :
                               product.amountproductdraft
                           }

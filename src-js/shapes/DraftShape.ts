@@ -6,7 +6,7 @@ export type DraftContent = {
   telcustomertmp: string | null,
   pickuptime: string | null,
   codcustomer: number | null,
-  products?: ProductShape[],
+  products?: (ProductShape & { amountproductdraft: number })[],
 }
 
 // noinspection SpellCheckingInspection

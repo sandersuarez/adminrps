@@ -228,6 +228,12 @@ const DraftPanel: FC<DraftSectionProps> = (
     setDraftCustomerID(undefined)
   }
 
+  const searchProducts = () => {
+    doUpdateDraft()
+    changeSecondSidePanel(Panels.Products)
+    openSecondSidePanel()
+  }
+
   useEffect(() => {
     if (draft !== undefined) {
       doUpdateDraft()
@@ -339,7 +345,9 @@ const DraftPanel: FC<DraftSectionProps> = (
               <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
-          <OrderProductsTable products={ draft?.products } editable={ true } />
+          <OrderProductsTable css={ css`margin-top: ${ margins.mobile.littleGap }` } products={ draft?.products }
+                              editable={ true } />
+          <Button customType={ ButtonTypes.Primary }>{ 'Añadir producto' }</Button>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
             <Input

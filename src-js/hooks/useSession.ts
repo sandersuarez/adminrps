@@ -22,6 +22,7 @@ export enum SessionMessageTypes {
 
 export type SessionMessage = Message<SessionMessageTypes>
 export type SessionCheckType = (action?: () => void) => void
+export type SessionRenewType = () => void
 
 /**
  * Hook that manages the app user session. Checks the session, creates one by the login method, and destroys it by

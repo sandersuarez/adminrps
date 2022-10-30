@@ -1,4 +1,4 @@
-import React, { EventHandler, FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import React, { FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import Alert from './Alert'
@@ -12,7 +12,7 @@ import Panels from '../shapes/Panels'
 import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import { forEach } from 'lodash'
-import DraftShape, { DraftReqData } from '../shapes/DraftShape'
+import DraftShape, { DraftContent } from '../shapes/DraftShape'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -36,7 +36,7 @@ interface IProps {
   setColMessage: React.Dispatch<React.SetStateAction<DraftMessage | undefined>>
   getDrafts: () => void
   getDraft: (draftID: number) => void
-  drafts: (DraftShape & DraftReqData)[] | undefined
+  drafts: (DraftShape & DraftContent)[] | undefined
 }
 
 const Drafts: FC<IProps> = (

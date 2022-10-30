@@ -71,7 +71,15 @@ const Main = () => {
               <Routes>
                 <Route
                   index
-                  element={ <Home username={ user.nameuser } logout={ logout } sessionCheck={ sessionCheck } /> }
+                  element=
+                    {
+                      <Home
+                        username={ user.nameuser }
+                        logout={ logout }
+                        sessionCheck={ sessionCheck }
+                        sessionRenew={ sessionRenew }
+                      />
+                    }
                 />
                 <Route path={ 'products' } element={ <ProductsSection article={ productsArticle }
                                                                       setArticle={ handleSetProductsArticle } /> } />

@@ -9,11 +9,14 @@ import OrderPanel from '../orders/OrderPanel'
 import { css } from '@emotion/react'
 import colors from '../../styles/colors'
 import CustomersSelection from '../customers/CustomersSelection'
-import { SessionCheckType } from '../../hooks/useSession'
+import { SessionCheckType, SessionRenewType } from '../../hooks/useSession'
 import DraftPanel from '../DraftPanel'
 import useDrafts from '../../hooks/useDrafts'
 import Panels from '../../shapes/Panels'
 import useCustomers from '../../hooks/useCustomers'
+import ProductsSelection from '../products/ProductsSelection'
+import useProducts from '../../hooks/useProducts'
+import ProductShape from '../../shapes/ProductShape'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -51,19 +54,21 @@ interface IProps {
   username: string
   logout: () => void
   sessionCheck: SessionCheckType
+  sessionRenew: SessionRenewType
 }
 
 /**
  * This component is the main section of the application, the home page. It contains the welcome message for the user,
  * the logout button, the active orders component and the drafts component.
  */
-const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
+const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const [openFirstSidePanel, setOpenFirstSidePanel] = React.useState<boolean>(false)
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
   const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
   const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
   const [selectedCustomer, setSelectedCustomer] = useState<number>()
+  const [tempDraftProducts, setTempDraftProducts] = useState<ProductShape[]>()
 
   const {
     individualMessage: indDraftMessage,
@@ -89,6 +94,15 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
     getCustomers,
   } = useCustomers(sessionCheck)
 
+  const {
+    collectiveMessage: colProductMessage,
+    products,
+    activePage: productsActivePage,
+    totalPages: productsTotalPages,
+    setActivePage: productsSetActivePage,
+    getProducts,
+  } = useProducts(sessionCheck)
+
   const handleOpenFirstSidePanel = () => {
     setOpenFirstSidePanel(true)
   }
@@ -98,6 +112,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
   }
 
   const handleOpenSecondSidePanel = () => {
+    sessionRenew()
     setOpenSecondSidePanel(true)
   }
 
@@ -158,6 +173,24 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck }) => {
           setSelectedCustomer={ setSelectedCustomer }
           selectedCustomer={ selectedCustomer }
         />
+      break
+    case Panels.Products:
+      sidePanel =
+        <ProductsSelection
+          closeSidePanel={ handleCloseSecondSidePanel }
+          activePage={ productsActivePage }
+          totalPages={ productsTotalPages }
+          setActivePage={ productsSetActivePage }
+          message={ colProductMessage }
+          products={ products }
+          getProducts={ getProducts }
+          /* Todo: modify tempDraftProducts on the selection. When commit, do an edit draft request. Then update
+          the tempDraftProducts value with the new draft.products. Use draft.products to check if there has been
+          changes or not */
+          setDraftProducts={ setTempDraftProducts }
+          draftProducts={ draft?.products }
+        />
+      break
   }
 
   /*<ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />*/

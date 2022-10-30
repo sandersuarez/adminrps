@@ -4,7 +4,6 @@ type ProductShape = {
   nameproduct: string,
   priceproduct: string,
   stockproduct: number | null,
-  amountproductdraft: number,
 }
 
 export default ProductShape
