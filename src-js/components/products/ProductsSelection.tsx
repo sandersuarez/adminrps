@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from 'react'
-import styled from '@emotion/styled/dist/emotion-styled.cjs'
 import margins from '../../styles/margins'
 import { GetProducts, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
 import ProductShape from '../../shapes/ProductShape'
@@ -9,11 +8,10 @@ import SearchBar from '../SearchBar'
 import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Options from '../buttons/Options'
-import { CustomerMessageTypes } from '../../hooks/useCustomers'
 import Pagination from '../Pagination'
 import ProductsContainer from './ProductsContainer'
-import product from './Product'
 import SelectableProduct from './SelectableProduct'
+import styled from '@emotion/styled'
 
 const Container = styled.article`
   --vertical-margin: ${ margins.mobile.mediumVertical };
@@ -53,6 +51,8 @@ const ProductsSelection: FC<IProps> = (
 
   const [searchString, setSearchString] = useState<string>('')
   const [selectedProducts, setSelectedProducts] = useState(products)
+  const [priceFormatter] =
+    useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
 
   const [matches, setMatches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
@@ -61,7 +61,6 @@ const ProductsSelection: FC<IProps> = (
     // noinspection SpellCheckingInspection
     getProducts({
       name: searchString,
-      page: 1,
       products_number: matches ? 30 : 15,
     })
   }, [activePage, searchString, matches])
@@ -98,7 +97,7 @@ const ProductsSelection: FC<IProps> = (
                   key={ index }
                   id={ product.codproduct }
                   name={ product.nameproduct }
-                  price={ product.priceproduct }
+                  price={ priceFormatter.format(parseFloat(product.priceproduct)) }
                 />
               )
             })

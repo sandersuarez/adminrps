@@ -39,6 +39,7 @@ function obtain_products(array $requirements): array
       " WHERE productdeleted = :productdeleted AND coduser = :coduser" . $name_clause);
 
     // Parameters binding and execution
+    $query->bindParam(':productdeleted', $requirements['deleted'], PDO::PARAM_INT);
     $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
     if ($requirements['name'] != '') {

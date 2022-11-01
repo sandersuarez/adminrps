@@ -20,6 +20,7 @@ import { assign, omit } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
 import OrderProductsTable from './orders/OrderProductsTable'
+import { GetProducts } from '../hooks/useProducts'
 
 const Container = styled.section`
   display: flex;
@@ -55,6 +56,7 @@ interface DraftSectionProps {
   setDraftCustomerID: (id: number | undefined) => void
   draftCustomerID: number | undefined
   setSelectedCustomer: (id: number | undefined) => void
+  getProducts: (data: GetProducts['Request']) => void
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -73,6 +75,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     setDraftCustomerID,
     draftCustomerID,
     setSelectedCustomer,
+    getProducts,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
@@ -230,6 +233,10 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   const searchProducts = () => {
     doUpdateDraft()
+    getProducts({
+      name: '',
+      products_number: matches ? 30 : 15,
+    })
     changeSecondSidePanel(Panels.Products)
     openSecondSidePanel()
   }
@@ -345,9 +352,12 @@ const DraftPanel: FC<DraftSectionProps> = (
               <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
-          <OrderProductsTable css={ css`margin-top: ${ margins.mobile.littleGap }` } products={ draft?.products }
-                              editable={ true } />
-          <Button customType={ ButtonTypes.Primary }>{ 'Añadir producto' }</Button>
+          <OrderProductsTable
+            css={ css`margin-top: ${ margins.mobile.littleGap }` }
+            products={ draft?.products }
+            editable={ true }
+          />
+          <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Añadir producto' }</Button>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
             <Input

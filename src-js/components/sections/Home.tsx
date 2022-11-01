@@ -152,6 +152,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           setDraftCustomerID={ setDraftCustomerID }
           draftCustomerID={ draftCustomerID }
           setSelectedCustomer={ setSelectedCustomer }
+          getProducts={ getProducts }
         />
       break
   }

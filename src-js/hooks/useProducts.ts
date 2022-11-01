@@ -10,7 +10,6 @@ import { assign } from 'lodash'
 export interface GetProducts {
   Request: {
     name: string,
-    page: number,
     products_number: number,
   }
   Response:
@@ -34,9 +33,9 @@ function useProducts(sessionCheck: SessionCheckType) {
 
   // noinspection SpellCheckingInspection
   const { doRequest: doGetProductsRequest } =
-    useFetchWith.urlPlaceholders<GetProducts['Request'], GetProducts['Response']>(
+    useFetchWith.urlPlaceholders<GetProducts['Request'] & { page: number }, GetProducts['Response']>(
       buildParametrizedUrl
-        `api/obtain_products?name=${ 'name' }&page=${ 'page' }&customers_number=${ 'products_number' }`,
+        `api/obtain_products?name=${ 'name' }&page=${ 'page' }&products_number=${ 'products_number' }`,
     )
 
   const [collectiveMessage, setCollectiveMessage] = useState<ProductMessage>()
@@ -49,7 +48,7 @@ function useProducts(sessionCheck: SessionCheckType) {
       setCollectiveMessage(undefined)
       doGetProductsRequest(assign(data, { page: activePage }))
         .then((res) => {
-
+console.log(res)
           if ('products' in res && 'pages' in res) {
             setProducts(res['products'])
             setTotalPages(res['pages'])

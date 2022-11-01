@@ -7,10 +7,15 @@ import IconUp from '../svg/IconUp'
 import AmountInput from '../buttons/AmountInput'
 
 const Container = styled.div`
+  --rigth-round: 2.5rem;
+  --left-round: .5rem;
+  
   display: flex;
-  border-radius: .5rem;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--left-round) var(--rigth-round) var(--rigth-round) var(--left-round);
   border: 1px solid ${ colors.primary };
-  padding: .75em 1em;
+  padding: .25em .35em .25em 1em;
 
   p {
     margin: 0;
@@ -30,7 +35,7 @@ interface IProps {
 const SelectableProduct: FC<IProps> = ({ id, name, price, stock }) => {
   return (
     <Container>
-      <p>{ name }{ '(' + price + ')' }</p>
+      <p>{ name }{ ' (' + price + ')' }</p>
       {
         stock &&
         <p>{ 'Stock: ' + stock }</p>
