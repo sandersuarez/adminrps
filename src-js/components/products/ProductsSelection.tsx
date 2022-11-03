@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import margins from '../../styles/margins'
 import { GetProducts, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
-import ProductShape from '../../shapes/ProductShape'
+import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
 import Alert from '../Alert'
 import AlertTypes from '../../shapes/AlertTypes'
 import SearchBar from '../SearchBar'
@@ -12,6 +12,7 @@ import Pagination from '../Pagination'
 import ProductsContainer from './ProductsContainer'
 import SelectableProduct from './SelectableProduct'
 import styled from '@emotion/styled'
+import { assign, findIndex, omit, remove } from 'lodash'
 
 const Container = styled.article`
   --vertical-margin: ${ margins.mobile.mediumVertical };
@@ -31,8 +32,8 @@ interface IProps {
   message: ProductMessage | undefined
   products: ProductShape[] | undefined
   getProducts: (data: GetProducts['Request']) => void
-  setDraftProducts: (products: ProductShape[]) => void
-  draftProducts: ProductShape[] | undefined
+  setDraftProducts: (products: (ProductShape & { amountproductdraft: number })[]) => void
+  draftProducts: (ProductShape & { amountproductdraft: number })[] | undefined
 }
 
 const ProductsSelection: FC<IProps> = (
@@ -50,12 +51,35 @@ const ProductsSelection: FC<IProps> = (
 ) => {
 
   const [searchString, setSearchString] = useState<string>('')
-  const [selectedProducts, setSelectedProducts] = useState(products)
+
+  const [selectedProducts, setSelectedProducts] = useState<DraftProductReqData[] | undefined>(
+    draftProducts?.map(product => {
+      return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
+    }))
+
   const [priceFormatter] =
     useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
 
   const [matches, setMatches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
+
+  const setAmount = (id: number, amount: number) => {
+    if (amount > 0) {
+      const index = findIndex(selectedProducts, { codproduct: id })
+      if (index !== -1) {
+        if (selectedProducts !== undefined) {
+          selectedProducts.splice(index, 1, { codproduct: id })
+        }
+      } else {
+        setSelectedProducts(assign(selectedProducts, { codproduct: id }))
+      }
+    } else {
+      if (selectedProducts !== undefined) {
+        // noinspection SpellCheckingInspection
+        setSelectedProducts(remove(selectedProducts, { codproduct: id }))
+      }
+    }
+  }
 
   useEffect(() => {
     // noinspection SpellCheckingInspection
@@ -98,6 +122,7 @@ const ProductsSelection: FC<IProps> = (
                   id={ product.codproduct }
                   name={ product.nameproduct }
                   price={ priceFormatter.format(parseFloat(product.priceproduct)) }
+                  stock={ product.stockproduct !== null ? product.stockproduct : undefined }
                 />
               )
             })

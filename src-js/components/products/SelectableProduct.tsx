@@ -9,7 +9,7 @@ import AmountInput from '../buttons/AmountInput'
 const Container = styled.div`
   --rigth-round: 2.5rem;
   --left-round: .5rem;
-  
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -30,9 +30,20 @@ interface IProps {
   name: string
   price: string
   stock?: number
+  amount: number
+  setAmount: (amount: number) => void
 }
 
-const SelectableProduct: FC<IProps> = ({ id, name, price, stock }) => {
+const SelectableProduct: FC<IProps> = (
+  {
+    id,
+    name,
+    price,
+    stock,
+    amount,
+    setAmount,
+  }) => {
+
   return (
     <Container>
       <p>{ name }{ ' (' + price + ')' }</p>
@@ -40,7 +51,7 @@ const SelectableProduct: FC<IProps> = ({ id, name, price, stock }) => {
         stock &&
         <p>{ 'Stock: ' + stock }</p>
       }
-      <AmountInput />
+      <AmountInput num={ amount } setNum={ setAmount } max={ stock } />
     </Container>
   )
 }

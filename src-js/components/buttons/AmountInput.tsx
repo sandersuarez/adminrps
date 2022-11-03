@@ -31,18 +31,21 @@ const ArrowButton = styled.button`
 
 interface IProps {
   className?: string
+  num: number
+  setNum: (num: number) => void
+  max?: number
 }
 
 /**
  * Component that defines an interactive amount controller.
  */
-const AmountInput: FC<IProps> = () => {
+const AmountInput: FC<IProps> = ({num, setNum, max}) => {
   return (
     <Container>
       <ArrowButton>
         <IconDown />
       </ArrowButton>
-      { 0 }
+      { num }
       <ArrowButton>
         <IconUp />
       </ArrowButton>

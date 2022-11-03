@@ -4,23 +4,26 @@
  * Function to create a PDO object using the application constant variables with the default configuration
  * @return PDO
  */
-function create_pdo_object()
+function create_pdo_object(): PDO
 {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET, DB_USER, DB_KEY);
-    $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    return $connection;
+  $connection = new PDO(
+    "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET,
+    DB_USER,
+    DB_KEY);
+  $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  return $connection;
 }
 
 /**
  * Function to clear a query data and destroy a PDO object
- * @param PDOStatement|false $query
+ * @param bool|PDOStatement $query
  * @param PDO $connection
  * @return void
  */
-function clear_query_data($query, $connection)
+function clear_query_data(bool|PDOStatement $query, PDO $connection): void
 {
-    $query->closeCursor();
-    $connection = null;
+  $query->closeCursor();
+  $connection = null;
 }
 
 /**
@@ -28,8 +31,8 @@ function clear_query_data($query, $connection)
  * @param PDOException $e
  * @return array
  */
-function process_pdo_exception($e)
+function process_pdo_exception(PDOException $e): array
 {
-    $error = 'Error: ' . $e->getMessage();
-    return array('error' => "Error: $error");
+  $error = 'Error: ' . $e->getMessage();
+  return array('error' => "Error: $error");
 }

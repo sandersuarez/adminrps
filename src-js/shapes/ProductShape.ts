@@ -1,4 +1,10 @@
 // noinspection SpellCheckingInspection
+export type DraftProductReqData = {
+  codproduct: number,
+  amountproduct: number,
+}
+
+// noinspection SpellCheckingInspection
 type ProductShape = {
   codproduct: number,
   nameproduct: string,

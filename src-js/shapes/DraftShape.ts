@@ -1,4 +1,4 @@
-import ProductShape from './ProductShape'
+import ProductShape, { DraftProductReqData } from './ProductShape'
 
 // noinspection SpellCheckingInspection
 export type DraftContent = {
@@ -15,10 +15,7 @@ export type DraftReqData = {
   telcustomertmp?: string,
   pickuptime?: string,
   codcustomer?: number,
-  products?: {
-    codproduct: number,
-    amountproduct: number,
-  }[],
+  products?: DraftProductReqData[],
 }
 
 // noinspection SpellCheckingInspection
