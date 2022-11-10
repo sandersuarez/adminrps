@@ -12,7 +12,7 @@ import Pagination from '../Pagination'
 import ProductsContainer from './ProductsContainer'
 import SelectableProduct from './SelectableProduct'
 import styled from '@emotion/styled'
-import { assign, findIndex, omit, remove } from 'lodash'
+import { concat, filter, findIndex } from 'lodash'
 
 const Container = styled.article`
   --vertical-margin: ${ margins.mobile.mediumVertical };
@@ -60,23 +60,36 @@ const ProductsSelection: FC<IProps> = (
   const [priceFormatter] =
     useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
 
-  const [matches, setMatches] =
+  const [matches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
 
   const setAmount = (id: number, amount: number) => {
+
     if (amount > 0) {
-      const index = findIndex(selectedProducts, { codproduct: id })
-      if (index !== -1) {
-        if (selectedProducts !== undefined) {
-          selectedProducts.splice(index, 1, { codproduct: id })
+      if (selectedProducts !== undefined) {
+        // noinspection SpellCheckingInspection
+        if (findIndex(selectedProducts, { codproduct: id }) !== -1) {
+          // noinspection SpellCheckingInspection
+          let aux = filter(selectedProducts, product => {
+            return product.codproduct != id
+          })
+          setSelectedProducts(
+            concat(aux, { codproduct: id, amountproduct: amount }),
+          )
+        } else {
+          // noinspection SpellCheckingInspection
+          setSelectedProducts(concat(selectedProducts, { codproduct: id, amountproduct: amount }))
         }
       } else {
-        setSelectedProducts(assign(selectedProducts, { codproduct: id }))
+        // noinspection SpellCheckingInspection
+        setSelectedProducts([{ codproduct: id, amountproduct: amount }])
       }
     } else {
       if (selectedProducts !== undefined) {
         // noinspection SpellCheckingInspection
-        setSelectedProducts(remove(selectedProducts, { codproduct: id }))
+        setSelectedProducts(filter(selectedProducts, product => {
+          return product.codproduct != id
+        }))
       }
     }
   }
@@ -116,6 +129,14 @@ const ProductsSelection: FC<IProps> = (
         <>
           <ProductsContainer productList={
             products.map((product, index) => {
+
+              let coincidentProduct = undefined
+              if (draftProducts !== undefined) {
+                coincidentProduct = draftProducts.find(selected => {
+                  return selected.codproduct == product.codproduct
+                })
+              }
+
               return (
                 <SelectableProduct
                   key={ index }
@@ -123,6 +144,8 @@ const ProductsSelection: FC<IProps> = (
                   name={ product.nameproduct }
                   price={ priceFormatter.format(parseFloat(product.priceproduct)) }
                   stock={ product.stockproduct !== null ? product.stockproduct : undefined }
+                  setAmount={ setAmount }
+                  initialAmount={ coincidentProduct !== undefined ? coincidentProduct.amountproductdraft : 0 }
                 />
               )
             })

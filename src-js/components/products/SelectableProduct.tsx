@@ -1,12 +1,10 @@
-import React, { FC, Key } from 'react'
+import React, { FC, Key, useState } from 'react'
 import styled from '@emotion/styled'
 import colors from '../../styles/colors'
-import { css } from '@emotion/react/dist/emotion-react.cjs'
-import IconDown from '../svg/IconDown'
-import IconUp from '../svg/IconUp'
 import AmountInput from '../buttons/AmountInput'
+import { motion } from 'framer-motion'
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   --rigth-round: 2.5rem;
   --left-round: .5rem;
 
@@ -30,8 +28,8 @@ interface IProps {
   name: string
   price: string
   stock?: number
-  amount: number
-  setAmount: (amount: number) => void
+  initialAmount?: number
+  setAmount: (id: number, amount: number) => void
 }
 
 const SelectableProduct: FC<IProps> = (
@@ -40,18 +38,29 @@ const SelectableProduct: FC<IProps> = (
     name,
     price,
     stock,
-    amount,
+    initialAmount,
     setAmount,
   }) => {
 
+  const [added, setAdded] = useState<boolean>(initialAmount === undefined ? false : initialAmount > 0)
+
+  const setNum = (amount: number) => {
+    setAdded(amount > 0)
+    setAmount(id, amount)
+  }
+
   return (
-    <Container>
+    <Container
+      initial={ { backgroundColor: colors.background } }
+      animate={ (added) ? { backgroundColor: colors.menu } : { backgroundColor: colors.background } }
+      transition={{ ease: 'easeInOut', duration: .2 }}
+    >
       <p>{ name }{ ' (' + price + ')' }</p>
       {
         stock &&
         <p>{ 'Stock: ' + stock }</p>
       }
-      <AmountInput num={ amount } setNum={ setAmount } max={ stock } />
+      <AmountInput initialNum={ initialAmount } pushNum={ setNum } max={ stock } />
     </Container>
   )
 }
