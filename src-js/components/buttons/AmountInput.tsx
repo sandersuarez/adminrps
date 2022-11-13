@@ -41,7 +41,7 @@ interface IProps {
  */
 const AmountInput: FC<IProps> = ({ initialNum, pushNum, max }) => {
 
-  const [num, setNum] = useState<number>(initialNum ? initialNum : 0)
+  const [num, setNum] = useState<number>(initialNum !== undefined ? initialNum : 0)
 
   const sum: FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
@@ -64,6 +64,10 @@ const AmountInput: FC<IProps> = ({ initialNum, pushNum, max }) => {
   useEffect(() => {
     pushNum(num)
   }, [num])
+
+  useEffect(() => {
+    setNum(initialNum !== undefined ? initialNum : 0)
+  }, [initialNum])
 
   return (
     <Container>

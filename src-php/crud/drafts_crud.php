@@ -259,17 +259,23 @@ function edit_draft(array $input_data): array
 {
   // Obtain the draft data
   $draft_data = obtain_draft($input_data['coddraft']);
-  if (array_key_exists('message', $draft_data)) return $draft_data;
+  if (array_key_exists('message', $draft_data)) {
+    return $draft_data;
+  }
 
   // Requirements control
   if (array_key_exists('namecustomertmp', $input_data)) {
     $input_data['namecustomertmp'] = trim($input_data['namecustomertmp']);
-    if (strlen($input_data['namecustomertmp']) > 60) return array('message' => 'The customer name is invalid');
+    if (strlen($input_data['namecustomertmp']) > 60) {
+      return array('message' => 'The customer name is invalid');
+    }
   }
 
   if (array_key_exists('telcustomertmp', $input_data)) {
     $input_data['telcustomertmp'] = trim($input_data['telcustomertmp']);
-    if (strlen($input_data['telcustomertmp']) > 9) return array('message' => 'The customer phone number is invalid');
+    if (strlen($input_data['telcustomertmp']) > 9) {
+      return array('message' => 'The customer phone number is invalid');
+    }
   }
 
   if ((((array_key_exists('namecustomertmp', $input_data) && $input_data['namecustomertmp'] !== '') ||
@@ -278,59 +284,96 @@ function edit_draft(array $input_data): array
         (!array_key_exists('telcustomertmp', $input_data) && $draft_data['draft'][0]['telcustomertmp'] !== null))) &&
     ((array_key_exists('codcustomer', $input_data) && $input_data['codcustomer'] != 0) ||
       (!array_key_exists('codcustomer', $input_data) && $draft_data['draft'][0]['codcustomer'] !== null))
-  )
+  ) {
     return array('message', 'The customer code and the customer data cannot be inserted at the same time');
+  }
 
-  if (array_key_exists('coddraft', $input_data) && !filter_var($input_data['coddraft'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+  if (array_key_exists('coddraft', $input_data) &&
+    !filter_var(
+      $input_data['coddraft'],
+      FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']])
+  ) {
     return array('message' => 'The draft code is invalid');
+  }
 
-  if (array_key_exists('codcustomer', $input_data) && !(filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT) === 0 ||
-      filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']])))
+  if (array_key_exists('codcustomer', $input_data) &&
+    !(filter_var($input_data['codcustomer'], FILTER_VALIDATE_INT) === 0 ||
+      filter_var(
+        $input_data['codcustomer'],
+        FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+  ) {
     return array('message' => 'The customer code is invalid');
+  }
 
   if (array_key_exists('products', $input_data) && $input_data['products'] !== []) {
     $validation = validate_order_product_list($input_data['products']);
-    if (array_key_exists('message', $validation)) return $validation;
+    if (array_key_exists('message', $validation)) {
+      return $validation;
+    }
   }
 
   if (array_key_exists('pickuptime', $input_data)) {
     $input_data['pickuptime'] = trim($input_data['pickuptime']);
-    if ((!validateTime($input_data['pickuptime'])) && $input_data['pickuptime'] != '') return array('message' => 'The pick up time is invalid');
+    if ((!validateTime($input_data['pickuptime'])) && $input_data['pickuptime'] != '') {
+      return array('message' => 'The pick up time is invalid');
+    }
   }
 
   $equal = 0;
   foreach ($input_data as $element => $value) {
     foreach ($draft_data['draft'][0] as $draft_attr => $draft_value) {
-      if ($element == $draft_attr && $value == $draft_value) $equal = $equal + 1;
-      if ($element == 'codcustomer' && $draft_attr == 'codcustomer' && $value == 0 && $draft_value === null) $equal = $equal + 1;
-      if ($element == 'pickuptime' && $value != '' && $draft_attr == 'pickuptime' && $value . ':00' == $draft_value) $equal = $equal + 1;
+
+      if ($element == $draft_attr && $value == $draft_value) {
+        $equal = $equal + 1;
+      }
+
+      if ($element == 'codcustomer' && $draft_attr == 'codcustomer' && $value == 0 && $draft_value === null) {
+        $equal = $equal + 1;
+      }
+
+      if ($element == 'pickuptime' && $value != '' && $draft_attr == 'pickuptime' && $value . ':00' == $draft_value) {
+        $equal = $equal + 1;
+      }
     }
   }
 
   if (array_key_exists('products', $input_data)) {
     if (array_key_exists('products', $draft_data['draft'][0])) {
+
       $equal_products = 0;
+
       foreach ($input_data['products'] as $product) {
         foreach ($draft_data['draft'][0]['products'] as $draft_product) {
-          if ($product['codproduct'] == $draft_product['codproduct'] && $product['amountproduct'] == $draft_product['amountproductdraft'])
+          if ($product['codproduct'] == $draft_product['codproduct'] &&
+            $product['amountproduct'] == $draft_product['amountproductdraft']) {
             $equal_products = $equal_products + 1;
+          }
         }
       }
-      if ($equal_products == max(count($input_data['products']), count($draft_data['draft'][0]['products']))) $equal = $equal + 1;
+
+      if ($equal_products == max(count($input_data['products']), count($draft_data['draft'][0]['products']))) {
+        $equal = $equal + 1;
+      }
     } else {
-      if (count($input_data['products']) == 0) $equal = $equal + 1;
+      if (count($input_data['products']) == 0) {
+        $equal = $equal + 1;
+      }
     }
   }
 
-  if ($equal == count($input_data)) return array('message' => 'There is nothing to change');
+  if ($equal == count($input_data)) {
+    return array('message' => 'There is nothing to change');
+  }
 
   try {
     $connection = create_pdo_object();
     $connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 
     if (array_key_exists('codcustomer', $input_data) && $input_data['codcustomer'] != 0) {
+
       // SQL Query to check if the customer exists
-      $query = $connection->prepare("SELECT codcustomer FROM " . CUSTOMERS . " WHERE codcustomer = :codcustomer AND coduser = :coduser");
+      $query = $connection->prepare("SELECT codcustomer FROM " . CUSTOMERS .
+        " WHERE codcustomer = :codcustomer AND coduser = :coduser");
 
       // Parameters binding and execution
       $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
@@ -345,7 +388,7 @@ function edit_draft(array $input_data): array
       $query->closeCursor();
     }
   } catch (PDOException $e) {
-    if ($query !== null) $query->closeCursor();
+    $query?->closeCursor();
     $connection = null;
     return process_pdo_exception($e);
   }
@@ -355,12 +398,14 @@ function edit_draft(array $input_data): array
 
     // SQL Query to edit the draft
     if (
-      array_key_exists('namecustomertmp', $input_data) || array_key_exists('telcustomertmp', $input_data) || array_key_exists('codcustomer', $input_data) ||
-      array_key_exists('pickuptime', $input_data)
+      array_key_exists('namecustomertmp', $input_data) || array_key_exists('telcustomertmp', $input_data) ||
+      array_key_exists('codcustomer', $input_data) || array_key_exists('pickuptime', $input_data)
     ) {
 
       $namecustomertmp_clause = '';
-      if (array_key_exists('namecustomertmp', $input_data)) $namecustomertmp_clause = "namecustomertmp = :namecustomertmp";
+      if (array_key_exists('namecustomertmp', $input_data)) {
+        $namecustomertmp_clause = "namecustomertmp = :namecustomertmp";
+      }
 
       $telcustomertmp_clause = '';
       if (array_key_exists('telcustomertmp', $input_data)) {
@@ -389,8 +434,8 @@ function edit_draft(array $input_data): array
         }
       }
 
-      $query = $connection->prepare("UPDATE " . DRAFTS . " SET " . $namecustomertmp_clause . $telcustomertmp_clause . $codcustomer_clause . $pickuptime_clause .
-        " WHERE coddraft = :coddraft");
+      $query = $connection->prepare("UPDATE " . DRAFTS . " SET " . $namecustomertmp_clause .
+        $telcustomertmp_clause . $codcustomer_clause . $pickuptime_clause . " WHERE coddraft = :coddraft");
 
       // Parameters binding and execution
       $query->bindParam(':coddraft', $input_data['coddraft'], PDO::PARAM_INT);
@@ -407,7 +452,7 @@ function edit_draft(array $input_data): array
         if ($input_data['namecustomertmp'] === '') {
           $query->bindValue(':namecustomertmp', NULL, PDO::PARAM_NULL);
         } else {
-          $query->bindParam(':namecustomertmp', $input_data['namecustomertmp'], PDO::PARAM_STR);
+          $query->bindParam(':namecustomertmp', $input_data['namecustomertmp']);
         }
       }
 
@@ -415,7 +460,7 @@ function edit_draft(array $input_data): array
         if ($input_data['telcustomertmp'] === '') {
           $query->bindValue(':telcustomertmp', NULL, PDO::PARAM_NULL);
         } else {
-          $query->bindParam(':telcustomertmp', $input_data['telcustomertmp'], PDO::PARAM_STR);
+          $query->bindParam(':telcustomertmp', $input_data['telcustomertmp']);
         }
       }
 
@@ -423,7 +468,7 @@ function edit_draft(array $input_data): array
         if ($input_data['pickuptime'] === '') {
           $query->bindValue(':pickuptime', NULL, PDO::PARAM_NULL);
         } else {
-          $query->bindParam(':pickuptime', $input_data['pickuptime'], PDO::PARAM_STR);
+          $query->bindParam(':pickuptime', $input_data['pickuptime']);
         }
       }
 
@@ -433,9 +478,11 @@ function edit_draft(array $input_data): array
 
     if (array_key_exists('products', $input_data)) {
       if (!array_key_exists('products', $draft_data['draft'][0])) {
-        foreach ($input_data['products'] as $index => $product) {
+
+        foreach ($input_data['products'] as $product) {
           // SQL Query to add product records to the draft
-          $query = $connection->prepare("INSERT INTO " . DRAFTS_CONTAIN . " (codproduct, coddraft, amountproductdraft) VALUES (:codproduct, :coddraft, :amountproductdraft)");
+          $query = $connection->prepare("INSERT INTO " . DRAFTS_CONTAIN .
+            " (codproduct, coddraft, amountproductdraft) VALUES (:codproduct, :coddraft, :amountproductdraft)");
 
           // Parameters binding and execution
           $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);
@@ -449,24 +496,33 @@ function edit_draft(array $input_data): array
         if ($equal_products != max(count($input_data['products']), count($draft_data['draft'][0]['products']))) {
 
           $codproducts_delete = [];
-          foreach ($draft_data['draft'][0]['products'] as $draft_product)
-            array_push($codproducts_delete, $draft_product['codproduct']);
+          foreach ($draft_data['draft'][0]['products'] as $draft_product) {
+            $codproducts_delete[] = $draft_product['codproduct'];
+          }
 
           $codproducts_insert = [];
-          foreach ($input_data['products'] as $product)
-            array_push($codproducts_insert, $product['codproduct']);
+          foreach ($input_data['products'] as $product) {
+            $codproducts_insert[] = $product['codproduct'];
+          }
 
           // Product elements modification
           foreach ($input_data['products'] as $product) {
             foreach ($draft_data['draft'][0]['products'] as $draft_product) {
+
               if ($product['codproduct'] == $draft_product['codproduct']) {
 
-                if (($key = array_search($product['codproduct'], $codproducts_insert)) !== false) unset($codproducts_insert[$key]);
-                if (($key = array_search($draft_product['codproduct'], $codproducts_delete)) !== false) unset($codproducts_delete[$key]);
+                if (($key = array_search($product['codproduct'], $codproducts_insert)) !== false) {
+                  unset($codproducts_insert[$key]);
+                }
+
+                if (($key = array_search($draft_product['codproduct'], $codproducts_delete)) !== false) {
+                  unset($codproducts_delete[$key]);
+                }
 
                 if ($product['amountproduct'] != $draft_product['amountproductdraft']) {
                   // SQL Query to add product records to the order
-                  $query = $connection->prepare("UPDATE " . DRAFTS_CONTAIN . " SET amountproductdraft = :amountproductdraft WHERE codproduct = :codproduct " .
+                  $query = $connection->prepare("UPDATE " . DRAFTS_CONTAIN .
+                    " SET amountproductdraft = :amountproductdraft WHERE codproduct = :codproduct " .
                     "AND coddraft = :coddraft");
 
                   // Parameters binding and execution
@@ -483,18 +539,24 @@ function edit_draft(array $input_data): array
 
           $products_delete = [];
           foreach ($draft_data['draft'][0]['products'] as $draft_product) {
-            if (in_array($draft_product['codproduct'], $codproducts_delete)) array_push($products_delete, $draft_product);
+            if (in_array($draft_product['codproduct'], $codproducts_delete)) {
+              $products_delete[] = $draft_product;
+            }
           }
 
           $products_insert = [];
           foreach ($input_data['products'] as $product) {
-            if (in_array($product['codproduct'], $codproducts_insert)) array_push($products_insert, $product);
+            if (in_array($product['codproduct'], $codproducts_insert)) {
+              $products_insert[] = $product;
+            }
           }
 
           // Product elements insertion
           foreach ($products_insert as $product_insert) {
+
             // SQL Query to add product records to the order
-            $query = $connection->prepare("INSERT INTO " . DRAFTS_CONTAIN . " (codproduct, coddraft, amountproductdraft) VALUES (:codproduct, :coddraft, :amountproductdraft)");
+            $query = $connection->prepare("INSERT INTO " . DRAFTS_CONTAIN .
+              " (codproduct, coddraft, amountproductdraft) VALUES (:codproduct, :coddraft, :amountproductdraft)");
 
             // Parameters binding and execution
             $query->bindParam(':codproduct', $product_insert['codproduct'], PDO::PARAM_INT);
@@ -507,8 +569,10 @@ function edit_draft(array $input_data): array
 
           // Product elements deletion
           foreach ($products_delete as $product_delete) {
+
             // SQL Query to add product records to the order
-            $query = $connection->prepare("DELETE FROM " . DRAFTS_CONTAIN . " WHERE codproduct = :codproduct AND coddraft = :coddraft");
+            $query = $connection->prepare("DELETE FROM " . DRAFTS_CONTAIN .
+              " WHERE codproduct = :codproduct AND coddraft = :coddraft");
 
             // Parameters binding and execution
             $query->bindParam(':codproduct', $product_delete['codproduct'], PDO::PARAM_INT);
@@ -524,7 +588,7 @@ function edit_draft(array $input_data): array
     $connection->commit();
   } catch (PDOException $e) {
     $connection->rollBack();
-    if ($query !== null) $query->closeCursor();
+    $query?->closeCursor();
     $connection = null;
     return process_pdo_exception($e);
   }

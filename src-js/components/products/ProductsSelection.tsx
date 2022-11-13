@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import margins from '../../styles/margins'
 import { GetProducts, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
 import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
@@ -32,8 +32,8 @@ interface IProps {
   message: ProductMessage | undefined
   products: ProductShape[] | undefined
   getProducts: (data: GetProducts['Request']) => void
-  setDraftProducts: (products: (ProductShape & { amountproductdraft: number })[]) => void
-  draftProducts: (ProductShape & { amountproductdraft: number })[] | undefined
+  draftProducts: DraftProductReqData[] | undefined
+  setDraftProducts: (tempDraftProducts: DraftProductReqData[] | undefined) => void
 }
 
 const ProductsSelection: FC<IProps> = (
@@ -45,17 +45,14 @@ const ProductsSelection: FC<IProps> = (
     message,
     products,
     getProducts,
-    setDraftProducts,
     draftProducts,
+    setDraftProducts,
   },
 ) => {
 
   const [searchString, setSearchString] = useState<string>('')
 
-  const [selectedProducts, setSelectedProducts] = useState<DraftProductReqData[] | undefined>(
-    draftProducts?.map(product => {
-      return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
-    }))
+  const [selectedProducts, setSelectedProducts] = useState<DraftProductReqData[] | undefined>(draftProducts)
 
   const [priceFormatter] =
     useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
@@ -63,8 +60,9 @@ const ProductsSelection: FC<IProps> = (
   const [matches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
 
-  const setAmount = (id: number, amount: number) => {
+  const [productList, setProductList] = useState<ReactElement[]>([])
 
+  const setAmount = (id: number, amount: number) => {
     if (amount > 0) {
       if (selectedProducts !== undefined) {
         // noinspection SpellCheckingInspection
@@ -94,6 +92,12 @@ const ProductsSelection: FC<IProps> = (
     }
   }
 
+  const save: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    setDraftProducts(selectedProducts)
+    closeSidePanel()
+  }
+
   useEffect(() => {
     // noinspection SpellCheckingInspection
     getProducts({
@@ -101,6 +105,32 @@ const ProductsSelection: FC<IProps> = (
       products_number: matches ? 30 : 15,
     })
   }, [activePage, searchString, matches])
+
+  useEffect(() => {
+    if (products !== undefined) {
+      setProductList(
+        products.map((product, index) => {
+          return (
+            <SelectableProduct
+              key={ index }
+              id={ product.codproduct }
+              name={ product.nameproduct }
+              price={ priceFormatter.format(parseFloat(product.priceproduct)) }
+              stock={ product.stockproduct !== null ? product.stockproduct : undefined }
+              setAmount={ setAmount }
+              initialAmount={ selectedProducts?.find(selected => {
+                return selected.codproduct == product.codproduct
+              })?.amountproduct }
+            />
+          )
+        }),
+      )
+    } else {
+      setProductList([])
+    }
+  }, [products, draftProducts])
+
+  useEffect(() => setSelectedProducts(draftProducts), [draftProducts])
 
   return (
     <Container>
@@ -112,7 +142,7 @@ const ProductsSelection: FC<IProps> = (
       <Options>
         {
           products !== undefined &&
-          <Button customType={ ButtonTypes.Primary }>{ 'Guardar' }</Button>
+          <Button customType={ ButtonTypes.Primary } onClick={ save }>{ 'Guardar' }</Button>
         }
         {
           (message === undefined || message.type === ProductMessageTypes.Info) &&
@@ -127,30 +157,7 @@ const ProductsSelection: FC<IProps> = (
       {
         products !== undefined &&
         <>
-          <ProductsContainer productList={
-            products.map((product, index) => {
-
-              let coincidentProduct = undefined
-              if (draftProducts !== undefined) {
-                coincidentProduct = draftProducts.find(selected => {
-                  return selected.codproduct == product.codproduct
-                })
-              }
-
-              return (
-                <SelectableProduct
-                  key={ index }
-                  id={ product.codproduct }
-                  name={ product.nameproduct }
-                  price={ priceFormatter.format(parseFloat(product.priceproduct)) }
-                  stock={ product.stockproduct !== null ? product.stockproduct : undefined }
-                  setAmount={ setAmount }
-                  initialAmount={ coincidentProduct !== undefined ? coincidentProduct.amountproductdraft : 0 }
-                />
-              )
-            })
-          }
-          />
+          <ProductsContainer productList={ productList } />
           <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
         </>
       }

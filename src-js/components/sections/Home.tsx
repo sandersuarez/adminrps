@@ -16,7 +16,7 @@ import Panels from '../../shapes/Panels'
 import useCustomers from '../../hooks/useCustomers'
 import ProductsSelection from '../products/ProductsSelection'
 import useProducts from '../../hooks/useProducts'
-import ProductShape from '../../shapes/ProductShape'
+import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -68,7 +68,6 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
   const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
   const [selectedCustomer, setSelectedCustomer] = useState<number>()
-  const [tempDraftProducts, setTempDraftProducts] = useState<ProductShape[]>()
 
   const {
     individualMessage: indDraftMessage,
@@ -84,6 +83,12 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     getDraft,
     editDraft,
   } = useDrafts(sessionCheck)
+
+  const [draftProducts, setDraftProducts] = useState<DraftProductReqData[] | undefined>(
+    draft?.products?.map(product => {
+      // noinspection SpellCheckingInspection
+      return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
+    }))
 
   const {
     collectiveMessage: colCustomerMessage,
@@ -125,6 +130,18 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   }
 
   useEffect(getDrafts, [draft, newDraftID])
+  useEffect(() => {
+    if (draft !== undefined) {
+      if (draft.products === undefined) {
+        setDraftProducts(undefined)
+      } else {
+        setDraftProducts(draft.products.map(product => {
+          // noinspection SpellCheckingInspection
+          return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
+        }))
+      }
+    }
+  }, [draft?.products])
 
   let mainPanel
   switch (firstSidePanel) {
@@ -153,6 +170,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           draftCustomerID={ draftCustomerID }
           setSelectedCustomer={ setSelectedCustomer }
           getProducts={ getProducts }
+          draftProducts={ draftProducts }
+          setDraftProducts={ setDraftProducts }
         />
       break
   }
@@ -188,8 +207,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           /* Todo: modify tempDraftProducts on the selection. When commit, do an edit draft request. Then update
           the tempDraftProducts value with the new draft.products. Use draft.products to check if there has been
           changes or not */
-          setDraftProducts={ setTempDraftProducts }
-          draftProducts={ draft?.products }
+          draftProducts={ draftProducts }
+          setDraftProducts={ setDraftProducts }
         />
       break
   }

@@ -48,7 +48,7 @@ function useProducts(sessionCheck: SessionCheckType) {
       setCollectiveMessage(undefined)
       doGetProductsRequest(assign(data, { page: activePage }))
         .then((res) => {
-console.log(res)
+
           if ('products' in res && 'pages' in res) {
             setProducts(res['products'])
             setTotalPages(res['pages'])

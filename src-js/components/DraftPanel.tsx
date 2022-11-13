@@ -13,14 +13,14 @@ import { AddDraft, DraftMessage, DraftMessageTypes, EditDraft } from '../hooks/u
 import AlertTypes from '../shapes/AlertTypes'
 import Alert from './Alert'
 import FieldWrapper from './forms/FieldWrapper'
-import DraftShape, { DraftContent, DraftReqData } from '../shapes/DraftShape'
+import DraftShape, { DraftContent } from '../shapes/DraftShape'
 import { css } from '@emotion/react'
 import useValid from '../hooks/useValid'
-import { assign, omit } from 'lodash'
+import { assign, isEqual } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
-import OrderProductsTable from './orders/OrderProductsTable'
 import { GetProducts } from '../hooks/useProducts'
+import { DraftProductReqData } from '../shapes/ProductShape'
 
 const Container = styled.section`
   display: flex;
@@ -57,6 +57,8 @@ interface DraftSectionProps {
   draftCustomerID: number | undefined
   setSelectedCustomer: (id: number | undefined) => void
   getProducts: (data: GetProducts['Request']) => void
+  draftProducts: DraftProductReqData[] | undefined
+  setDraftProducts: (draftProducts: DraftProductReqData[] | undefined) => void
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -76,6 +78,8 @@ const DraftPanel: FC<DraftSectionProps> = (
     draftCustomerID,
     setSelectedCustomer,
     getProducts,
+    draftProducts,
+    setDraftProducts,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
@@ -125,6 +129,12 @@ const DraftPanel: FC<DraftSectionProps> = (
 
             modified = true
           }
+
+          if (draftProducts !== undefined && draftProducts.length > 0) {
+            // noinspection SpellCheckingInspection
+            assign(data, { products: draftProducts })
+            modified = true
+          }
         }
 
         if (draft !== undefined) {
@@ -160,6 +170,17 @@ const DraftPanel: FC<DraftSectionProps> = (
           if (draft.pickuptime !== pickUpTimeSet) {
             // noinspection SpellCheckingInspection
             assign(data, { pickuptime: pickUpTimeSet })
+            modified = true
+          }
+
+          let previousProducts = draft?.products?.map(product => {
+            // noinspection SpellCheckingInspection
+            return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
+          })
+
+          if (!isEqual(draftProducts, previousProducts)) {
+            // noinspection SpellCheckingInspection
+            assign(data, { products: draftProducts === undefined ? [] : draftProducts})
             modified = true
           }
         }
@@ -245,7 +266,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     if (draft !== undefined) {
       doUpdateDraft()
     }
-  }, [draftCustomerID])
+  }, [draftCustomerID, draftProducts])
 
   useEffect(() => {
     window
@@ -352,11 +373,6 @@ const DraftPanel: FC<DraftSectionProps> = (
               <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
-          <OrderProductsTable
-            css={ css`margin-top: ${ margins.mobile.littleGap }` }
-            products={ draft?.products }
-            editable={ true }
-          />
           <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Añadir producto' }</Button>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
