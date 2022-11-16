@@ -1,13 +1,9 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import colors from '../../styles/colors'
 import breakpoints from '../../styles/breakpoints'
 import margins from '../../styles/margins'
-import { css } from '@emotion/react'
-import IconDown from '../svg/IconDown'
-import IconUp from '../svg/IconUp'
 import ProductShape from '../../shapes/ProductShape'
-import AmountInput from '../buttons/AmountInput'
 
 const Gradient = styled.div`
   position: absolute;
@@ -50,7 +46,7 @@ const Table = styled.table`
     padding-top: 0.4rem;
     padding-bottom: ${ margins.mobile.littleGap };
   }
-  
+
   td {
     padding: ${ margins.mobile.tinyLateral } ${ margins.mobile.littleGap };
   }
@@ -70,6 +66,7 @@ const Table = styled.table`
 
   span {
     white-space: nowrap;
+    margin-left: .75em;
   }
 `
 
@@ -95,8 +92,7 @@ const Container = styled.div`
 
 interface OrderProductsTableProps {
   className?: string
-  editable: boolean
-  products: ProductShape[] | undefined
+  products: (ProductShape & { amountproductdraft: number })[] | undefined
 }
 
 /**
@@ -106,11 +102,24 @@ interface OrderProductsTableProps {
 const OrderProductsTable: FC<OrderProductsTableProps> = (
   {
     className,
-    editable,
     products,
   }) => {
 
   const formatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+  const [total, setTotal] = useState<number>(products !== undefined ?
+    products.reduce((acc, product) => {
+      return acc + parseFloat(product.priceproduct) * product.amountproductdraft
+    }, 0)
+    : 0,
+  )
+
+  useEffect(() => {
+    setTotal(products !== undefined ?
+      products.reduce((acc, product) => {
+        return acc + parseFloat(product.priceproduct) * product.amountproductdraft
+      }, 0)
+      : 0)
+  }, [products])
 
   return (
     <Container className={ className }>
@@ -129,16 +138,11 @@ const OrderProductsTable: FC<OrderProductsTableProps> = (
                 products !== undefined ?
                   products.map((product, index) => {
                     return (
-                      <tr>
-                        <td scope={ 'row' }>{ product.nameproduct }<span>{ product.priceproduct }</span></td>
-                        <td>
-                          {
-                            editable ?
-                              <AmountInput css={ css`justify-content: center` }/>
-                              :
-                              product.amountproductdraft
-                          }
+                      <tr key={ index }>
+                        <td scope={ 'row' }>{ product.nameproduct }
+                          <span>{ '(' + formatter.format(parseFloat(product.priceproduct)) + ')' }</span>
                         </td>
+                        <td>{ product.amountproductdraft }</td>
                         <td>{ formatter.format(parseFloat(product.priceproduct) * product.amountproductdraft) }</td>
                       </tr>
                     )
@@ -153,7 +157,7 @@ const OrderProductsTable: FC<OrderProductsTableProps> = (
               <tr>
                 <td scope={ 'row' }></td>
                 <td>{ 'Total' }</td>
-                <td></td>
+                <td>{ formatter.format(total) }</td>
               </tr>
             </>
           } />

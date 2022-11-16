@@ -21,6 +21,7 @@ import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
 import { GetProducts } from '../hooks/useProducts'
 import { DraftProductReqData } from '../shapes/ProductShape'
+import OrderProductsTable from './orders/OrderProductsTable'
 
 const Container = styled.section`
   display: flex;
@@ -373,7 +374,8 @@ const DraftPanel: FC<DraftSectionProps> = (
               <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
-          <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Añadir producto' }</Button>
+          <OrderProductsTable products={draft?.products} />
+          <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
             <Input

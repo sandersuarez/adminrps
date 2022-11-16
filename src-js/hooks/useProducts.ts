@@ -14,6 +14,7 @@ export interface GetProducts {
   }
   Response:
     { products: ProductShape[], pages: number }
+    | { empty: string }
     | Errors
     | ForbidReasons
 }

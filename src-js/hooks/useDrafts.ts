@@ -18,6 +18,7 @@ export interface AddDraft {
 export interface GetDrafts {
   Response:
     { drafts: (DraftShape & DraftContent)[] }
+    | { empty: string }
     | Errors
     | ForbidReasons
 }

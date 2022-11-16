@@ -51,7 +51,7 @@ const SelectableProduct: FC<IProps> = (
 
   return (
     <Container
-      initial={ { backgroundColor: colors.background } }
+      initial={ (added) ? { backgroundColor: colors.menu } : { backgroundColor: colors.background } }
       animate={ (added) ? { backgroundColor: colors.menu } : { backgroundColor: colors.background } }
       transition={{ ease: 'easeInOut', duration: .2 }}
     >

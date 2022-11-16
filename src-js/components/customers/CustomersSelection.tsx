@@ -86,6 +86,11 @@ const CustomersSelection: FC<IProps> = (
   return (
     <Container>
       {
+        message !== undefined && message.type === CustomerMessageTypes.Error &&
+        <Alert message={ message.content + '. Contacte con el administrador.' }
+               type={ AlertTypes.Error } />
+      }
+      {
         message !== undefined && message.type === CustomerMessageTypes.Warning &&
         <Alert message={ message.content } type={ AlertTypes.Warning } />
       }

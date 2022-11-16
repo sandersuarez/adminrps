@@ -28,11 +28,13 @@ function obtain_products(array $requirements): array
 
   try {
     $connection = create_pdo_object();
-
+throw new PDOException();
     // If there is a product name to search, the clause is added
     $name_clause = '';
     $requirements['name'] = trim($requirements['name']);
-    if ($requirements['name'] !== '') $name_clause = " AND (nameproduct REGEXP :nameproduct)";
+    if ($requirements['name'] !== '') {
+      $name_clause = " AND (nameproduct REGEXP :nameproduct)";
+    }
 
     // SQL Query to search total number customers
     $query = $connection->prepare("SELECT count(codproduct) FROM " . PRODUCTS .
@@ -64,7 +66,7 @@ function obtain_products(array $requirements): array
       // SQL Query to search products in alphabetic order
       $query = $connection->prepare("SELECT codproduct, nameproduct, stockproduct, priceproduct FROM " .
         PRODUCTS . " WHERE productdeleted = :productdeleted AND coduser = :coduser" . $name_clause .
-        " ORDER BY nameproduct LIMIT :begin, :end");
+        " ORDER BY nameproduct, codproduct LIMIT :begin, :end");
 
       // Parameters binding and execution
       $query->bindParam(':productdeleted', $requirements['deleted'], PDO::PARAM_INT);
@@ -112,7 +114,11 @@ function obtain_products(array $requirements): array
         $answer = array('empty' => 'No hay productos que coincidan con la búsqueda');
       }
     } else {
-      $answer = array('empty' => 'No hay productos que coincidan con la búsqueda');
+      if ($requirements['name'] !== '') {
+        $answer = array('empty' => 'No hay productos que coincidan con la búsqueda');
+      } else {
+        $answer = array('empty' => 'No hay productos');
+      }
     }
 
     clear_query_data($query, $connection);

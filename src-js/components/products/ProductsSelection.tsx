@@ -12,7 +12,7 @@ import Pagination from '../Pagination'
 import ProductsContainer from './ProductsContainer'
 import SelectableProduct from './SelectableProduct'
 import styled from '@emotion/styled'
-import { concat, filter, findIndex } from 'lodash'
+import { concat, filter, findIndex, isEqual } from 'lodash'
 
 const Container = styled.article`
   --vertical-margin: ${ margins.mobile.mediumVertical };
@@ -57,7 +57,7 @@ const ProductsSelection: FC<IProps> = (
   const [priceFormatter] =
     useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
 
-  const [matches] =
+  const [matches, setMatches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
 
   const [productList, setProductList] = useState<ReactElement[]>([])
@@ -71,6 +71,7 @@ const ProductsSelection: FC<IProps> = (
           let aux = filter(selectedProducts, product => {
             return product.codproduct != id
           })
+          // noinspection SpellCheckingInspection
           setSelectedProducts(
             concat(aux, { codproduct: id, amountproduct: amount }),
           )
@@ -98,6 +99,14 @@ const ProductsSelection: FC<IProps> = (
     closeSidePanel()
   }
 
+  const cancel: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    closeSidePanel()
+    if (!isEqual(selectedProducts, draftProducts)) {
+      setSelectedProducts(draftProducts)
+    }
+  }
+
   useEffect(() => {
     // noinspection SpellCheckingInspection
     getProducts({
@@ -119,6 +128,7 @@ const ProductsSelection: FC<IProps> = (
               stock={ product.stockproduct !== null ? product.stockproduct : undefined }
               setAmount={ setAmount }
               initialAmount={ selectedProducts?.find(selected => {
+                console.log(selectedProducts)
                 return selected.codproduct == product.codproduct
               })?.amountproduct }
             />
@@ -128,15 +138,26 @@ const ProductsSelection: FC<IProps> = (
     } else {
       setProductList([])
     }
-  }, [products, draftProducts])
+  }, [products, draftProducts, selectedProducts])
 
   useEffect(() => setSelectedProducts(draftProducts), [draftProducts])
+
+  useEffect(() => {
+    window
+      .matchMedia('(min-width: 700px)')
+      .addEventListener('change', e => setMatches(e.matches))
+  }, [])
 
   return (
     <Container>
       {
         message !== undefined && message.type === ProductMessageTypes.Warning &&
         <Alert message={ message.content } type={ AlertTypes.Warning } />
+      }
+      {
+        message !== undefined && message.type === ProductMessageTypes.Error &&
+        <Alert message={ message.content + '. Contacte con el administrador.' }
+               type={ AlertTypes.Error } />
       }
       <SearchBar searchString={ searchString } setSearchString={ setSearchString } />
       <Options>
@@ -148,7 +169,7 @@ const ProductsSelection: FC<IProps> = (
           (message === undefined || message.type === ProductMessageTypes.Info) &&
           <Button customType={ ButtonTypes.Primary }>{ 'Nuevo producto' }</Button>
         }
-        <Button customType={ ButtonTypes.Secondary } onClick={ closeSidePanel }>{ 'Cancelar' }</Button>
+        <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
       </Options>
       {
         message !== undefined && message.type === ProductMessageTypes.Info &&

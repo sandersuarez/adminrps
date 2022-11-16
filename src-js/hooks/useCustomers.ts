@@ -15,6 +15,7 @@ export interface GetCustomers {
   }
   Response:
     { customers: CustomerShape[], pages: number }
+    | { empty: string }
     | Errors
     | ForbidReasons
 }
