@@ -1,10 +1,8 @@
 import React, { FC, useEffect, useState } from 'react'
-import styled from '@emotion/styled'
 import SearchBar from '../SearchBar'
 import Alert from '../Alert'
 import Pagination from '../Pagination'
 import CustomersContainer from './CustomersContainer'
-import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import ButtonTypes from '../../shapes/ButtonTypes'
 import Options from '../buttons/Options'
@@ -12,16 +10,6 @@ import Customer from './Customer'
 import { CustomerMessage, CustomerMessageTypes, GetCustomers } from '../../hooks/useCustomers'
 import AlertTypes from '../../shapes/AlertTypes'
 import CustomerShape from '../../shapes/CustomerShape'
-
-const Container = styled.article`
-  --vertical-margin: ${ margins.mobile.mediumVertical };
-  --horizontal-margin: ${ margins.mobile.lateral };
-
-  display: flex;
-  flex-direction: column;
-  row-gap: ${ margins.mobile.mediumVertical };
-  padding: var(--vertical-margin) var(--horizontal-margin);
-`
 
 interface IProps {
   closeSidePanel: () => void
@@ -84,7 +72,8 @@ const CustomersSelection: FC<IProps> = (
   }, [activePage, searchString, matches])
 
   return (
-    <Container>
+    <article>
+      <h3>{ 'Seleccionar cliente' }</h3>
       {
         message !== undefined && message.type === CustomerMessageTypes.Error &&
         <Alert message={ message.content + '. Contacte con el administrador.' }
@@ -132,7 +121,7 @@ const CustomersSelection: FC<IProps> = (
           <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
         </>
       }
-    </Container>
+    </article>
   )
 }
 

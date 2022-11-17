@@ -1,5 +1,4 @@
 import React, { FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
-import margins from '../../styles/margins'
 import { GetProducts, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
 import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
 import Alert from '../Alert'
@@ -11,18 +10,8 @@ import Options from '../buttons/Options'
 import Pagination from '../Pagination'
 import ProductsContainer from './ProductsContainer'
 import SelectableProduct from './SelectableProduct'
-import styled from '@emotion/styled'
 import { concat, filter, findIndex, isEqual } from 'lodash'
-
-const Container = styled.article`
-  --vertical-margin: ${ margins.mobile.mediumVertical };
-  --horizontal-margin: ${ margins.mobile.lateral };
-
-  display: flex;
-  flex-direction: column;
-  row-gap: ${ margins.mobile.mediumVertical };
-  padding: var(--vertical-margin) var(--horizontal-margin);
-`
+import Panels from '../../shapes/Panels'
 
 interface IProps {
   closeSidePanel: () => void
@@ -34,6 +23,7 @@ interface IProps {
   getProducts: (data: GetProducts['Request']) => void
   draftProducts: DraftProductReqData[] | undefined
   setDraftProducts: (tempDraftProducts: DraftProductReqData[] | undefined) => void
+  changeSecondSidePanel: (panel: Panels) => void
 }
 
 const ProductsSelection: FC<IProps> = (
@@ -47,6 +37,7 @@ const ProductsSelection: FC<IProps> = (
     getProducts,
     draftProducts,
     setDraftProducts,
+    changeSecondSidePanel,
   },
 ) => {
 
@@ -107,6 +98,12 @@ const ProductsSelection: FC<IProps> = (
     }
   }
 
+  const changeToAddProduct: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    setDraftProducts(selectedProducts)
+    changeSecondSidePanel(Panels.NewProduct)
+  }
+
   useEffect(() => {
     // noinspection SpellCheckingInspection
     getProducts({
@@ -128,7 +125,6 @@ const ProductsSelection: FC<IProps> = (
               stock={ product.stockproduct !== null ? product.stockproduct : undefined }
               setAmount={ setAmount }
               initialAmount={ selectedProducts?.find(selected => {
-                console.log(selectedProducts)
                 return selected.codproduct == product.codproduct
               })?.amountproduct }
             />
@@ -149,7 +145,8 @@ const ProductsSelection: FC<IProps> = (
   }, [])
 
   return (
-    <Container>
+    <article>
+      <h3>{ 'Seleccionar productos' }</h3>
       {
         message !== undefined && message.type === ProductMessageTypes.Warning &&
         <Alert message={ message.content } type={ AlertTypes.Warning } />
@@ -167,7 +164,7 @@ const ProductsSelection: FC<IProps> = (
         }
         {
           (message === undefined || message.type === ProductMessageTypes.Info) &&
-          <Button customType={ ButtonTypes.Primary }>{ 'Nuevo producto' }</Button>
+          <Button customType={ ButtonTypes.Primary } onClick={ changeToAddProduct }>{ 'Nuevo producto' }</Button>
         }
         <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
       </Options>
@@ -182,7 +179,7 @@ const ProductsSelection: FC<IProps> = (
           <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
         </>
       }
-    </Container>
+    </article>
   )
 }
 

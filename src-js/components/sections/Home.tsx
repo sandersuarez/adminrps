@@ -17,6 +17,7 @@ import useCustomers from '../../hooks/useCustomers'
 import ProductsSelection from '../products/ProductsSelection'
 import useProducts from '../../hooks/useProducts'
 import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
+import NewProductInDraft from '../products/NewProductInDraft'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -204,11 +205,15 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           message={ colProductMessage }
           products={ products }
           getProducts={ getProducts }
-          /* Todo: modify tempDraftProducts on the selection. When commit, do an edit draft request. Then update
-          the tempDraftProducts value with the new draft.products. Use draft.products to check if there has been
-          changes or not */
           draftProducts={ draftProducts }
           setDraftProducts={ setDraftProducts }
+          changeSecondSidePanel={ setSecondSidePanel }
+        />
+      break
+    case Panels.NewProduct:
+      sidePanel =
+        <NewProductInDraft
+          changeSecondSidePanel={ setSecondSidePanel }
         />
       break
   }

@@ -23,6 +23,10 @@ const ArrowButton = styled.button`
   border-radius: 999em;
   padding: .85em .7em;
 
+  &[disabled] {
+    opacity: .6
+  }
+
   svg {
     fill: ${ colors.background };
     width: .8em;
@@ -71,11 +75,11 @@ const AmountInput: FC<IProps> = ({ initialNum, pushNum, max }) => {
 
   return (
     <Container>
-      <ArrowButton onClick={ sub }>
+      <ArrowButton onClick={ sub } disabled={ num == 0 }>
         <IconDown />
       </ArrowButton>
       { num }
-      <ArrowButton onClick={ sum }>
+      <ArrowButton onClick={ sum } disabled={ max !== undefined && num == max }>
         <IconUp />
       </ArrowButton>
     </Container>

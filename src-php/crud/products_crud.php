@@ -28,7 +28,7 @@ function obtain_products(array $requirements): array
 
   try {
     $connection = create_pdo_object();
-throw new PDOException();
+
     // If there is a product name to search, the clause is added
     $name_clause = '';
     $requirements['name'] = trim($requirements['name']);

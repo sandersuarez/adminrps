@@ -4,6 +4,7 @@ import breakpoints from '../styles/breakpoints'
 import { motion } from 'framer-motion'
 import colors from '../styles/colors'
 import { css } from '@emotion/react'
+import margins from '../styles/margins'
 
 const Container = styled(motion.div)`
   position: relative;
@@ -31,6 +32,16 @@ const SideContainer = styled(motion.div)`
   ${ breakpoints.mediumDesktop } {
     position: relative;
     flex-basis: 55rem;
+  }
+
+  article {
+    --vertical-margin: ${ margins.mobile.mediumVertical };
+    --horizontal-margin: ${ margins.mobile.lateral };
+
+    display: flex;
+    flex-direction: column;
+    row-gap: ${ margins.mobile.mediumVertical };
+    padding: var(--vertical-margin) var(--horizontal-margin);
   }
 `
 

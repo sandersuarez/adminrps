@@ -68,6 +68,18 @@ const useValid = (callback: () => void) => {
           }
           break
 
+        case 'product-name':
+          if (element.value.length == 0 &&
+            (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
+            tmpErrors = {
+              ...tmpErrors,
+              productName: 'El nombre de producto es obligatorio',
+            }
+          } else {
+            tmpErrors = omit(tmpErrors, 'productName')
+          }
+          break
+
         default:
           break
       }
@@ -107,6 +119,17 @@ const useValid = (callback: () => void) => {
             }
           } else {
             tmpErrors = omit(tmpErrors, 'password')
+          }
+          break
+
+        case 'product-name':
+          if (element.event === ValidEvents.Submit && element.value.length > 240) {
+            tmpErrors = {
+              ...tmpErrors,
+              productName: 'El nombre de producto es inválido',
+            }
+          } else {
+            tmpErrors = omit(tmpErrors, 'productName')
           }
           break
 
