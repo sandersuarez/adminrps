@@ -9,6 +9,17 @@ import Label from '../forms/Label'
 import Input from '../forms/Input'
 import InputMessage from '../forms/InputMessage'
 import FieldWrapper from '../forms/FieldWrapper'
+import AmountInput from '../buttons/AmountInput'
+import styled from '@emotion/styled'
+import margins from '../../styles/margins'
+
+const AmountFieldWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: ${ margins.mobile.lateral };
+`
 
 interface IProps {
   changeSecondSidePanel: (panel: Panels) => void
@@ -22,7 +33,8 @@ const NewProductInDraft: FC<IProps> = (
 
   const [productName, setProductName] = useState<string>('')
   const [productPrice, setProductPrice] = useState<string>('0,00')
-  const [draftProductAmount, setDraftProductAmount] = useState<number>(1)
+  const [minProductAmount] = useState<number>(1)
+  const [draftProductAmount, setDraftProductAmount] = useState<number>(minProductAmount)
 
   const doNewProductInDraft = () => {
 
@@ -59,14 +71,24 @@ const NewProductInDraft: FC<IProps> = (
       setProductPrice(value)
       validateField({ name: 'product-price', value: productPrice, event: event })
     }
-    if (name === 'draft-product-amount') {
-      setDraftProductAmount(parseInt(value))
-      validateField({ name: 'draft-product-amount', value: draftProductAmount.toString(), event: event })
-    }
   }
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
+
+    new FormData(e.currentTarget).forEach((entry, name) => {
+      if (name === 'product-name') {
+        setProductName(entry.toString())
+      }
+      if (name === 'product-price') {
+        setProductPrice(entry.toString())
+      }
+    })
+
+    validateSubmit([
+      { name: 'product-name', value: productName, event: ValidEvents.Submit },
+      { name: 'product-price', value: productPrice, event: ValidEvents.Submit },
+    ])
   }
 
   const back: MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -110,22 +132,17 @@ const NewProductInDraft: FC<IProps> = (
             <InputMessage message={ errors1['productPrice'] } />
           </div>
         </FieldWrapper>
-        <FieldWrapper>
-          <Label htmlFor={ 'draft-product-amount' }>{ 'Cantidad:' }</Label>
-          <div>
-            <Input
-              type={ 'number' }
-              id={ 'draft-product-amount' }
-              name={ 'draft-product-amount' }
+        <div>
+          <AmountFieldWrapper>
+            <Label htmlFor={ 'draft-product-amount' }>{ 'Cantidad:' }</Label>
+            <AmountInput
+              pushNum={ setDraftProductAmount }
               max={ 32767 }
-              onChange={ handleChange }
-              onBlur={ handleChange }
-              valid={ errors1['draftProductAmount'] === undefined }
-              value={ draftProductAmount }
+              initialNum={ minProductAmount }
+              min={ minProductAmount }
             />
-            <InputMessage message={ errors1['draftProductAmount'] } />
-          </div>
-        </FieldWrapper>
+          </AmountFieldWrapper>
+        </div>
         <Options>
           <Button customType={ ButtonTypes.Secondary } onClick={ back }>{ 'Atrás' }</Button>
         </Options>

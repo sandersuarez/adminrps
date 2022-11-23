@@ -53,14 +53,14 @@ const SelectableProduct: FC<IProps> = (
     <Container
       initial={ (added) ? { backgroundColor: colors.menu } : { backgroundColor: colors.background } }
       animate={ (added) ? { backgroundColor: colors.menu } : { backgroundColor: colors.background } }
-      transition={{ ease: 'easeInOut', duration: .2 }}
+      transition={ { ease: 'easeInOut', duration: .2 } }
     >
       <p>{ name }{ ' (' + price + ')' }</p>
       {
         stock &&
         <p>{ 'Stock: ' + stock }</p>
       }
-      <AmountInput initialNum={ initialAmount } pushNum={ setNum } max={ stock } />
+      <AmountInput initialNum={ initialAmount } pushNum={ setNum } max={ stock ? stock : 32767 } min={ 0 } />
     </Container>
   )
 }

@@ -9,7 +9,7 @@ const Form = styled.form`
   align-items: flex-start;
   row-gap: ${ margins.mobile.mediumVertical };
 
-  div {
+  & > div {
     display: flex;
     flex-direction: column;
     align-self: stretch;

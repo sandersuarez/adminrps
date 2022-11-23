@@ -6,6 +6,11 @@ const FieldWrapper = styled.div`
   flex-direction: column;
   align-self: stretch;
   row-gap: ${ margins.mobile.vertical };
+  
+  & > div {
+    display: flex;
+    flex-direction: column;
+  }
 `
 
 export default FieldWrapper

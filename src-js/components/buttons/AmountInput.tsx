@@ -7,6 +7,7 @@ import colors from '../../styles/colors'
 
 const Container = styled.div`
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: ${ margins.mobile.littleGap };
 `
@@ -38,12 +39,13 @@ interface IProps {
   initialNum?: number
   pushNum: (num: number) => void
   max?: number
+  min?: number
 }
 
 /**
  * Component that defines an interactive amount controller.
  */
-const AmountInput: FC<IProps> = ({ initialNum, pushNum, max }) => {
+const AmountInput: FC<IProps> = ({ initialNum, pushNum, max, min }) => {
 
   const [num, setNum] = useState<number>(initialNum !== undefined ? initialNum : 0)
 
@@ -60,7 +62,11 @@ const AmountInput: FC<IProps> = ({ initialNum, pushNum, max }) => {
 
   const sub: FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    if (num > 0) {
+    if (min !== undefined) {
+      if (num > min) {
+        setNum(num - 1)
+      }
+    } else {
       setNum(num - 1)
     }
   }
@@ -70,12 +76,14 @@ const AmountInput: FC<IProps> = ({ initialNum, pushNum, max }) => {
   }, [num])
 
   useEffect(() => {
-    setNum(initialNum !== undefined ? initialNum : 0)
+    if (initialNum !== undefined) {
+      setNum(initialNum)
+    }
   }, [initialNum])
 
   return (
     <Container>
-      <ArrowButton onClick={ sub } disabled={ num == 0 }>
+      <ArrowButton onClick={ sub } disabled={ min !== undefined && num == min }>
         <IconDown />
       </ArrowButton>
       { num }
