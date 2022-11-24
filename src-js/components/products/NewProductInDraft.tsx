@@ -68,7 +68,18 @@ const NewProductInDraft: FC<IProps> = (
       validateField({ name: 'product-name', value: productName, event: event })
     }
     if (name === 'product-price') {
-      setProductPrice(value)
+      let val
+      let valAux = value.replace(/,/, '.')
+      if (/^\d{4,6}/g.test(valAux)) {
+        val = '999'
+        if (valAux.indexOf('.') !== -1) {
+          val = val + valAux.substring(valAux.indexOf('.'))
+        }
+      }
+      if (/^\d\.\d{3,4}/g.test(valAux)) {
+        val = valAux.substring(0, valAux.indexOf('.')) + valAux.substring(valAux.indexOf('.'), valAux.indexOf('.') + 3)
+      }
+      setProductPrice(val ? val : value)
       validateField({ name: 'product-price', value: productPrice, event: event })
     }
   }

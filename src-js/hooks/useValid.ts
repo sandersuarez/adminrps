@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { forEach, omit } from 'lodash'
+import { assign, forEach, omit } from 'lodash'
 
 export enum ValidEvents { Change = 'Change', Blur = 'Blur', Submit = 'Submit'}
 
@@ -47,10 +47,7 @@ const useValid = (callback: () => void) => {
         case 'username':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = {
-              ...tmpErrors,
-              username: 'El nombre de usuario es obligatorio',
-            }
+            tmpErrors = assign(tmpErrors, { username: 'El nombre de usuario es obligatorio' })
           } else {
             tmpErrors = omit(tmpErrors, 'username')
           }
@@ -59,10 +56,7 @@ const useValid = (callback: () => void) => {
         case 'password':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = {
-              ...tmpErrors,
-              password: 'La contraseña es obligatoria',
-            }
+            tmpErrors = assign(tmpErrors, { password: 'La contraseña es obligatoria' })
           } else {
             tmpErrors = omit(tmpErrors, 'password')
           }
@@ -71,12 +65,23 @@ const useValid = (callback: () => void) => {
         case 'product-name':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = {
-              ...tmpErrors,
-              productName: 'El nombre de producto es obligatorio',
-            }
+            tmpErrors = assign(tmpErrors, { productName: 'El nombre de producto es obligatorio' })
           } else {
             tmpErrors = omit(tmpErrors, 'productName')
+          }
+          break
+
+        case 'product-price':
+          if (element.value.length == 0 &&
+            (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
+            tmpErrors = assign(tmpErrors, { productPrice: 'El precio de producto es obligatorio' })
+          } else {
+            if (!/^\d{1,3}[,.]\d{0,2}$|^\d{1,3}$/g.test(element.value) &&
+              (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
+              tmpErrors = assign(tmpErrors, { productPrice: 'El precio de producto es inválido' })
+            } else {
+              tmpErrors = omit(tmpErrors, 'productPrice')
+            }
           }
           break
 
@@ -101,33 +106,24 @@ const useValid = (callback: () => void) => {
     forEach(fields, (element) => {
       switch (element.name) {
         case 'username':
-          if (element.event === ValidEvents.Submit && element.value.length > 60) {
-            tmpErrors = {
-              ...tmpErrors,
-              username: 'El nombre usuario o la contraseña son incorrectos',
-            }
+          if (element.value.length > 60) {
+            tmpErrors = assign(tmpErrors, { username: 'El nombre usuario o la contraseña son incorrectos' })
           } else {
             tmpErrors = omit(tmpErrors, 'username')
           }
           break
 
         case 'password':
-          if (element.event === ValidEvents.Submit && element.value.length != 8) {
-            tmpErrors = {
-              ...tmpErrors,
-              password: 'El nombre usuario o la contraseña son incorrectos',
-            }
+          if (element.value.length != 8) {
+            tmpErrors = assign(tmpErrors, { password: 'El nombre usuario o la contraseña son incorrectos' })
           } else {
             tmpErrors = omit(tmpErrors, 'password')
           }
           break
 
         case 'product-name':
-          if (element.event === ValidEvents.Submit && element.value.length > 240) {
-            tmpErrors = {
-              ...tmpErrors,
-              productName: 'El nombre de producto es inválido',
-            }
+          if (element.value.length > 240) {
+            tmpErrors = assign(tmpErrors, { productName: 'El nombre de producto es inválido' })
           } else {
             tmpErrors = omit(tmpErrors, 'productName')
           }
@@ -144,20 +140,13 @@ const useValid = (callback: () => void) => {
 
   const validateField = (field: FieldsType) => {
     validate1([field])
-
-    setValues({
-      ...values,
-      [field.name]: field.value,
-    })
+    setValues(assign(values, { [field.name]: field.value }))
   }
 
   const commit = (fields: FieldsType[]) => {
 
     fields.forEach((field) => {
-      setValues({
-        ...values,
-        [field.name]: field.value,
-      })
+      setValues(assign(values, { [field.name]: field.value }))
     })
 
     validate(fields)
