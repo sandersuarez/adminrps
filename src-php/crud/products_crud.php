@@ -194,20 +194,34 @@ function obtain_product($codproduct)
  * @param array $input_data
  * @return array
  */
-function add_product($input_data)
+function add_product(array $input_data): array
 {
   // Requirements control
   $input_data['nameproduct'] = trim($input_data['nameproduct']);
-  if ($input_data['nameproduct'] === '') return array('message' => 'The product name is required');
-  if (strlen($input_data['nameproduct']) > 240) return array('message' => 'The product name is invalid');
+  if ($input_data['nameproduct'] === '') {
+    return array('message' => 'The product name is required');
+  }
+  if (strlen($input_data['nameproduct']) > 240) {
+    return array('message' => 'The product name is invalid');
+  }
 
-  if ((!is_numeric($input_data['priceproduct'])) || $input_data['priceproduct'] < 0 || round($input_data['priceproduct'], 2) > 999.99) return array('message' => 'The price is invalid');
+  if (
+    (!is_numeric($input_data['priceproduct'])) ||
+    $input_data['priceproduct'] < 0 ||
+    round($input_data['priceproduct'], 2) > 999.99) {
+    return array('message' => 'The price is invalid');
+  }
   $input_data['priceproduct'] = round($input_data['priceproduct'], 2);
 
   if (
     array_key_exists('stockproduct', $input_data) &&
-    !(filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT) === 0 ||
-      filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '2147483647']]))
+    !(
+      filter_var($input_data['stockproduct'], FILTER_VALIDATE_INT) === 0 ||
+      filter_var(
+        $input_data['stockproduct'],
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => '1', 'max_range' => '2147483647']])
+    )
   )
     return array('message' => 'The stock is invalid');
 
@@ -227,26 +241,30 @@ function add_product($input_data)
 
     // SQL Query to insert a product
     if (array_key_exists('stockproduct', $input_data)) {
-      $query = $connection->prepare("INSERT INTO " . PRODUCTS . " (codproduct, nameproduct, stockproduct, priceproduct, coduser) VALUES " .
+      $query = $connection->prepare("INSERT INTO " . PRODUCTS .
+        " (codproduct, nameproduct, stockproduct, priceproduct, coduser) VALUES " .
         "(:codproduct, :nameproduct, :stockproduct, :priceproduct, :coduser)");
     } else {
-      $query = $connection->prepare("INSERT INTO " . PRODUCTS . " (codproduct, nameproduct, priceproduct, coduser) VALUES " .
+      $query = $connection->prepare("INSERT INTO " . PRODUCTS .
+        " (codproduct, nameproduct, priceproduct, coduser) VALUES " .
         "(:codproduct, :nameproduct, :priceproduct, :coduser)");
     }
 
     // Parameters binding and execution
     $query->bindParam(':codproduct', $codproduct, PDO::PARAM_INT);
-    $query->bindParam(':nameproduct', $input_data['nameproduct'], PDO::PARAM_STR);
-    $query->bindParam(':priceproduct', $input_data['priceproduct'], PDO::PARAM_STR);
+    $query->bindParam(':nameproduct', $input_data['nameproduct']);
+    $query->bindParam(':priceproduct', $input_data['priceproduct']);
     $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
-    if (array_key_exists('stockproduct', $input_data)) $query->bindParam(':stockproduct', $input_data['stockproduct'], PDO::PARAM_INT);
+    if (array_key_exists('stockproduct', $input_data)) {
+      $query->bindParam(':stockproduct', $input_data['stockproduct'], PDO::PARAM_INT);
+    }
 
     $query->execute();
 
     clear_query_data($query, $connection);
-    return array('success_message' => 'The product has been added correctly');
+    return array('success_message' => 'The product has been added correctly', 'codproduct' => $codproduct);
   } catch (PDOException $e) {
-    if ($query !== null) $query->closeCursor();
+    $query?->closeCursor();
     $connection = null;
     return process_pdo_exception($e);
   }

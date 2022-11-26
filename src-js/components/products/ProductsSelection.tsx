@@ -18,12 +18,15 @@ interface IProps {
   activePage: number
   totalPages: number
   setActivePage: (page: number) => void
-  message: ProductMessage | undefined
+  colMessage: ProductMessage | undefined
+  setColMessage: (message: ProductMessage | undefined) => void
   products: ProductShape[] | undefined
   getProducts: (data: GetProducts['Request']) => void
   draftProducts: DraftProductReqData[] | undefined
   setDraftProducts: (tempDraftProducts: DraftProductReqData[] | undefined) => void
   changeSecondSidePanel: (panel: Panels) => void
+  indProductMessage: ProductMessage | undefined
+  setIndProductMessage: (message: ProductMessage | undefined) => void
 }
 
 const ProductsSelection: FC<IProps> = (
@@ -32,12 +35,15 @@ const ProductsSelection: FC<IProps> = (
     activePage,
     totalPages,
     setActivePage,
-    message,
+    colMessage,
+    setColMessage,
     products,
     getProducts,
     draftProducts,
     setDraftProducts,
     changeSecondSidePanel,
+    indProductMessage,
+    setIndProductMessage,
   },
 ) => {
 
@@ -88,11 +94,15 @@ const ProductsSelection: FC<IProps> = (
     e.preventDefault()
     setDraftProducts(selectedProducts)
     closeSidePanel()
+    setIndProductMessage(undefined)
+    setColMessage(undefined)
   }
 
   const cancel: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     closeSidePanel()
+    setIndProductMessage(undefined)
+    setColMessage(undefined)
     if (!isEqual(selectedProducts, draftProducts)) {
       setSelectedProducts(draftProducts)
     }
@@ -111,6 +121,13 @@ const ProductsSelection: FC<IProps> = (
       products_number: matches ? 30 : 15,
     })
   }, [activePage, searchString, matches])
+
+  useEffect(() => {
+    if (searchString != '') {
+      setIndProductMessage(undefined)
+      setColMessage(undefined)
+    }
+  }, [searchString])
 
   useEffect(() => {
     if (products !== undefined) {
@@ -148,12 +165,12 @@ const ProductsSelection: FC<IProps> = (
     <article>
       <h3>{ 'Seleccionar productos' }</h3>
       {
-        message !== undefined && message.type === ProductMessageTypes.Warning &&
-        <Alert message={ message.content } type={ AlertTypes.Warning } />
+        colMessage !== undefined && colMessage.type === ProductMessageTypes.Warning &&
+        <Alert message={ colMessage.content } type={ AlertTypes.Warning } />
       }
       {
-        message !== undefined && message.type === ProductMessageTypes.Error &&
-        <Alert message={ message.content + '. Contacte con el administrador.' }
+        colMessage !== undefined && colMessage.type === ProductMessageTypes.Error &&
+        <Alert message={ colMessage.content + '. Contacte con el administrador.' }
                type={ AlertTypes.Error } />
       }
       <SearchBar searchString={ searchString } setSearchString={ setSearchString } />
@@ -163,14 +180,18 @@ const ProductsSelection: FC<IProps> = (
           <Button customType={ ButtonTypes.Primary } onClick={ save }>{ 'Guardar' }</Button>
         }
         {
-          (message === undefined || message.type === ProductMessageTypes.Info) &&
+          (colMessage === undefined || colMessage.type === ProductMessageTypes.Info) &&
           <Button customType={ ButtonTypes.Primary } onClick={ changeToAddProduct }>{ 'Nuevo producto' }</Button>
         }
         <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
       </Options>
       {
-        message !== undefined && message.type === ProductMessageTypes.Info &&
-        <Alert message={ message.content } type={ AlertTypes.Empty } />
+        colMessage !== undefined && colMessage.type === ProductMessageTypes.Info &&
+        <Alert message={ colMessage.content } type={ AlertTypes.Empty } />
+      }
+      {
+        indProductMessage !== undefined && indProductMessage.type === ProductMessageTypes.Success &&
+        <Alert message={ indProductMessage.content } type={ AlertTypes.Success } />
       }
       {
         products !== undefined &&

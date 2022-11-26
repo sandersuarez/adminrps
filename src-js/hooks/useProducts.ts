@@ -4,7 +4,8 @@ import Errors from '../shapes/Errors'
 import { useState } from 'react'
 import ProductShape from '../shapes/ProductShape'
 import { buildParametrizedUrl, useFetchWith } from './useFetch'
-import { assign } from 'lodash'
+import { assign, isUndefined } from 'lodash'
+import { EditDraft } from './useDrafts'
 
 // noinspection SpellCheckingInspection
 export interface GetProducts {
@@ -19,7 +20,22 @@ export interface GetProducts {
     | ForbidReasons
 }
 
+// noinspection SpellCheckingInspection
+export interface AddProduct {
+  Request: {
+    nameproduct: string,
+    priceproduct: number,
+    stockproduct?: number,
+  }
+  Response:
+    { success_message: string, codproduct: number }
+    | { overflow: string }
+    | Errors
+    | ForbidReasons
+}
+
 export enum ProductMessageTypes {
+  Success = 'Success',
   Info = 'info',
   Warning = 'warning',
   Error = 'error',
@@ -39,7 +55,12 @@ function useProducts(sessionCheck: SessionCheckType) {
         `api/obtain_products?name=${ 'name' }&page=${ 'page' }&products_number=${ 'products_number' }`,
     )
 
+  // noinspection SpellCheckingInspection
+  const { doRequest: doAddProductRequest } =
+    useFetchWith.bodyParams<AddProduct['Request'], AddProduct['Response']>('api/add_product')
+
   const [collectiveMessage, setCollectiveMessage] = useState<ProductMessage>()
+  const [individualMessage, setIndividualMessage] = useState<ProductMessage>()
   const [products, setProducts] = useState<ProductShape[]>()
   const [activePage, setActivePage] = useState<number>(1)
   const [totalPages, setTotalPages] = useState<number>(1)
@@ -74,6 +95,50 @@ function useProducts(sessionCheck: SessionCheckType) {
     })
   }
 
+  const addProduct = (
+    data: AddProduct['Request'],
+    finalFunction?: () => void,
+    addProductToDraft?: {
+      callback: (data: EditDraft['Request']) => void,
+      editDraftData: EditDraft['Request'],
+      amount: number
+    },
+  ) => {
+    sessionCheck(() => {
+      setCollectiveMessage(undefined)
+      doAddProductRequest(data)
+        .then((res) => {
+
+          // noinspection SpellCheckingInspection
+          if ('success_message' in res && 'codproduct' in res) {
+
+            setIndividualMessage({ content: res['success_message'], type: ProductMessageTypes.Success })
+            if (!isUndefined(finalFunction)) {
+              finalFunction()
+            }
+
+            if (!isUndefined(addProductToDraft)) {
+              // noinspection SpellCheckingInspection
+              assign(addProductToDraft.editDraftData,
+                { products: [{ codproduct: res['codproduct'], amountproduct: addProductToDraft.amount }] })
+              addProductToDraft.callback(addProductToDraft.editDraftData)
+            }
+          }
+
+          if ('overflow' in res) {
+            setIndividualMessage({ content: res['overflow'], type: ProductMessageTypes.Info })
+          }
+          manageErrors(res, setIndividualMessage)
+
+        }).catch(reason => {
+        setCollectiveMessage({ content: reason, type: ProductMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
+    })
+  }
+
   const manageErrors = (
     res: Errors | {},
     callback: (ProductMessage: ProductMessage | undefined) => void,
@@ -98,12 +163,15 @@ function useProducts(sessionCheck: SessionCheckType) {
 
   return {
     collectiveMessage,
+    individualMessage,
     products,
     activePage,
     totalPages,
     setCollectiveMessage,
+    setIndividualMessage,
     setActivePage,
     getProducts,
+    addProduct,
   }
 }
 

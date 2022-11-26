@@ -255,10 +255,6 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   const searchProducts = () => {
     doUpdateDraft()
-    getProducts({
-      name: '',
-      products_number: matches ? 30 : 15,
-    })
     changeSecondSidePanel(Panels.Products)
     openSecondSidePanel()
   }

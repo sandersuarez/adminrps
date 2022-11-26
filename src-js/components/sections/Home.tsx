@@ -102,11 +102,15 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
 
   const {
     collectiveMessage: colProductMessage,
+    individualMessage: indProductMessage,
     products,
     activePage: productsActivePage,
     totalPages: productsTotalPages,
     setActivePage: productsSetActivePage,
     getProducts,
+    addProduct,
+    setIndividualMessage: setIndProductMessage,
+    setCollectiveMessage: setColProductMessage,
   } = useProducts(sessionCheck)
 
   const handleOpenFirstSidePanel = () => {
@@ -202,18 +206,26 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           activePage={ productsActivePage }
           totalPages={ productsTotalPages }
           setActivePage={ productsSetActivePage }
-          message={ colProductMessage }
+          colMessage={ colProductMessage }
+          setColMessage={ setColProductMessage }
           products={ products }
           getProducts={ getProducts }
           draftProducts={ draftProducts }
           setDraftProducts={ setDraftProducts }
           changeSecondSidePanel={ setSecondSidePanel }
+          indProductMessage={ indProductMessage }
+          setIndProductMessage={ setIndProductMessage }
         />
       break
     case Panels.NewProduct:
       sidePanel =
         <NewProductInDraft
           changeSecondSidePanel={ setSecondSidePanel }
+          addProduct={ addProduct }
+          editDraft={ editDraft }
+          draftID={ draft ? draft.coddraft : newDraftID }
+          message={ indProductMessage }
+          setMessage={ setIndProductMessage }
         />
       break
   }

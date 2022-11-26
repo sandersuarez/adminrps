@@ -12,6 +12,12 @@ import FieldWrapper from '../forms/FieldWrapper'
 import AmountInput from '../buttons/AmountInput'
 import styled from '@emotion/styled'
 import margins from '../../styles/margins'
+import Alert from '../Alert'
+import { css } from '@emotion/react'
+import AlertTypes from '../../shapes/AlertTypes'
+import { EditDraft } from '../../hooks/useDrafts'
+import { AddProduct, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
+import { isUndefined } from 'lodash'
 
 const AmountFieldWrapper = styled.div`
   display: flex;
@@ -23,11 +29,29 @@ const AmountFieldWrapper = styled.div`
 
 interface IProps {
   changeSecondSidePanel: (panel: Panels) => void
+  addProduct: (
+    data: AddProduct['Request'],
+    finalFunction?: () => void,
+    addProductToDraft?: {
+      callback: (data: EditDraft['Request']) => void,
+      editDraftData: EditDraft['Request'],
+      amount: number
+    },
+  ) => void
+  editDraft: (data: EditDraft['Request']) => void
+  draftID: number | undefined
+  message: ProductMessage | undefined
+  setMessage: (message: ProductMessage | undefined) => void
 }
 
 const NewProductInDraft: FC<IProps> = (
   {
     changeSecondSidePanel,
+    addProduct,
+    editDraft,
+    draftID,
+    message,
+    setMessage,
   },
 ) => {
 
@@ -37,7 +61,24 @@ const NewProductInDraft: FC<IProps> = (
   const [draftProductAmount, setDraftProductAmount] = useState<number>(minProductAmount)
 
   const doNewProductInDraft = () => {
-
+    if (!isUndefined(draftID)) {
+      // noinspection SpellCheckingInspection
+      addProduct({
+          nameproduct: values['product-name'],
+          priceproduct: parseFloat(values['product-price'].replace(/,/, '.')),
+        },
+        () => changeSecondSidePanel(Panels.Products),
+        {
+          callback: editDraft,
+          editDraftData: {
+            coddraft: draftID,
+          },
+          amount: draftProductAmount,
+        },
+      )
+    } else {
+      setMessage({ content: 'There is no editing draft', type: ProductMessageTypes.Error })
+    }
   }
 
   const {
@@ -45,12 +86,12 @@ const NewProductInDraft: FC<IProps> = (
     values,
     errors1,
     errors2,
-    setErrors2,
     commit: validateSubmit,
   } = useValid(doNewProductInDraft)
 
   const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
     e.persist()
+    setMessage(undefined)
 
     const value = e.currentTarget.value
     const name = e.currentTarget.name
@@ -104,13 +145,32 @@ const NewProductInDraft: FC<IProps> = (
 
   const back: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
+    setMessage(undefined)
     changeSecondSidePanel(Panels.Products)
   }
 
   return (
     <article>
       <h3>{ 'Añadir nuevo producto' }</h3>
+      {
+        message !== undefined && message.type === ProductMessageTypes.Warning &&
+        <Alert message={ message.content } type={ AlertTypes.Warning } />
+      }
+      {
+        message !== undefined && message.type === ProductMessageTypes.Error &&
+        <Alert message={ message.content + '. Contacte con el administrador.' }
+               type={ AlertTypes.Error } />
+      }
       <Form onSubmit={ handleSubmit } noValidate={ true }>
+        {
+          Object.values(errors2)[0] &&
+          <Alert css={ css`margin-bottom: ${ margins.mobile.littleGap }` } message={ Object.values(errors2)[0] }
+                 type={ AlertTypes.Warning } />
+        }
+        {
+          message !== undefined && message.type === ProductMessageTypes.Info &&
+          <Alert message={ message.content } type={ AlertTypes.Empty } />
+        }
         <FieldWrapper>
           <Label htmlFor={ 'product-name' }>{ 'Nombre:' }</Label>
           <div>
@@ -156,6 +216,11 @@ const NewProductInDraft: FC<IProps> = (
         </div>
         <Options>
           <Button customType={ ButtonTypes.Secondary } onClick={ back }>{ 'Atrás' }</Button>
+          <Button
+            customType={ ButtonTypes.Primary }
+            disabled={ Object.keys(values).length < 1 || Object.keys(errors1).length !== 0 }>
+            { 'Añadir' }
+          </Button>
         </Options>
       </Form>
 

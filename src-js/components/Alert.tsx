@@ -39,6 +39,15 @@ const Container = styled.article<{ type?: AlertTypes }>(
         }
       `
     }
+    if (type === AlertTypes.Success) {
+      return css`
+        border-color: ${ colors.success };
+        
+        i {
+          color: ${ colors.success };
+        }
+      `
+    }
   },
 )
 
@@ -55,6 +64,9 @@ const Alert: FC<IProps> = ({ className, message, type }) => {
     case AlertTypes.Info:
     case AlertTypes.Error:
       iconClass = 'bi bi-exclamation-circle-fill'
+      break
+    case AlertTypes.Success:
+      iconClass = 'bi bi-check-circle-fill'
       break
   }
 

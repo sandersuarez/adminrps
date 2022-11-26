@@ -141,7 +141,7 @@ $app->post('/add_product', function (Request $request, Response $response) {
     if (array_key_exists('user', $security)) {
 
       // Check for required parameters
-      $params = $request->getQueryParams();
+      $params = $request->getParsedBody();
 
       if (array_key_exists('nameproduct', $params) && array_key_exists('priceproduct', $params)) {
 
