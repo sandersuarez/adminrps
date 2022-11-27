@@ -10,7 +10,7 @@ import Options from '../buttons/Options'
 import Pagination from '../Pagination'
 import ProductsContainer from './ProductsContainer'
 import SelectableProduct from './SelectableProduct'
-import { concat, filter, findIndex, isEqual } from 'lodash'
+import { concat, filter, findIndex, isEqual, isUndefined } from 'lodash'
 import Panels from '../../shapes/Panels'
 
 interface IProps {
@@ -27,6 +27,8 @@ interface IProps {
   changeSecondSidePanel: (panel: Panels) => void
   indProductMessage: ProductMessage | undefined
   setIndProductMessage: (message: ProductMessage | undefined) => void
+  newProductToAdd: DraftProductReqData | undefined
+  setNewProductToAdd: (product: DraftProductReqData | undefined) => void
 }
 
 const ProductsSelection: FC<IProps> = (
@@ -44,6 +46,8 @@ const ProductsSelection: FC<IProps> = (
     changeSecondSidePanel,
     indProductMessage,
     setIndProductMessage,
+    newProductToAdd,
+    setNewProductToAdd,
   },
 ) => {
 
@@ -130,12 +134,16 @@ const ProductsSelection: FC<IProps> = (
   }, [searchString])
 
   useEffect(() => {
+    console.log(selectedProducts)
+  }, [selectedProducts])
+
+  useEffect(() => {
     if (products !== undefined) {
       setProductList(
-        products.map((product, index) => {
+        products.map((product) => {
           return (
             <SelectableProduct
-              key={ index }
+              key={ product.codproduct }
               id={ product.codproduct }
               name={ product.nameproduct }
               price={ priceFormatter.format(parseFloat(product.priceproduct)) }
@@ -153,7 +161,23 @@ const ProductsSelection: FC<IProps> = (
     }
   }, [products, draftProducts, selectedProducts])
 
-  useEffect(() => setSelectedProducts(draftProducts), [draftProducts])
+  useEffect(() => {
+    if (isUndefined(draftProducts)) {
+      if (!isUndefined(newProductToAdd)) {
+        setSelectedProducts([newProductToAdd])
+        setNewProductToAdd(undefined)
+      } else {
+        setSelectedProducts(draftProducts)
+      }
+    } else {
+      if (!isUndefined(newProductToAdd)) {
+        setSelectedProducts(concat(draftProducts, newProductToAdd))
+        setNewProductToAdd(undefined)
+      } else {
+        setSelectedProducts(draftProducts)
+      }
+    }
+  }, [draftProducts])
 
   useEffect(() => {
     window

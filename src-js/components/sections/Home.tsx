@@ -16,7 +16,7 @@ import Panels from '../../shapes/Panels'
 import useCustomers from '../../hooks/useCustomers'
 import ProductsSelection from '../products/ProductsSelection'
 import useProducts from '../../hooks/useProducts'
-import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
+import { DraftProductReqData } from '../../shapes/ProductShape'
 import NewProductInDraft from '../products/NewProductInDraft'
 
 const auxPanelStyles = css`
@@ -69,6 +69,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
   const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
   const [selectedCustomer, setSelectedCustomer] = useState<number>()
+  const [newProductToAdd, setNewProductToAdd] = useState<DraftProductReqData>()
 
   const {
     individualMessage: indDraftMessage,
@@ -215,6 +216,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           changeSecondSidePanel={ setSecondSidePanel }
           indProductMessage={ indProductMessage }
           setIndProductMessage={ setIndProductMessage }
+          newProductToAdd={ newProductToAdd }
+          setNewProductToAdd={ setNewProductToAdd }
         />
       break
     case Panels.NewProduct:
@@ -222,10 +225,10 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
         <NewProductInDraft
           changeSecondSidePanel={ setSecondSidePanel }
           addProduct={ addProduct }
-          editDraft={ editDraft }
           draftID={ draft ? draft.coddraft : newDraftID }
           message={ indProductMessage }
           setMessage={ setIndProductMessage }
+          setNewProductToAdd={ setNewProductToAdd }
         />
       break
   }

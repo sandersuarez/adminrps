@@ -5,7 +5,6 @@ import { useState } from 'react'
 import ProductShape from '../shapes/ProductShape'
 import { buildParametrizedUrl, useFetchWith } from './useFetch'
 import { assign, isUndefined } from 'lodash'
-import { EditDraft } from './useDrafts'
 
 // noinspection SpellCheckingInspection
 export interface GetProducts {
@@ -95,15 +94,7 @@ function useProducts(sessionCheck: SessionCheckType) {
     })
   }
 
-  const addProduct = (
-    data: AddProduct['Request'],
-    finalFunction?: () => void,
-    addProductToDraft?: {
-      callback: (data: EditDraft['Request']) => void,
-      editDraftData: EditDraft['Request'],
-      amount: number
-    },
-  ) => {
+  const addProduct = (data: AddProduct['Request'], finalFunction?: (backValue?: number) => void) => {
     sessionCheck(() => {
       setCollectiveMessage(undefined)
       doAddProductRequest(data)
@@ -111,17 +102,10 @@ function useProducts(sessionCheck: SessionCheckType) {
 
           // noinspection SpellCheckingInspection
           if ('success_message' in res && 'codproduct' in res) {
-
             setIndividualMessage({ content: res['success_message'], type: ProductMessageTypes.Success })
             if (!isUndefined(finalFunction)) {
-              finalFunction()
-            }
-
-            if (!isUndefined(addProductToDraft)) {
               // noinspection SpellCheckingInspection
-              assign(addProductToDraft.editDraftData,
-                { products: [{ codproduct: res['codproduct'], amountproduct: addProductToDraft.amount }] })
-              addProductToDraft.callback(addProductToDraft.editDraftData)
+              finalFunction(res['codproduct'])
             }
           }
 

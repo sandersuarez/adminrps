@@ -15,9 +15,9 @@ import margins from '../../styles/margins'
 import Alert from '../Alert'
 import { css } from '@emotion/react'
 import AlertTypes from '../../shapes/AlertTypes'
-import { EditDraft } from '../../hooks/useDrafts'
 import { AddProduct, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
 import { isUndefined } from 'lodash'
+import { DraftProductReqData } from '../../shapes/ProductShape'
 
 const AmountFieldWrapper = styled.div`
   display: flex;
@@ -29,29 +29,21 @@ const AmountFieldWrapper = styled.div`
 
 interface IProps {
   changeSecondSidePanel: (panel: Panels) => void
-  addProduct: (
-    data: AddProduct['Request'],
-    finalFunction?: () => void,
-    addProductToDraft?: {
-      callback: (data: EditDraft['Request']) => void,
-      editDraftData: EditDraft['Request'],
-      amount: number
-    },
-  ) => void
-  editDraft: (data: EditDraft['Request']) => void
+  addProduct: (data: AddProduct['Request'], finalFunction?: (backValue?: number) => void) => void
   draftID: number | undefined
   message: ProductMessage | undefined
   setMessage: (message: ProductMessage | undefined) => void
+  setNewProductToAdd: (product: DraftProductReqData | undefined) => void
 }
 
 const NewProductInDraft: FC<IProps> = (
   {
     changeSecondSidePanel,
     addProduct,
-    editDraft,
     draftID,
     message,
     setMessage,
+    setNewProductToAdd,
   },
 ) => {
 
@@ -67,13 +59,13 @@ const NewProductInDraft: FC<IProps> = (
           nameproduct: values['product-name'],
           priceproduct: parseFloat(values['product-price'].replace(/,/, '.')),
         },
-        () => changeSecondSidePanel(Panels.Products),
-        {
-          callback: editDraft,
-          editDraftData: {
-            coddraft: draftID,
-          },
-          amount: draftProductAmount,
+        (newProductID) => {
+          changeSecondSidePanel(Panels.Products)
+
+          if (!isUndefined(newProductID)) {
+            // noinspection SpellCheckingInspection
+            setNewProductToAdd({ codproduct: newProductID, amountproduct: draftProductAmount })
+          }
         },
       )
     } else {
