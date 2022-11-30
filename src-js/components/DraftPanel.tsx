@@ -15,13 +15,14 @@ import Alert from './Alert'
 import FieldWrapper from './forms/FieldWrapper'
 import DraftShape, { DraftContent } from '../shapes/DraftShape'
 import { css } from '@emotion/react'
-import useValid from '../hooks/useValid'
+import useValid, { ValidEvents } from '../hooks/useValid'
 import { assign, isEqual } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
-import { GetProducts } from '../hooks/useProducts'
 import { DraftProductReqData } from '../shapes/ProductShape'
 import OrderProductsTable from './orders/OrderProductsTable'
+import InputMessage from './forms/InputMessage'
+import { AddOrder } from '../hooks/useOrders'
 
 const Container = styled.section`
   display: flex;
@@ -47,6 +48,7 @@ interface DraftSectionProps {
   openSecondSidePanel: () => void
   changeSecondSidePanel: (panel: Panels) => void
   message: DraftMessage | undefined
+  setMessage: (message: DraftMessage | undefined) => void
   newDraftID: number | undefined
   setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
   draft: (DraftShape & DraftContent) | undefined
@@ -57,9 +59,13 @@ interface DraftSectionProps {
   setDraftCustomerID: (id: number | undefined) => void
   draftCustomerID: number | undefined
   setSelectedCustomer: (id: number | undefined) => void
-  getProducts: (data: GetProducts['Request']) => void
   draftProducts: DraftProductReqData[] | undefined
-  setDraftProducts: (draftProducts: DraftProductReqData[] | undefined) => void
+  addOrder: (
+    data: AddOrder['Request'],
+    action: () => void, callback:
+      (DraftMessage: DraftMessage | undefined) => void,
+  ) => void,
+  getDrafts: () => void,
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -68,6 +74,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     openSecondSidePanel,
     changeSecondSidePanel,
     message,
+    setMessage,
     newDraftID,
     setNewDraftID,
     draft,
@@ -78,15 +85,14 @@ const DraftPanel: FC<DraftSectionProps> = (
     setDraftCustomerID,
     draftCustomerID,
     setSelectedCustomer,
-    getProducts,
     draftProducts,
-    setDraftProducts,
+    addOrder,
+    getDrafts,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
   const [customerPhone, setCustomerPhone] = useState<string>('')
   const [pickUpTime, setPickUpTime] = useState<string>('')
-  const [canSave, setCanSave] = useState<boolean>(true)
 
   const [matches, setMatches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
@@ -181,7 +187,7 @@ const DraftPanel: FC<DraftSectionProps> = (
 
           if (!isEqual(draftProducts, previousProducts)) {
             // noinspection SpellCheckingInspection
-            assign(data, { products: draftProducts === undefined ? [] : draftProducts})
+            assign(data, { products: draftProducts === undefined ? [] : draftProducts })
             modified = true
           }
         }
@@ -195,12 +201,21 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   const {
     validateField,
-    values,
     errors1,
-    errors2,
-    setErrors2,
-    commit,
-  } = useValid(doUpdateDraft)
+    commit: validateSubmit,
+  } = useValid(() => {
+    if (draft !== undefined) {
+      // noinspection SpellCheckingInspection
+      addOrder(
+        { coddraft: draft.coddraft },
+        () => {
+          close()
+          getDrafts()
+        },
+        setMessage,
+      )
+    }
+  })
 
   const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
     e.persist()
@@ -208,27 +223,61 @@ const DraftPanel: FC<DraftSectionProps> = (
     const value = e.currentTarget.value
     const name = e.currentTarget.name
 
-    if (name === 'customer-name') {
-      setCustomerName(value)
+    let event
+    if (e.type === 'change') {
+      event = ValidEvents.Change
     }
-    if (name === 'customer-phone') {
-      setCustomerPhone(value)
+    if (e.type === 'blur') {
+      event = ValidEvents.Blur
+      doUpdateDraft()
     }
+
+    if (draftCustomerID === undefined) {
+      if (name === 'customer-name') {
+        setCustomerName(value)
+        validateField({ name: 'customer-name', value: customerName, event: event })
+      }
+      if (name === 'customer-phone') {
+        setCustomerPhone(value)
+        validateField({ name: 'customer-phone', value: customerPhone, event: event })
+      }
+    }
+
     if (name === 'pick-up-time') {
       setPickUpTime(value)
-    }
-  }
-
-  const handleBlur: FormEventHandler<HTMLInputElement> = (e) => {
-    if (newDraftID === undefined && draft === undefined && !addingDraft) {
-      addDraft({})
-    } else if (!addingDraft) {
-      doUpdateDraft()
+      validateField({ name: 'pick-up-time', value: pickUpTime, event: event })
     }
   }
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
+
+    new FormData(e.currentTarget).forEach((entry, name) => {
+      if (draftCustomerID === undefined) {
+        if (name === 'customer-name') {
+          setCustomerName(entry.toString())
+        }
+        if (name === 'customer-phone') {
+          setCustomerPhone(entry.toString())
+        }
+      }
+      if (name === 'pick-up-time') {
+        setPickUpTime(entry.toString())
+      }
+    })
+
+    let fields = [
+      { name: 'pick-up-time', value: pickUpTime, event: ValidEvents.Submit },
+      { name: 'products', value: draftProducts ? draftProducts.length.toString() : '0', event: ValidEvents.Submit },
+    ]
+
+    if (draftCustomerID === undefined) {
+      fields.push(
+        { name: 'customer-name', value: customerName, event: ValidEvents.Submit },
+        { name: 'customer-phone', value: customerPhone, event: ValidEvents.Submit },
+      )
+    }
+    validateSubmit(fields)
   }
 
   const close = () => {
@@ -264,6 +313,14 @@ const DraftPanel: FC<DraftSectionProps> = (
       doUpdateDraft()
     }
   }, [draftCustomerID, draftProducts])
+
+  useEffect(() => {
+    validateField({
+      name: 'products',
+      value: draftProducts ? draftProducts.length.toString() : '0',
+      event: ValidEvents.Change,
+    })
+  }, [draftProducts])
 
   useEffect(() => {
     window
@@ -340,10 +397,12 @@ const DraftPanel: FC<DraftSectionProps> = (
               id={ 'customer-name' }
               maxLength={ 60 }
               onChange={ handleChange }
-              onBlur={ handleBlur }
+              onBlur={ handleChange }
               value={ customerName }
               disabled={ disableCustomerInputs }
+              valid={ errors1['customerName'] === undefined }
             />
+            <InputMessage message={ errors1['customerName'] } />
           </FieldWrapper>
           <FieldWrapper>
             <Label htmlFor={ 'customer-phone' }>{ 'Teléfono del cliente:' }</Label>
@@ -353,10 +412,12 @@ const DraftPanel: FC<DraftSectionProps> = (
               id={ 'customer-phone' }
               maxLength={ 9 }
               onChange={ handleChange }
-              onBlur={ handleBlur }
+              onBlur={ handleChange }
               value={ customerPhone }
               disabled={ disableCustomerInputs }
+              valid={ errors1['customerPhone'] === undefined }
             />
+            <InputMessage message={ errors1['customerPhone'] } />
           </FieldWrapper>
           <Options>
             <Button
@@ -370,7 +431,8 @@ const DraftPanel: FC<DraftSectionProps> = (
               <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
             }
           </Options>
-          <OrderProductsTable products={draft?.products} />
+          <OrderProductsTable products={ draft?.products } />
+          <InputMessage message={ errors1['products'] } />
           <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
           <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
@@ -380,12 +442,19 @@ const DraftPanel: FC<DraftSectionProps> = (
               id={ 'pick-up-time' }
               value={ pickUpTime }
               onChange={ handleChange }
-              onBlur={ handleBlur }
+              onBlur={ handleChange }
+              valid={ errors1['pickUpTime'] === undefined }
             />
+            <InputMessage message={ errors1['pickUpTime'] } />
           </FieldWrapper>
           <Options>
-            <Button customType={ ButtonTypes.Danger }>{ 'Cancelar' }</Button>
-            <Button customType={ ButtonTypes.Primary } disabled={ canSave }>{ 'Guardar pedido' }</Button>
+            <Button
+              customType={ ButtonTypes.Danger }
+              onClick={ close }
+            >
+              { draft !== undefined ? 'Eliminar borrador' : 'Cancelar' }
+            </Button>
+            <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
           </Options>
         </Form>
       }

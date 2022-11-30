@@ -134,10 +134,6 @@ const ProductsSelection: FC<IProps> = (
   }, [searchString])
 
   useEffect(() => {
-    console.log(selectedProducts)
-  }, [selectedProducts])
-
-  useEffect(() => {
     if (products !== undefined) {
       setProductList(
         products.map((product) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { assign, forEach, omit } from 'lodash'
+import { assign, forEach, merge, unset } from 'lodash'
 
 export enum ValidEvents { Change = 'Change', Blur = 'Blur', Submit = 'Submit'}
 
@@ -47,41 +47,75 @@ const useValid = (callback: () => void) => {
         case 'username':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = assign(tmpErrors, { username: 'El nombre de usuario es obligatorio' })
+            assign(tmpErrors, { username: 'El nombre de usuario es obligatorio' })
           } else {
-            tmpErrors = omit(tmpErrors, 'username')
+            unset(tmpErrors, 'username')
           }
           break
 
         case 'password':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = assign(tmpErrors, { password: 'La contraseña es obligatoria' })
+            assign(tmpErrors, { password: 'La contraseña es obligatoria' })
           } else {
-            tmpErrors = omit(tmpErrors, 'password')
+            unset(tmpErrors, 'password')
           }
           break
 
         case 'product-name':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = assign(tmpErrors, { productName: 'El nombre de producto es obligatorio' })
+            assign(tmpErrors, { productName: 'El nombre de producto es obligatorio' })
           } else {
-            tmpErrors = omit(tmpErrors, 'productName')
+            unset(tmpErrors, 'productName')
           }
           break
 
         case 'product-price':
           if (element.value.length == 0 &&
             (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-            tmpErrors = assign(tmpErrors, { productPrice: 'El precio de producto es obligatorio' })
+            assign(tmpErrors, { productPrice: 'El precio de producto es obligatorio' })
           } else {
             if (!/^\d{1,3}[,.]\d{0,2}$|^\d{1,3}$/g.test(element.value) &&
               (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
-              tmpErrors = assign(tmpErrors, { productPrice: 'El precio de producto es inválido' })
+              assign(tmpErrors, { productPrice: 'El precio de producto es inválido' })
             } else {
-              tmpErrors = omit(tmpErrors, 'productPrice')
+              unset(tmpErrors, 'productPrice')
             }
+          }
+          break
+
+        case 'customer-name':
+          if (element.value.length == 0 && element.event === ValidEvents.Submit) {
+            assign(tmpErrors, { customerName: 'El nombre del cliente es obligatorio' })
+          } else {
+           unset(tmpErrors, 'customerName')
+          }
+          break
+
+        case 'customer-phone':
+          if (element.value.length == 0 && element.event === ValidEvents.Submit) {
+            assign(tmpErrors, { customerPhone: 'El teléfono del cliente es obligatorio' })
+          } else if (!/^[6-9](\d){8}$/g.test(element.value) && element.event === ValidEvents.Submit) {
+            assign(tmpErrors, { customerPhone: 'El teléfono del cliente es inválido' })
+          } else {
+            unset(tmpErrors, 'customerPhone')
+          }
+          break
+
+        case 'pick-up-time':
+          if (element.value.length == 0 && element.event === ValidEvents.Submit) {
+            assign(tmpErrors, { pickUpTime: 'La hora aproximada de recogida es obligatoria' })
+          } else {
+            unset(tmpErrors, 'pickUpTime')
+          }
+          break
+
+        case 'products':
+          if (element.value === '0' && element.event === ValidEvents.Submit) {
+            assign(tmpErrors, { products: 'Un pedido debe contener como mínimo un producto' })
+          } else {
+            unset(tmpErrors, 'products')
           }
           break
 
@@ -107,25 +141,41 @@ const useValid = (callback: () => void) => {
       switch (element.name) {
         case 'username':
           if (element.value.length > 60) {
-            tmpErrors = assign(tmpErrors, { username: 'El nombre usuario o la contraseña son incorrectos' })
+            assign(tmpErrors, { username: 'El nombre usuario o la contraseña son incorrectos' })
           } else {
-            tmpErrors = omit(tmpErrors, 'username')
+            unset(tmpErrors, 'username')
           }
           break
 
         case 'password':
           if (element.value.length != 8) {
-            tmpErrors = assign(tmpErrors, { password: 'El nombre usuario o la contraseña son incorrectos' })
+            assign(tmpErrors, { password: 'El nombre usuario o la contraseña son incorrectos' })
           } else {
-            tmpErrors = omit(tmpErrors, 'password')
+            unset(tmpErrors, 'password')
           }
           break
 
         case 'product-name':
           if (element.value.length > 240) {
-            tmpErrors = assign(tmpErrors, { productName: 'El nombre de producto es inválido' })
+            assign(tmpErrors, { productName: 'El nombre de producto es inválido' })
           } else {
-            tmpErrors = omit(tmpErrors, 'productName')
+            unset(tmpErrors, 'productName')
+          }
+          break
+
+        case 'customer-name':
+          if (element.value.length > 60) {
+            assign(tmpErrors, { customerName: 'El nombre del cliente es inválido' })
+          } else {
+            unset(tmpErrors, 'customerName')
+          }
+          break
+
+        case 'customer-phone':
+          if (element.value.length > 9) {
+            assign(tmpErrors, { customerPhone: 'El teléfono del cliente es inválido' })
+          } else {
+            unset(tmpErrors, 'customerPhone')
           }
           break
 
@@ -140,13 +190,13 @@ const useValid = (callback: () => void) => {
 
   const validateField = (field: FieldsType) => {
     validate1([field])
-    setValues(assign(values, { [field.name]: field.value }))
+    setValues(merge(values, { [field.name]: field.value }))
   }
 
   const commit = (fields: FieldsType[]) => {
 
     fields.forEach((field) => {
-      setValues(assign(values, { [field.name]: field.value }))
+      setValues(merge(values, { [field.name]: field.value }))
     })
 
     validate(fields)

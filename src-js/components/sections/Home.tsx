@@ -18,6 +18,7 @@ import ProductsSelection from '../products/ProductsSelection'
 import useProducts from '../../hooks/useProducts'
 import { DraftProductReqData } from '../../shapes/ProductShape'
 import NewProductInDraft from '../products/NewProductInDraft'
+import useOrders from '../../hooks/useOrders'
 
 const auxPanelStyles = css`
   position: absolute;
@@ -79,6 +80,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     drafts,
     addingDraft,
     setCollectiveMessage: setColDraftMessage,
+    setIndividualMessage: setIndDraftMessage,
     setNewDraftID,
     addDraft,
     getDrafts,
@@ -113,6 +115,10 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     setIndividualMessage: setIndProductMessage,
     setCollectiveMessage: setColProductMessage,
   } = useProducts(sessionCheck)
+
+  const {
+    addOrder,
+  } = useOrders(sessionCheck)
 
   const handleOpenFirstSidePanel = () => {
     setOpenFirstSidePanel(true)
@@ -165,6 +171,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           openSecondSidePanel={ handleOpenSecondSidePanel }
           changeSecondSidePanel={ setSecondSidePanel }
           message={ indDraftMessage }
+          setMessage={ setIndDraftMessage }
           newDraftID={ newDraftID }
           setNewDraftID={ setNewDraftID }
           draft={ draft }
@@ -175,9 +182,9 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           setDraftCustomerID={ setDraftCustomerID }
           draftCustomerID={ draftCustomerID }
           setSelectedCustomer={ setSelectedCustomer }
-          getProducts={ getProducts }
           draftProducts={ draftProducts }
-          setDraftProducts={ setDraftProducts }
+          addOrder={ addOrder }
+          getDrafts={ getDrafts }
         />
       break
   }

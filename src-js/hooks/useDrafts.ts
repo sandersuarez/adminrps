@@ -183,6 +183,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     drafts,
     setNewDraftID,
     setCollectiveMessage,
+    setIndividualMessage,
     addDraft,
     getDrafts,
     getDraft,
