@@ -88,6 +88,11 @@ const TableContainer = styled.div`
 
 const Container = styled.div`
   position: relative;
+  max-width: 75rem;
+
+  ${ breakpoints.tablet } {
+    margin-top: ${ margins.tablet.vertical };
+  }
 `
 
 interface OrderProductsTableProps {

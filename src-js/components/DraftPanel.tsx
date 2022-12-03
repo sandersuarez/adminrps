@@ -23,6 +23,15 @@ import { DraftProductReqData } from '../shapes/ProductShape'
 import OrderProductsTable from './orders/OrderProductsTable'
 import InputMessage from './forms/InputMessage'
 import { AddOrder } from '../hooks/useOrders'
+import breakpoints from '../styles/breakpoints'
+
+const hourFieldStyles = css`
+  margin-top: ${ margins.mobile.littleGap };
+
+  ${ breakpoints.tablet } {
+    margin-top: ${ margins.tablet.gridSpace };
+  }
+`
 
 const Container = styled.section`
   display: flex;
@@ -39,6 +48,19 @@ const Container = styled.section`
 
     &:nth-last-of-type(1) {
       margin-top: ${ margins.mobile.mediumVertical };
+    }
+  }
+
+  ${ breakpoints.tablet } {
+    row-gap: ${ margins.tablet.mediumVertical };
+    padding: ${ margins.tablet.lateral };
+
+    ${ Options } {
+      margin-top: 0;
+
+      &:nth-last-of-type(1) {
+        margin-top: ${ margins.tablet.mediumVertical };
+      }
     }
   }
 `
@@ -302,7 +324,8 @@ const DraftPanel: FC<DraftSectionProps> = (
     setDraftCustomerID(undefined)
   }
 
-  const searchProducts = () => {
+  const searchProducts: FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
     doUpdateDraft()
     changeSecondSidePanel(Panels.Products)
     openSecondSidePanel()
@@ -434,7 +457,7 @@ const DraftPanel: FC<DraftSectionProps> = (
           <OrderProductsTable products={ draft?.products } />
           <InputMessage message={ errors1['products'] } />
           <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
-          <FieldWrapper css={ css`margin-top: ${ margins.mobile.littleGap }` }>
+          <FieldWrapper css={ hourFieldStyles }>
             <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
             <Input
               type={ 'time' }

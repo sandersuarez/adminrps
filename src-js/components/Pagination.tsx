@@ -4,6 +4,7 @@ import { css } from '@emotion/react'
 import ButtonTypes from '../shapes/ButtonTypes'
 import margins from '../styles/margins'
 import PaginationButton from './buttons/PaginationButton'
+import breakpoints from '../styles/breakpoints'
 
 const Container = styled.div`
   display: flex;
@@ -11,6 +12,10 @@ const Container = styled.div`
   align-self: center;
   row-gap: ${ margins.mobile.vertical };
   column-gap: ${ margins.mobile.littleGap };
+
+  ${ breakpoints.tablet } {
+    margin-top: ${ margins.tablet.littleGap };
+  }
 `
 
 interface IProps {

@@ -2,6 +2,7 @@ import React from 'react'
 import styled from '@emotion/styled'
 import margins from '../../styles/margins'
 import Options from '../buttons/Options'
+import breakpoints from '../../styles/breakpoints'
 
 const Form = styled.form`
   display: flex;
@@ -17,6 +18,10 @@ const Form = styled.form`
 
   ${ Options } {
     flex-direction: row;
+  }
+
+  ${ breakpoints.tablet } {
+    row-gap: ${ margins.tablet.mediumVertical };
   }
 `
 

@@ -3,11 +3,23 @@ import { EditableCustomerProps } from './EditableCustomer'
 import styled from '@emotion/styled'
 import margins from '../../styles/margins'
 import { CustomerProps } from './Customer'
+import breakpoints from '../../styles/breakpoints'
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  row-gap: ${ margins.mobile.vertical };
+  row-gap: ${ margins.mobile.gridSpace };
+
+  ${ breakpoints.tablet } {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: ${ margins.tablet.gridSpace };
+    margin-top: ${ margins.tablet.gridSpace };
+
+    div {
+      flex-basis: calc(50% - (${ margins.tablet.gridSpace } / 2));
+    }
+  }
 `
 
 interface IProps {

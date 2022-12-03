@@ -10,6 +10,14 @@ import Customer from './Customer'
 import { CustomerMessage, CustomerMessageTypes, GetCustomers } from '../../hooks/useCustomers'
 import AlertTypes from '../../shapes/AlertTypes'
 import CustomerShape from '../../shapes/CustomerShape'
+import { css } from '@emotion/react'
+import styled from '@emotion/styled'
+
+const Container = styled.article`
+${Options} {
+  margin-top: 0;
+}
+`
 
 interface IProps {
   closeSidePanel: () => void
@@ -72,7 +80,7 @@ const CustomersSelection: FC<IProps> = (
   }, [activePage, searchString, matches])
 
   return (
-    <article>
+    <Container>
       <h3>{ 'Seleccionar cliente' }</h3>
       {
         message !== undefined && message.type === CustomerMessageTypes.Error &&
@@ -121,7 +129,7 @@ const CustomersSelection: FC<IProps> = (
           <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
         </>
       }
-    </article>
+    </Container>
   )
 }
 

@@ -53,7 +53,7 @@ const thisButtonStyles = css`
     
     svg {
       fill: ${ colors.primary };
-      height: 3rem;
+      height: 2.5rem;
       max-width: 100%;
     }
   }

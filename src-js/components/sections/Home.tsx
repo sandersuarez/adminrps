@@ -35,16 +35,16 @@ const HomeWrapper = styled.div`
   height: 100%;
   padding: ${ margins.mobile.lateral };
   overflow-y: auto;
+
+  ${ breakpoints.tablet } {
+    padding: ${ margins.tablet.lateral };
+  }
 `
 
 const Container = styled.section`
   position: relative;
   width: 100%;
   overflow: hidden;
-
-  ${ breakpoints.tablet } {
-    padding: 1.5rem 1.5rem 2rem 1.5rem;
-  }
 
   ${ breakpoints.desktop } {
     order: 2;

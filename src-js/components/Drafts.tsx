@@ -25,7 +25,8 @@ const Container = styled.article`
   }
 
   ${ breakpoints.tablet } {
-    margin: 2rem 0 0 0;
+    margin-top: ${ margins.tablet.bigVertical };
+    gap: ${ margins.tablet.mediumVertical };
   }
 `
 

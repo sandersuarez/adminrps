@@ -6,15 +6,15 @@ import breakpoints from '../../styles/breakpoints'
 const Options = styled.div`
   display: flex;
   flex-flow: row wrap;
-  gap: ${ margins.mobile.vertical };
+  gap: ${ margins.mobile.gridSpace };
 
   button:nth-of-type(2), button:nth-of-type(3) {
     white-space: break-spaces;
   }
 
   ${ breakpoints.tablet } {
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: ${ margins.tablet.gridSpace };
+    margin-top: ${ margins.tablet.littleGap };
   }
 `
 

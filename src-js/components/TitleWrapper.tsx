@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
+import breakpoints from '../styles/breakpoints'
 
 const TitleWrapper = styled.div`
   display: flex;
@@ -10,6 +11,10 @@ const TitleWrapper = styled.div`
   h2 {
     flex-grow: 1;
     margin: 0;
+  }
+
+  ${ breakpoints.tablet } {
+    margin-bottom: ${ margins.tablet.gridSpace };
   }
 `
 

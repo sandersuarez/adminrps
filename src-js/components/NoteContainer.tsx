@@ -14,15 +14,14 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(20ch, 100%), 1fr));
   grid-auto-flow: row dense;
-  gap: ${ margins.mobile.vertical };
+  gap: ${ margins.mobile.gridSpace };
 
   h3 {
     ${ fonts.noteTitle }
   }
 
   ${ breakpoints.tablet } {
-    column-gap: 2rem;
-    row-gap: 1.5rem;
+    gap: ${ margins.tablet.gridSpace };
   }
 
   ${ breakpoints.smallDesktop } {
@@ -45,7 +44,11 @@ const Container = styled.div`
 /**
  * Component that contains a set of notes, and shows them responsively.
  */
-const NoteContainer: FC<NoteContainerProps> = ({ className, noteList }) => {
+const NoteContainer: FC<NoteContainerProps> = (
+  {
+    className,
+    noteList,
+  }) => {
   return (
     <Container className={ className } children={ noteList } />
   )
