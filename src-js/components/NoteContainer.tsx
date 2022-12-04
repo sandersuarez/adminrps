@@ -32,7 +32,7 @@ const Container = styled.div`
     }
   }
 
-  ${ breakpoints.bigDesktop } {
+  ${ breakpoints.desktop } {
     grid-template-columns: repeat(auto-fit, minmax(min(24ch, 100%), 1fr));
 
     ${ Note } {

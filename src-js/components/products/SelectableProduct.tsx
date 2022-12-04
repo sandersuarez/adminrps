@@ -3,6 +3,8 @@ import styled from '@emotion/styled'
 import colors from '../../styles/colors'
 import AmountInput from '../buttons/AmountInput'
 import { motion } from 'framer-motion'
+import margins from '../../styles/margins'
+import breakpoints from '../../styles/breakpoints'
 
 const Container = styled(motion.div)`
   --rigth-round: 2.5rem;
@@ -19,6 +21,19 @@ const Container = styled(motion.div)`
     margin: 0;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  ${ breakpoints.tablet } {
+    flex-basis: calc(50% - (${ margins.tablet.gridSpace } / 2));
+    flex-grow: 1;
+  }
+
+  ${ breakpoints.desktop } {
+    flex-basis: 100%;
+  }
+
+  ${ breakpoints.bigDesktop } {
+    flex-basis: calc(50% - (${ margins.tablet.gridSpace } / 2));
   }
 `
 

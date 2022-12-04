@@ -307,7 +307,8 @@ const DraftPanel: FC<DraftSectionProps> = (
     setNewDraftID(undefined)
   }
 
-  const searchCustomer = () => {
+  const searchCustomer: FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
     doUpdateDraft()
     // noinspection SpellCheckingInspection
     getCustomers({
@@ -319,7 +320,8 @@ const DraftPanel: FC<DraftSectionProps> = (
     openSecondSidePanel()
   }
 
-  const resetCustomer = () => {
+  const resetCustomer: FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
     setSelectedCustomer(undefined)
     setDraftCustomerID(undefined)
   }

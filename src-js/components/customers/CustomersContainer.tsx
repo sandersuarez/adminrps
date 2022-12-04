@@ -15,10 +15,6 @@ const Container = styled.div`
     flex-wrap: wrap;
     gap: ${ margins.tablet.gridSpace };
     margin-top: ${ margins.tablet.gridSpace };
-
-    div {
-      flex-basis: calc(50% - (${ margins.tablet.gridSpace } / 2));
-    }
   }
 `
 

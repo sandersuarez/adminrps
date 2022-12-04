@@ -10,13 +10,15 @@ import Customer from './Customer'
 import { CustomerMessage, CustomerMessageTypes, GetCustomers } from '../../hooks/useCustomers'
 import AlertTypes from '../../shapes/AlertTypes'
 import CustomerShape from '../../shapes/CustomerShape'
-import { css } from '@emotion/react'
 import styled from '@emotion/styled'
+import breakpoints from '../../styles/breakpoints'
 
 const Container = styled.article`
-${Options} {
-  margin-top: 0;
-}
+  ${ breakpoints.tablet } {
+    ${ Options } {
+      margin-top: 0;
+    }
+  }
 `
 
 interface IProps {

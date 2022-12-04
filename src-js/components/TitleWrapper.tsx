@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import margins from '../styles/margins'
 import breakpoints from '../styles/breakpoints'
+import ExitButton from './buttons/ExitButton'
 
 const TitleWrapper = styled.div`
   display: flex;
@@ -15,6 +16,12 @@ const TitleWrapper = styled.div`
 
   ${ breakpoints.tablet } {
     margin-bottom: ${ margins.tablet.gridSpace };
+  }
+
+  ${ breakpoints.mediumDesktop } {
+    ${ ExitButton } {
+      display: none;
+    }
   }
 `
 

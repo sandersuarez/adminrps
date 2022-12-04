@@ -7,7 +7,6 @@ import margins from '../../styles/margins'
 import PanelContainer from '../PanelContainer'
 import OrderPanel from '../orders/OrderPanel'
 import { css } from '@emotion/react'
-import colors from '../../styles/colors'
 import CustomersSelection from '../customers/CustomersSelection'
 import { SessionCheckType, SessionRenewType } from '../../hooks/useSession'
 import DraftPanel from '../DraftPanel'
@@ -20,24 +19,20 @@ import { DraftProductReqData } from '../../shapes/ProductShape'
 import NewProductInDraft from '../products/NewProductInDraft'
 import useOrders from '../../hooks/useOrders'
 
-const auxPanelStyles = css`
-  position: absolute;
-  top: 0;
-  left: 100%;
-
-  & > div:first-of-type {
-    background: ${ colors.section };
-  }
-`
-
 const HomeWrapper = styled.div`
   width: 100%;
   height: 100%;
-  padding: ${ margins.mobile.lateral };
+  padding: ${ margins.mobile.vertical } ${ margins.mobile.lateral };
   overflow-y: auto;
 
   ${ breakpoints.tablet } {
-    padding: ${ margins.tablet.lateral };
+    padding: ${ margins.tablet.mediumVertical } ${ margins.tablet.lateral };
+  }
+
+  ${ breakpoints.mediumDesktop } {
+    flex-basis: 60%;
+    flex-grow: 1;
+    padding: ${ margins.desktop.mediumVertical } ${ margins.desktop.lateral };
   }
 `
 
@@ -46,9 +41,9 @@ const Container = styled.section`
   width: 100%;
   overflow: hidden;
 
-  ${ breakpoints.desktop } {
+  ${ breakpoints.mediumDesktop } {
+    display: flex;
     order: 2;
-    padding: 1.5rem 3rem 2rem 3rem;
   }
 `
 
@@ -256,7 +251,6 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
         />
       </HomeWrapper>
       <PanelContainer
-        css={ auxPanelStyles }
         open={ openFirstSidePanel }
         mainChildren={ mainPanel }
         sideChildren={ sidePanel }

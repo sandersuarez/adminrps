@@ -18,13 +18,40 @@ import AlertTypes from '../../shapes/AlertTypes'
 import { AddProduct, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
 import { isUndefined } from 'lodash'
 import { DraftProductReqData } from '../../shapes/ProductShape'
+import breakpoints from '../../styles/breakpoints'
+
+const Container = styled.article`
+  ${ breakpoints.tablet } {
+    h3 {
+      margin-bottom: ${ margins.tablet.littleGap };
+    }
+    
+    ${ Options } {
+      margin-top: ${ margins.tablet.littleGap };
+    }
+
+    ${ Form } {
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: ${ margins.tablet.bigLateral };
+
+      ${ FieldWrapper } {
+        flex-basis: 100%;
+      }
+    }
+  }
+`
 
 const AmountFieldWrapper = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: ${ margins.mobile.lateral };
+  column-gap: ${ margins.mobile.gridSpace };
+
+  ${ breakpoints.tablet } {
+    margin-top: ${ margins.tablet.littleGap };
+  }
 `
 
 interface IProps {
@@ -142,7 +169,7 @@ const NewProductInDraft: FC<IProps> = (
   }
 
   return (
-    <article>
+    <Container>
       <h3>{ 'Añadir nuevo producto' }</h3>
       {
         message !== undefined && message.type === ProductMessageTypes.Warning &&
@@ -215,8 +242,7 @@ const NewProductInDraft: FC<IProps> = (
           </Button>
         </Options>
       </Form>
-
-    </article>
+    </Container>
   )
 }
 

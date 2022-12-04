@@ -1,7 +1,9 @@
-import React, { FC, Key, MouseEventHandler, useEffect } from 'react'
+import React, { FC, Key, MouseEventHandler } from 'react'
 import styled from '@emotion/styled'
 import colors from '../../styles/colors'
 import { css } from '@emotion/react'
+import margins from '../../styles/margins'
+import breakpoints from '../../styles/breakpoints'
 
 const Container = styled.div`
   display: flex;
@@ -13,6 +15,19 @@ const Container = styled.div`
     margin: 0;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  ${ breakpoints.tablet } {
+    flex-basis: calc(50% - (${ margins.tablet.gridSpace } / 2));
+    flex-grow: 1;
+  }
+  
+  ${ breakpoints.desktop } {
+    flex-basis: 100%;
+  }
+
+  ${ breakpoints.bigDesktop } {
+    flex-basis: calc(50% - (${ margins.tablet.gridSpace } / 2));
   }
 `
 

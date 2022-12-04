@@ -12,6 +12,16 @@ import ProductsContainer from './ProductsContainer'
 import SelectableProduct from './SelectableProduct'
 import { concat, filter, findIndex, isEqual, isUndefined } from 'lodash'
 import Panels from '../../shapes/Panels'
+import styled from '@emotion/styled'
+import breakpoints from '../../styles/breakpoints'
+
+const Container = styled.article`
+  ${ breakpoints.tablet } {
+    ${ Options } {
+      margin-top: 0;
+    }
+  }
+`
 
 interface IProps {
   closeSidePanel: () => void
@@ -182,7 +192,7 @@ const ProductsSelection: FC<IProps> = (
   }, [])
 
   return (
-    <article>
+    <Container>
       <h3>{ 'Seleccionar productos' }</h3>
       {
         colMessage !== undefined && colMessage.type === ProductMessageTypes.Warning &&
@@ -220,7 +230,7 @@ const ProductsSelection: FC<IProps> = (
           <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
         </>
       }
-    </article>
+    </Container>
   )
 }
 

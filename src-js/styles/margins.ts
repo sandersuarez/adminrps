@@ -15,8 +15,12 @@ const margins = {
     gridSpace: '2rem',
     mediumVertical: '3rem',
     bigVertical: '5rem',
+    bigLateral: '7rem',
   },
-  desktop: {},
+  desktop: {
+    mediumVertical: '4rem',
+    lateral: '6rem'
+  },
 }
 
 export default margins
