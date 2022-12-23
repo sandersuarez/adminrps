@@ -209,24 +209,35 @@ function add_draft(array $input_data): array
       $pickuptime_clause[1] = ", :pickuptime";
     }
 
-    $query = $connection->prepare("INSERT INTO " . DRAFTS . " (coddraft" . $codcustomer_clause[0] . $namecustomertmp_clause[0] . $telcustomertmp_clause[0] . $pickuptime_clause[0] .
-      ", coduser) VALUES (:coddraft" . $codcustomer_clause[1] . $namecustomertmp_clause[1] . $telcustomertmp_clause[1] . $pickuptime_clause[1] . ", :coduser)");
+    $query = $connection->prepare("INSERT INTO " . DRAFTS . " (coddraft" . $codcustomer_clause[0] .
+      $namecustomertmp_clause[0] . $telcustomertmp_clause[0] . $pickuptime_clause[0] . ", coduser) VALUES (:coddraft" .
+      $codcustomer_clause[1] . $namecustomertmp_clause[1] . $telcustomertmp_clause[1] . $pickuptime_clause[1] .
+      ", :coduser)");
 
     // Parameters binding and execution
     $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
-    if (array_key_exists('codcustomer', $input_data)) $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
-    if (array_key_exists('namecustomertmp', $input_data)) $query->bindParam(':namecustomertmp', $input_data['namecustomertmp'], PDO::PARAM_STR);
-    if (array_key_exists('telcustomertmp', $input_data)) $query->bindParam(':telcustomertmp', $input_data['telcustomertmp'], PDO::PARAM_STR);
-    if (array_key_exists('pickuptime', $input_data)) $query->bindParam(':pickuptime', $input_data['pickuptime'], PDO::PARAM_STR);
+    if (array_key_exists('codcustomer', $input_data)) {
+      $query->bindParam(':codcustomer', $input_data['codcustomer'], PDO::PARAM_INT);
+    }
+    if (array_key_exists('namecustomertmp', $input_data)) {
+      $query->bindParam(':namecustomertmp', $input_data['namecustomertmp']);
+    }
+    if (array_key_exists('telcustomertmp', $input_data)) {
+      $query->bindParam(':telcustomertmp', $input_data['telcustomertmp']);
+    }
+    if (array_key_exists('pickuptime', $input_data)) {
+      $query->bindParam(':pickuptime', $input_data['pickuptime']);
+    }
     $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
 
     $query->execute();
     $query->closeCursor();
 
     if (array_key_exists('products', $input_data)) {
-      foreach ($input_data['products'] as $index => $product) {
+      foreach ($input_data['products'] as $product) {
         // SQL Query to add product records to the draft
-        $query = $connection->prepare("INSERT INTO " . DRAFTS_CONTAIN . " (codproduct, coddraft, amountproductdraft) VALUES (:codproduct, :coddraft, :amountproductdraft)");
+        $query = $connection->prepare("INSERT INTO " . DRAFTS_CONTAIN .
+          " (codproduct, coddraft, amountproductdraft) VALUES (:codproduct, :coddraft, :amountproductdraft)");
 
         // Parameters binding and execution
         $query->bindParam(':codproduct', $product['codproduct'], PDO::PARAM_INT);

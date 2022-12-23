@@ -68,8 +68,11 @@ const ProductsSelection: FC<IProps> = (
   const [priceFormatter] =
     useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
 
-  const [matches, setMatches] =
+  const [matchesTablet, setMatchesTablet] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
+
+  const [matchesDesktop, setMatchesDesktop] =
+    useState<boolean>(window.matchMedia('(min-width: 992px)').matches)
 
   const [productList, setProductList] = useState<ReactElement[]>([])
 
@@ -132,9 +135,9 @@ const ProductsSelection: FC<IProps> = (
     // noinspection SpellCheckingInspection
     getProducts({
       name: searchString,
-      products_number: matches ? 30 : 15,
+      products_number: matchesTablet ? 30 : 15,
     })
-  }, [activePage, searchString, matches])
+  }, [activePage, searchString, matchesTablet])
 
   useEffect(() => {
     if (searchString != '') {
@@ -188,7 +191,10 @@ const ProductsSelection: FC<IProps> = (
   useEffect(() => {
     window
       .matchMedia('(min-width: 700px)')
-      .addEventListener('change', e => setMatches(e.matches))
+      .addEventListener('change', e => setMatchesTablet(e.matches))
+    window
+      .matchMedia('(min-width: 992px)')
+      .addEventListener('change', e => setMatchesDesktop(e.matches))
   }, [])
 
   return (
@@ -213,7 +219,10 @@ const ProductsSelection: FC<IProps> = (
           (colMessage === undefined || colMessage.type === ProductMessageTypes.Info) &&
           <Button customType={ ButtonTypes.Primary } onClick={ changeToAddProduct }>{ 'Nuevo producto' }</Button>
         }
-        <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
+        {
+          !matchesDesktop &&
+          <Button customType={ ButtonTypes.Secondary } onClick={ cancel }>{ 'Cancelar' }</Button>
+        }
       </Options>
       {
         colMessage !== undefined && colMessage.type === ProductMessageTypes.Info &&

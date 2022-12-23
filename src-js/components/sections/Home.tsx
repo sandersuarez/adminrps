@@ -59,6 +59,7 @@ interface IProps {
  * the logout button, the active orders component and the drafts component.
  */
 const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
+
   const [openFirstSidePanel, setOpenFirstSidePanel] = React.useState<boolean>(false)
   const [openSecondSidePanel, setOpenSecondSidePanel] = React.useState<boolean>(false)
   const [firstSidePanel, setFirstSidePanel] = React.useState<Panels>(Panels.Drafts)
@@ -66,6 +67,11 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
   const [selectedCustomer, setSelectedCustomer] = useState<number>()
   const [newProductToAdd, setNewProductToAdd] = useState<DraftProductReqData>()
+
+  const [matchesMediumDesktop, setMatchesMediumDesktop] =
+    useState<boolean>(window.matchMedia('(min-width: 1250px)').matches)
+  const [matchesDesktop, setMatchesDesktop] =
+    useState<boolean>(window.matchMedia('(min-width: 992px)').matches)
 
   const {
     individualMessage: indDraftMessage,
@@ -121,10 +127,12 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
 
   const handleCloseFirstSidePanel = () => {
     setOpenFirstSidePanel(false)
+    setOpenSecondSidePanel(false)
   }
 
   const handleOpenSecondSidePanel = () => {
     sessionRenew()
+    setOpenFirstSidePanel(true)
     setOpenSecondSidePanel(true)
   }
 
@@ -149,6 +157,34 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
       }
     }
   }, [draft?.products])
+
+  useEffect(() => {
+    window
+      .matchMedia('(min-width: 1250px)')
+      .addEventListener('change', e => setMatchesMediumDesktop(e.matches))
+    window
+      .matchMedia('(min-width: 992px)')
+      .addEventListener('change', e => setMatchesDesktop(e.matches))
+  }, [])
+
+  useEffect(() => {
+    if (!matchesDesktop) {
+      if (openSecondSidePanel) {
+        setOpenFirstSidePanel(true)
+      } else {
+        setOpenFirstSidePanel(false)
+      }
+      setOpenSecondSidePanel(false)
+    }
+  }, [matchesDesktop])
+
+  useEffect(() => {
+    if (!matchesMediumDesktop) {
+      if (!openSecondSidePanel) {
+        setOpenFirstSidePanel(false)
+      }
+    }
+  }, [matchesMediumDesktop])
 
   let mainPanel
   switch (firstSidePanel) {
@@ -251,7 +287,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
         />
       </HomeWrapper>
       <PanelContainer
-        open={ openFirstSidePanel }
+        open={ matchesMediumDesktop ? undefined : openFirstSidePanel }
         mainChildren={ mainPanel }
         sideChildren={ sidePanel }
         openSidePanel={ openSecondSidePanel }

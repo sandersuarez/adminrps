@@ -81,6 +81,8 @@ function useDrafts(sessionCheck: SessionCheckType) {
           setDraft(undefined)
           // noinspection SpellCheckingInspection
           setNewDraftID(res['coddraft'])
+          // noinspection SpellCheckingInspection
+          getDraft(res['coddraft'])
         }
 
         if ('overflow' in res) {

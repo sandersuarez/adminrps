@@ -119,9 +119,50 @@ const DraftPanel: FC<DraftSectionProps> = (
   const [matches, setMatches] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
 
-  const doUpdateDraft = () => {
+  const doUpdateDraft = (addAnyway: boolean = false) => {
     if (newDraftID === undefined && draft === undefined && !addingDraft) {
-      addDraft({})
+      if (customerName.trim() !== '' || customerPhone.trim() !== '' || draftCustomerID !== undefined ||
+        pickUpTime !== '' || draftProducts !== undefined || addAnyway) {
+
+        let data: AddDraft['Request'] = {}
+
+        if (pickUpTime !== '') {
+          // noinspection SpellCheckingInspection
+          assign(data, {
+            pickuptime: pickUpTime,
+          })
+        }
+
+        if (draftProducts !== undefined) {
+          // noinspection SpellCheckingInspection
+          assign(data, {
+            products: draftProducts,
+          })
+        }
+
+        if (draftCustomerID === undefined) {
+          let customerNameTrimmed = customerName.trim()
+          let customerPhoneTrimmed = customerPhone.trim()
+
+          if (customerNameTrimmed !== '') {
+            // noinspection SpellCheckingInspection
+            assign(data, {
+              namecustomertmp: customerNameTrimmed,
+            })
+          }
+          if (customerPhoneTrimmed !== '') {
+            // noinspection SpellCheckingInspection
+            assign(data, {
+              telcustomertmp: customerPhoneTrimmed,
+            })
+          }
+        } else {
+          // noinspection SpellCheckingInspection
+          assign(data, { codcustomer: draftCustomerID })
+        }
+
+        addDraft(data)
+      }
     } else {
       if (!addingDraft) {
         // noinspection SpellCheckingInspection
@@ -309,7 +350,7 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   const searchCustomer: FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    doUpdateDraft()
+    doUpdateDraft(true)
     // noinspection SpellCheckingInspection
     getCustomers({
       telname: '',
@@ -328,7 +369,7 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   const searchProducts: FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
-    doUpdateDraft()
+    doUpdateDraft(true)
     changeSecondSidePanel(Panels.Products)
     openSecondSidePanel()
   }
@@ -397,7 +438,7 @@ const DraftPanel: FC<DraftSectionProps> = (
   return (
     <Container>
       <TitleWrapper>
-        <h2>{ draft !== undefined ? 'Borrador ' + draft.coddraft : 'Nuevo pedido' }</h2>
+        <h2>{ draft !== undefined ? 'Borrador ' + draft.coddraft : newDraftID !== undefined ? 'Borrador ' + newDraftID : 'Nuevo pedido' }</h2>
         <ExitButton onClick={ close }>
           <i className={ 'bi bi-x' } />
         </ExitButton>
@@ -411,78 +452,75 @@ const DraftPanel: FC<DraftSectionProps> = (
         message !== undefined && message.type === DraftMessageTypes.Warning &&
         <Alert message={ message.content } type={ AlertTypes.Warning } />
       }
-      {
-        (draft !== undefined || newDraftID !== undefined) &&
-        <Form onSubmit={ handleSubmit }>
-          <FieldWrapper>
-            <Label htmlFor={ 'customer-name' }>{ 'Nombre del cliente:' }</Label>
-            <Input
-              type={ 'text' }
-              name={ 'customer-name' }
-              id={ 'customer-name' }
-              maxLength={ 60 }
-              onChange={ handleChange }
-              onBlur={ handleChange }
-              value={ customerName }
-              disabled={ disableCustomerInputs }
-              valid={ errors1['customerName'] === undefined }
-            />
-            <InputMessage message={ errors1['customerName'] } />
-          </FieldWrapper>
-          <FieldWrapper>
-            <Label htmlFor={ 'customer-phone' }>{ 'Teléfono del cliente:' }</Label>
-            <Input
-              type={ 'tel' }
-              name={ 'customer-phone' }
-              id={ 'customer-phone' }
-              maxLength={ 9 }
-              onChange={ handleChange }
-              onBlur={ handleChange }
-              value={ customerPhone }
-              disabled={ disableCustomerInputs }
-              valid={ errors1['customerPhone'] === undefined }
-            />
-            <InputMessage message={ errors1['customerPhone'] } />
-          </FieldWrapper>
-          <Options>
-            <Button
-              customType={ ButtonTypes.Primary }
-              onClick={ searchCustomer }
-            >
-              { 'Buscar cliente' }
-            </Button>
-            {
-              disableCustomerInputs &&
-              <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
-            }
-          </Options>
-          <OrderProductsTable products={ draft?.products } />
-          <InputMessage message={ errors1['products'] } />
-          <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
-          <FieldWrapper css={ hourFieldStyles }>
-            <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
-            <Input
-              type={ 'time' }
-              name={ 'pick-up-time' }
-              id={ 'pick-up-time' }
-              value={ pickUpTime }
-              onChange={ handleChange }
-              onBlur={ handleChange }
-              valid={ errors1['pickUpTime'] === undefined }
-            />
-            <InputMessage message={ errors1['pickUpTime'] } />
-          </FieldWrapper>
-          <Options>
-            <Button
-              customType={ ButtonTypes.Danger }
-              onClick={ close }
-            >
-              { draft !== undefined ? 'Eliminar borrador' : 'Cancelar' }
-            </Button>
-            <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
-          </Options>
-        </Form>
-      }
+      <Form onSubmit={ handleSubmit }>
+        <FieldWrapper>
+          <Label htmlFor={ 'customer-name' }>{ 'Nombre del cliente:' }</Label>
+          <Input
+            type={ 'text' }
+            name={ 'customer-name' }
+            id={ 'customer-name' }
+            maxLength={ 60 }
+            onChange={ handleChange }
+            onBlur={ handleChange }
+            value={ customerName }
+            disabled={ disableCustomerInputs }
+            valid={ errors1['customerName'] === undefined }
+          />
+          <InputMessage message={ errors1['customerName'] } />
+        </FieldWrapper>
+        <FieldWrapper>
+          <Label htmlFor={ 'customer-phone' }>{ 'Teléfono del cliente:' }</Label>
+          <Input
+            type={ 'tel' }
+            name={ 'customer-phone' }
+            id={ 'customer-phone' }
+            maxLength={ 9 }
+            onChange={ handleChange }
+            onBlur={ handleChange }
+            value={ customerPhone }
+            disabled={ disableCustomerInputs }
+            valid={ errors1['customerPhone'] === undefined }
+          />
+          <InputMessage message={ errors1['customerPhone'] } />
+        </FieldWrapper>
+        <Options>
+          <Button
+            customType={ ButtonTypes.Primary }
+            onClick={ searchCustomer }
+          >
+            { 'Buscar cliente' }
+          </Button>
+          {
+            disableCustomerInputs &&
+            <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
+          }
+        </Options>
+        <OrderProductsTable products={ draft?.products } />
+        <InputMessage message={ errors1['products'] } />
+        <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
+        <FieldWrapper css={ hourFieldStyles }>
+          <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
+          <Input
+            type={ 'time' }
+            name={ 'pick-up-time' }
+            id={ 'pick-up-time' }
+            value={ pickUpTime }
+            onChange={ handleChange }
+            onBlur={ handleChange }
+            valid={ errors1['pickUpTime'] === undefined }
+          />
+          <InputMessage message={ errors1['pickUpTime'] } />
+        </FieldWrapper>
+        <Options>
+          <Button
+            customType={ ButtonTypes.Danger }
+            onClick={ close }
+          >
+            { draft !== undefined ? 'Eliminar borrador' : 'Cancelar' }
+          </Button>
+          <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
+        </Options>
+      </Form>
     </Container>
   )
 }

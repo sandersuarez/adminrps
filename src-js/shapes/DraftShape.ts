@@ -11,9 +11,9 @@ export type DraftContent = {
 
 // noinspection SpellCheckingInspection
 export type DraftReqData = {
-  namecustomertmp?: string,
-  telcustomertmp?: string,
-  pickuptime?: string,
+  namecustomertmp?: string | null,
+  telcustomertmp?: string | null,
+  pickuptime?: string | null,
   codcustomer?: number,
   products?: DraftProductReqData[],
 }

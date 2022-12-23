@@ -69,16 +69,27 @@ $app->post('/add_draft', function (Request $request, Response $response) {
     if (array_key_exists('user', $security)) {
 
       // Check for required parameters
-      $params = $request->getQueryParams();
-
-      if (!((array_key_exists('namecustomertmp', $params) || array_key_exists('telcustomertmp', $params)) && array_key_exists('codcustomer', $params))) {
+      $params = $request->getParsedBody();
+      if (!((array_key_exists('namecustomertmp', $params) || array_key_exists('telcustomertmp', $params))
+        && array_key_exists('codcustomer', $params))) {
 
         $input_data = [];
-        if (array_key_exists('namecustomertmp', $params)) $input_data['namecustomertmp'] = $params['namecustomertmp'];
-        if (array_key_exists('telcustomertmp', $params)) $input_data['telcustomertmp'] = $params['telcustomertmp'];
-        if (array_key_exists('pickuptime', $params)) $input_data['pickuptime'] = $params['pickuptime'];
-        if (array_key_exists('codcustomer', $params)) $input_data['codcustomer'] = $params['codcustomer'];
-        if (array_key_exists('products', $params)) $input_data['products'] = json_decode($params['products'], true);
+        if (array_key_exists('namecustomertmp', $params)) {
+          $input_data['namecustomertmp'] = $params['namecustomertmp'];
+        }
+        if (array_key_exists('telcustomertmp', $params)) {
+          $input_data['telcustomertmp'] = $params['telcustomertmp'];
+        }
+        if (array_key_exists('pickuptime', $params)) {
+          $input_data['pickuptime'] = $params['pickuptime'];
+        }
+        if (array_key_exists('codcustomer', $params)) {
+          $input_data['codcustomer'] = $params['codcustomer'];
+        }
+        if (array_key_exists('products', $params)) {
+          $input_data['products'] =
+            json_decode(json_encode($params['products'], JSON_UNESCAPED_UNICODE), true);
+        }
 
         $response_content = json_encode(add_draft($input_data), JSON_UNESCAPED_UNICODE);
       } else {
@@ -118,11 +129,18 @@ $app->put('/edit_draft', function (Request $request, Response $response) {
       if (array_key_exists('coddraft', $params)) {
         $input_data = [];
         $input_data['coddraft'] = $params['coddraft'];
-        if (array_key_exists('namecustomertmp', $params)) $input_data['namecustomertmp'] = $params['namecustomertmp'];
-        if (array_key_exists('telcustomertmp', $params)) $input_data['telcustomertmp'] = $params['telcustomertmp'];
-        if (array_key_exists('pickuptime', $params)) $input_data['pickuptime'] = $params['pickuptime'];
-        if (array_key_exists('codcustomer', $params)) $input_data['codcustomer'] = $params['codcustomer'];
-
+        if (array_key_exists('namecustomertmp', $params)) {
+          $input_data['namecustomertmp'] = $params['namecustomertmp'];
+        }
+        if (array_key_exists('telcustomertmp', $params)) {
+          $input_data['telcustomertmp'] = $params['telcustomertmp'];
+        }
+        if (array_key_exists('pickuptime', $params)) {
+          $input_data['pickuptime'] = $params['pickuptime'];
+        }
+        if (array_key_exists('codcustomer', $params)) {
+          $input_data['codcustomer'] = $params['codcustomer'];
+        }
         if (array_key_exists('products', $params)) {
           $input_data['products'] =
             json_decode(json_encode($params['products'], JSON_UNESCAPED_UNICODE), true);

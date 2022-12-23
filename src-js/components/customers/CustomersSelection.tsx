@@ -52,8 +52,11 @@ const CustomersSelection: FC<IProps> = (
 
   const [searchString, setSearchString] = useState<string>('')
 
-  const [matches, setMatches] =
+  const [matchesTablet, setMatchesTablet] =
     useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
+
+  const [matchesDesktop, setMatchesDesktop] =
+    useState<boolean>(window.matchMedia('(min-width: 992px)').matches)
 
   const handleCustomerClick = (id: number) => {
     setSelectedCustomer(id)
@@ -69,17 +72,20 @@ const CustomersSelection: FC<IProps> = (
   useEffect(() => {
     window
       .matchMedia('(min-width: 700px)')
-      .addEventListener('change', e => setMatches(e.matches))
+      .addEventListener('change', e => setMatchesTablet(e.matches))
+    window
+      .matchMedia('(min-width: 992px)')
+      .addEventListener('change', e => setMatchesDesktop(e.matches))
   }, [])
 
   useEffect(() => {
     // noinspection SpellCheckingInspection
     getCustomers({
       telname: searchString,
-      customers_number: matches ? 30 : 15,
+      customers_number: matchesTablet ? 30 : 15,
       page: 1,
     })
-  }, [activePage, searchString, matches])
+  }, [activePage, searchString, matchesTablet])
 
   return (
     <Container>
@@ -105,7 +111,10 @@ const CustomersSelection: FC<IProps> = (
             { 'Seleccionar' }
           </Button>
         }
-        <Button customType={ ButtonTypes.Secondary } onClick={ closeSidePanel }>{ 'Cancelar' }</Button>
+        {
+          !matchesDesktop &&
+          <Button customType={ ButtonTypes.Secondary } onClick={ closeSidePanel }>{ 'Cancelar' }</Button>
+        }
       </Options>
       {
         message !== undefined && message.type === CustomerMessageTypes.Info &&
