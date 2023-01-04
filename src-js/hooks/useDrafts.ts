@@ -48,6 +48,13 @@ export interface DeleteDraft {
     | Errors
 }
 
+// noinspection SpellCheckingInspection
+export interface DeleteDrafts {
+  Response:
+    { success_message: string }
+    | Errors
+}
+
 export enum DraftMessageTypes {
   Info = 'info',
   Warning = 'warning',
@@ -78,6 +85,9 @@ function useDrafts(sessionCheck: SessionCheckType) {
   const { doRequest: doDeleteDraftRequest } =
     useFetchWith.bodyParams<DeleteDraft['Request'], DeleteDraft['Response']>
     ('api/delete_draft', { method: 'DELETE' })
+
+  const { doRequest: doDeleteDraftsRequest } =
+    useFetch<DeleteDrafts['Response']>('api/delete_all_drafts', { method: 'DELETE' })
 
   const [newDraftID, setNewDraftID] = useState<number>()
   const [individualMessage, setIndividualMessage] = useState<DraftMessage>()
@@ -122,6 +132,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
         }
 
         if ('empty' in res) {
+          setDrafts(undefined)
           setCollectiveMessage({ content: res['empty'], type: DraftMessageTypes.Info })
         }
         manageErrors(res, setCollectiveMessage)
@@ -197,6 +208,27 @@ function useDrafts(sessionCheck: SessionCheckType) {
     })
   }
 
+  const deleteDrafts = () => {
+    sessionCheck(() => {
+      setIndividualMessage(undefined)
+      doDeleteDraftsRequest().then(res => {
+
+        if ('success_message' in res) {
+          setNewDraftID(undefined)
+          setDraft(undefined)
+          getDrafts()
+        }
+        manageErrors(res, setIndividualMessage)
+
+      }).catch(reason => {
+        setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
+    })
+  }
+
   const manageErrors = (res: Errors | {}, callback: (DraftMessage: DraftMessage | undefined) => void) => {
     if ('message' in res) {
       callback({ content: res['message'], type: DraftMessageTypes.Warning })
@@ -218,6 +250,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     addingDraft,
     drafts,
     setNewDraftID,
+    setDraft,
     setCollectiveMessage,
     setIndividualMessage,
     addDraft,
@@ -225,6 +258,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     getDraft,
     editDraft,
     deleteDraft,
+    deleteDrafts,
   }
 }
 

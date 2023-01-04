@@ -27,7 +27,13 @@ const Container = styled.article`
   padding-bottom: ${ margins.mobile.mediumVertical };
 
   ${ Options } {
-    margin: auto ${ margins.mobile.lateral };
+    margin-top: unset !important;
+    margin-left: ${ margins.mobile.lateral };
+    margin-right: ${ margins.mobile.lateral };
+  }
+  
+  p {
+    margin: 0 ${ margins.tablet.lateral } ${ margins.tablet.mediumVertical } ${ margins.tablet.lateral };
   }
 `
 
@@ -53,10 +59,6 @@ const CloseButton = styled.button`
   font-size: 1.8em;
 `
 
-const P = styled.p`
-  padding: 0 ${ margins.tablet.lateral };
-`
-
 export interface AlertProps {
   cancel: () => void
   message: string
@@ -77,7 +79,7 @@ const Modal: FC<AlertProps> = (
           <i className={ 'bi bi-x' } />
         </CloseButton>
       </TopBar>
-      <P>{ message }</P>
+      <p>{ message }</p>
       <Options>
         { leftButton }
         { rightButton }

@@ -18,6 +18,7 @@ import useProducts from '../../hooks/useProducts'
 import { DraftProductReqData } from '../../shapes/ProductShape'
 import NewProductInDraft from '../products/NewProductInDraft'
 import useOrders from '../../hooks/useOrders'
+import ActiveOrders from '../orders/ActiveOrders'
 
 const HomeWrapper = styled.div`
   width: 100%;
@@ -83,11 +84,13 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     setCollectiveMessage: setColDraftMessage,
     setIndividualMessage: setIndDraftMessage,
     setNewDraftID,
+    setDraft,
     addDraft,
     getDrafts,
     getDraft,
     editDraft,
     deleteDraft,
+    deleteDrafts,
   } = useDrafts(sessionCheck)
 
   const [draftProducts, setDraftProducts] = useState<DraftProductReqData[] | undefined>(
@@ -142,7 +145,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   }
 
   const handleNewOrder = () => {
-
+    setNewDraftID(undefined)
+    setDraft(undefined)
   }
 
   useEffect(getDrafts, [draft, newDraftID])
@@ -273,11 +277,15 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
       break
   }
 
-  /*<ActiveOrders handleOpenSidePanel={ handleOpenFirstSidePanel } handleNewOrder={ handleNewOrder } />*/
+
   return (
     <Container css={ (openFirstSidePanel || openSecondSidePanel) ? css`overflow-y: hidden` : null }>
       <HomeWrapper>
         <WelcomeLayer userName={ username } logout={ logout } />
+        <ActiveOrders
+          handleOpenSidePanel={ handleOpenFirstSidePanel }
+          handleNewOrder={ handleNewOrder }
+        />
         <Drafts
           setFirstSidePanel={ setFirstSidePanel }
           handleOpenSidePanel={ handleOpenFirstSidePanel }
@@ -285,6 +293,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           setColMessage={ setColDraftMessage }
           getDrafts={ getDrafts }
           getDraft={ getDraft }
+          deleteDrafts={ deleteDrafts }
           drafts={ drafts }
         />
       </HomeWrapper>

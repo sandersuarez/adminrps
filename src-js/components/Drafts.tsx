@@ -1,4 +1,4 @@
-import React, { FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import React, { FC, FormEventHandler, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import breakpoints from '../styles/breakpoints'
 import Alert from './Alert'
@@ -13,6 +13,7 @@ import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import { forEach } from 'lodash'
 import DraftShape, { DraftContent } from '../shapes/DraftShape'
+import Modal from './Modal'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -37,6 +38,7 @@ interface IProps {
   setColMessage: React.Dispatch<React.SetStateAction<DraftMessage | undefined>>
   getDrafts: () => void
   getDraft: (draftID: number) => void
+  deleteDrafts: () => void
   drafts: (DraftShape & DraftContent)[] | undefined
 }
 
@@ -48,10 +50,12 @@ const Drafts: FC<IProps> = (
     setColMessage,
     getDrafts,
     getDraft,
+    deleteDrafts,
     drafts,
   }) => {
 
   const [notes, setNotes] = useState<ReactElement<NoteProps>[]>()
+  const [showModal, setShowModal] = useState<boolean>(false)
 
   const handleClick: MouseEventHandler<HTMLElement> = (e) => {
     setFirstSidePanel(Panels.Drafts)
@@ -79,11 +83,51 @@ const Drafts: FC<IProps> = (
     setNotes(notes)
   }
 
+  const remove: FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    deleteDrafts()
+  }
+
+  const openDeleteModal = () => {
+    setShowModal(true)
+  }
+
+  const closeDeleteModal = () => {
+    setShowModal(false)
+  }
+
   useEffect(getDrafts, [])
   useEffect(generateNotes, [drafts])
 
   return (
     <Container>
+      {
+        showModal &&
+        <Modal
+          cancel={ closeDeleteModal }
+          message={ '¿Seguro que quiere eliminar todos los borradores guardados? Esta acción no puede deshacerse.' }
+          leftButton={
+            <Button
+              customType={ ButtonTypes.Danger }
+              onClick={ (e) => {
+                closeDeleteModal()
+                remove(e)
+                close()
+              } }
+            >
+              { 'Sí, eliminar' }
+            </Button>
+          }
+          rightButton={
+            <Button
+              customType={ ButtonTypes.Secondary }
+              onClick={ closeDeleteModal }
+            >
+              { 'No, cancelar' }
+            </Button>
+          }
+        />
+      }
       <h2>Borradores</h2>
       {
         message !== undefined && message.type === DraftMessageTypes.Info &&
@@ -104,7 +148,15 @@ const Drafts: FC<IProps> = (
         <>
           <NoteContainer noteList={ notes } />
           <Options>
-            <Button customType={ ButtonTypes.Danger }>{ 'Eliminar todos los borradores' }</Button>
+            <Button
+              customType={ ButtonTypes.Danger }
+              onClick={ (e) => {
+                e.preventDefault()
+                openDeleteModal()
+              } }
+            >
+              { 'Eliminar todos los borradores' }
+            </Button>
           </Options>
         </>
       }

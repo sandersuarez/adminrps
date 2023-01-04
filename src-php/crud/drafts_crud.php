@@ -676,7 +676,6 @@ function delete_all_drafts(): array
   try {
     // Transaction to completely delete a draft
     $connection = create_pdo_object();
-    $connection->beginTransaction();
 
     // SQL Query to find the draft codes added by a user
     $query = $connection->prepare("SELECT coddraft FROM " . DRAFTS . " WHERE coduser = :coduser");
@@ -687,6 +686,7 @@ function delete_all_drafts(): array
     $query->closeCursor();
 
     if ($result) {
+      $connection->beginTransaction();
       foreach ($result as $draft) {
         // SQL Query to delete the draft products
         $query = $connection->prepare("DELETE FROM " . DRAFTS_CONTAIN . " WHERE coddraft = :coddraft");
@@ -702,12 +702,11 @@ function delete_all_drafts(): array
         $query->execute();
         $query->closeCursor();
       }
+      $connection->commit();
     } else {
       $connection = null;
       return array('message' => 'There are no drafts');
     }
-
-    $connection->commit();
   } catch (PDOException $e) {
     $connection->rollBack();
     $query?->closeCursor();

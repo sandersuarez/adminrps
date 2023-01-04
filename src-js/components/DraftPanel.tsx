@@ -450,6 +450,10 @@ const DraftPanel: FC<DraftSectionProps> = (
       setCustomerPhone('')
       setPickUpTime('')
       setDraftCustomerID(undefined)
+    } else {
+      setCustomerName('')
+      setCustomerPhone('')
+      setPickUpTime('')
     }
   }, [newDraftID, draft])
 
