@@ -40,6 +40,14 @@ export interface EditDraft {
     | Errors
 }
 
+// noinspection SpellCheckingInspection
+export interface DeleteDraft {
+  Request: { coddraft: number },
+  Response:
+    { success_message: string }
+    | Errors
+}
+
 export enum DraftMessageTypes {
   Info = 'info',
   Warning = 'warning',
@@ -64,7 +72,12 @@ function useDrafts(sessionCheck: SessionCheckType) {
   )
 
   const { doRequest: doEditDraftRequest } =
-    useFetchWith.bodyParams<EditDraft['Request'], EditDraft['Response']>('api/edit_draft', { method: 'PUT' })
+    useFetchWith.bodyParams<EditDraft['Request'], EditDraft['Response']>
+    ('api/edit_draft', { method: 'PUT' })
+
+  const { doRequest: doDeleteDraftRequest } =
+    useFetchWith.bodyParams<DeleteDraft['Request'], DeleteDraft['Response']>
+    ('api/delete_draft', { method: 'DELETE' })
 
   const [newDraftID, setNewDraftID] = useState<number>()
   const [individualMessage, setIndividualMessage] = useState<DraftMessage>()
@@ -163,6 +176,27 @@ function useDrafts(sessionCheck: SessionCheckType) {
     })
   }
 
+  const deleteDraft = (data: DeleteDraft['Request']) => {
+    sessionCheck(() => {
+      setIndividualMessage(undefined)
+      doDeleteDraftRequest(data).then(res => {
+
+        if ('success_message' in res) {
+          setNewDraftID(undefined)
+          setDraft(undefined)
+          getDrafts()
+        }
+        manageErrors(res, setIndividualMessage)
+
+      }).catch(reason => {
+        setIndividualMessage({ content: reason, type: DraftMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
+    })
+  }
+
   const manageErrors = (res: Errors | {}, callback: (DraftMessage: DraftMessage | undefined) => void) => {
     if ('message' in res) {
       callback({ content: res['message'], type: DraftMessageTypes.Warning })
@@ -190,6 +224,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     getDrafts,
     getDraft,
     editDraft,
+    deleteDraft,
   }
 }
 

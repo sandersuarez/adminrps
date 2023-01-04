@@ -2,54 +2,63 @@ import React, { FC, ReactElement } from 'react'
 import styled from '@emotion/styled'
 import colors from '../styles/colors'
 import { ButtonProps } from './buttons/Button'
+import margins from '../styles/margins'
+import Options from './buttons/Options'
 
-const Wrapper = styled.div({
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100vw',
-  height: '100vw',
-  backgroundColor: 'rgba(255, 255, 255, .7)',
-})
+const Wrapper = styled.div`
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, .7);
+`
 
-const Container = styled.article({
-  maxWidth: '40rem',
-  background: colors.section,
-})
+const Container = styled.article`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 40rem;
+  background: ${ colors.section };
+  padding-bottom: ${ margins.mobile.mediumVertical };
 
-const TopBar = styled.div({
-  position: 'relative',
-  height: '3.3rem',
-  background: colors.primary,
-})
+  ${ Options } {
+    margin: auto ${ margins.mobile.lateral };
+  }
+`
 
-const CloseButton = styled.button({
-  position: 'absolute',
-  top: '0',
-  right: 0,
-  width: '3.3rem',
-  height: '3.3rem',
-  display: 'flex',
+const TopBar = styled.div`
+  align-self: stretch;
+  display: flex;
+  flex-direction: row-reverse;
+  background: ${ colors.primary };
+  margin-bottom: ${ margins.mobile.mediumVertical };
+`
 
-  '& > svg': {
-    margin: 'auto',
-    width: '2rem',
-  },
-})
+const CloseButton = styled.button`
+  // reset styling
+  border: none;
+  font: inherit;
+  opacity: 1;
+  appearance: none;
 
-const P = styled.p({
-  margin: '1.5rem 0 1.8rem',
-})
+  background-color: transparent;
+  color: ${ colors.background };
+  padding: 0 .1em;
+  margin: -.05em 0;
+  font-size: 1.8em;
+`
 
-const ButtonsContainer = styled.div({
-  display: 'flex',
-  justifyContent: 'center',
-  gap: '1rem',
-  marginBottom: '1rem',
-})
+const P = styled.p`
+  padding: 0 ${ margins.tablet.lateral };
+`
 
 export interface AlertProps {
-  onCloseClick: () => void
+  cancel: () => void
   message: string
   leftButton: ReactElement<ButtonProps>
   rightButton: ReactElement<ButtonProps>
@@ -59,18 +68,20 @@ export interface AlertProps {
  * Component that defines a modal that shows to confirm an action.
  */
 const Modal: FC<AlertProps> = (
-  { onCloseClick, message, leftButton, rightButton },
+  { cancel, message, leftButton, rightButton },
 ) => (
   <Wrapper>
     <Container>
       <TopBar>
-        <CloseButton onClick={ onCloseClick } />
+        <CloseButton onClick={ cancel }>
+          <i className={ 'bi bi-x' } />
+        </CloseButton>
       </TopBar>
       <P>{ message }</P>
-      <ButtonsContainer>
+      <Options>
         { leftButton }
         { rightButton }
-      </ButtonsContainer>
+      </Options>
     </Container>
   </Wrapper>
 )

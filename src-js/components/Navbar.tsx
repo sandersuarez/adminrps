@@ -5,7 +5,6 @@ import breakpoints from '../styles/breakpoints'
 import IconProducts from './svg/IconProducts'
 import IconUsers from './svg/IconUsers'
 import IconHome from './svg/IconHome'
-import IconOrder from './svg/IconOrder'
 import IconSettings from './svg/IconSettings'
 import { css } from '@emotion/react'
 import { NavLink, NavLinkProps } from 'react-router-dom'
@@ -44,13 +43,13 @@ const thisButtonStyles = css`
     // reset styles
     text-decoration: inherit;
     color: ${ colors.text };
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
     flex-grow: 1;
     max-width: 10rem;
-    
+
     svg {
       fill: ${ colors.primary };
       height: 2.5rem;
@@ -79,8 +78,6 @@ const Navbar: FC = () => {
   return (
     <Wrapper>
       <Container>
-        <ThisButton to={ 'products' } title='Productos' icon={ <IconProducts /> } />
-        <ThisButton to={ 'customers' } title='Clientes' icon={ <IconUsers /> } />
         <ThisButton
           to={ '/' }
           title='Inicio'
@@ -91,8 +88,10 @@ const Navbar: FC = () => {
                 order: -1
               }
             `
-          } />
-        <ThisButton to={ 'orders' } title='Pedidos' icon={ <IconOrder /> } />
+          }
+        />
+        <ThisButton to={ 'products' } title='Productos' icon={ <IconProducts /> } />
+        <ThisButton to={ 'customers' } title='Clientes' icon={ <IconUsers /> } />
         <ThisButton
           to={ 'settings' }
           title='Ajustes'

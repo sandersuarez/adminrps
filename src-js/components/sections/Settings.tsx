@@ -1,5 +1,4 @@
 import React from 'react'
-import PasswordChange from '../forms/PasswordChange'
 import Input from '../forms/Input'
 import Button from '../buttons/Button'
 import Label from '../forms/Label'
@@ -83,7 +82,6 @@ const Settings = () => {
             antiguos.</Note>
         </FieldWrapper>
       </Form>
-      <PasswordChange />
     </Container>
   )
 }

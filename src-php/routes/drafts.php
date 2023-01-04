@@ -175,7 +175,7 @@ $app->delete('/delete_draft', function (Request $request, Response $response) {
     if (array_key_exists('user', $security)) {
 
       // Check for required parameters
-      $params = $request->getQueryParams();
+      $params = $request->getParsedBody();
 
       if (array_key_exists('coddraft', $params)) {
         $response_content = json_encode(delete_draft($params['coddraft']), JSON_UNESCAPED_UNICODE);

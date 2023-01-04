@@ -616,8 +616,13 @@ function edit_draft(array $input_data): array
 function delete_draft(int $coddraft): array
 {
   // Requirements control
-  if (!filter_var($coddraft, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+  if (!filter_var(
+    $coddraft,
+    FILTER_VALIDATE_INT,
+    ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]
+  )) {
     return array('message' => 'The draft code is invalid');
+  }
 
   try {
     // Transaction to completely delete a draft
@@ -625,8 +630,9 @@ function delete_draft(int $coddraft): array
     $connection->beginTransaction();
 
     // SQL Query to delete the draft products
-    $query = $connection->prepare("DELETE " . DRAFTS_CONTAIN . " FROM " . DRAFTS_CONTAIN . " JOIN " . DRAFTS . " ON " . DRAFTS_CONTAIN . ".coddraft = " . DRAFTS .
-      ".coddraft WHERE " . DRAFTS_CONTAIN . ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
+    $query = $connection->prepare("DELETE " . DRAFTS_CONTAIN . " FROM " . DRAFTS_CONTAIN . " JOIN " . DRAFTS .
+      " ON " . DRAFTS_CONTAIN . ".coddraft = " . DRAFTS . ".coddraft WHERE " . DRAFTS_CONTAIN .
+      ".coddraft = :coddraft AND " . DRAFTS . ".coduser = :coduser");
 
     $query->bindParam(':coddraft', $coddraft, PDO::PARAM_INT);
     $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);

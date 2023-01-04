@@ -6,13 +6,7 @@ import ExitButton from './buttons/ExitButton'
 import Options from './buttons/Options'
 import Button from './buttons/Button'
 import ButtonTypes from '../shapes/ButtonTypes'
-import Label from './forms/Label'
-import Input from './forms/Input'
-import Form from './forms/Form'
-import { AddDraft, DraftMessage, DraftMessageTypes, EditDraft } from '../hooks/useDrafts'
-import AlertTypes from '../shapes/AlertTypes'
-import Alert from './Alert'
-import FieldWrapper from './forms/FieldWrapper'
+import { AddDraft, DeleteDraft, DraftMessage, DraftMessageTypes, EditDraft } from '../hooks/useDrafts'
 import DraftShape, { DraftContent } from '../shapes/DraftShape'
 import { css } from '@emotion/react'
 import useValid, { ValidEvents } from '../hooks/useValid'
@@ -20,10 +14,17 @@ import { assign, isEqual } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
 import { DraftProductReqData } from '../shapes/ProductShape'
-import OrderProductsTable from './orders/OrderProductsTable'
-import InputMessage from './forms/InputMessage'
 import { AddOrder } from '../hooks/useOrders'
 import breakpoints from '../styles/breakpoints'
+import Modal from './Modal'
+import AlertTypes from '../shapes/AlertTypes'
+import FieldWrapper from './forms/FieldWrapper'
+import Label from './forms/Label'
+import Form from './forms/Form'
+import InputMessage from './forms/InputMessage'
+import OrderProductsTable from './orders/OrderProductsTable'
+import Alert from './Alert'
+import Input from './forms/Input'
 
 const hourFieldStyles = css`
   margin-top: ${ margins.mobile.littleGap };
@@ -88,6 +89,7 @@ interface DraftSectionProps {
       (DraftMessage: DraftMessage | undefined) => void,
   ) => void,
   getDrafts: () => void,
+  deleteDraft: (data: DeleteDraft['Request']) => void
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -110,14 +112,17 @@ const DraftPanel: FC<DraftSectionProps> = (
     draftProducts,
     addOrder,
     getDrafts,
+    deleteDraft,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
   const [customerPhone, setCustomerPhone] = useState<string>('')
   const [pickUpTime, setPickUpTime] = useState<string>('')
 
-  const [matches, setMatches] =
-    useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
+  const [matchesMediumDesktop, setMatchesMediumDesktop] =
+    useState<boolean>(window.matchMedia('(min-width: 1250px)').matches)
+
+  const [showModal, setShowModal] = useState<boolean>(false)
 
   const doUpdateDraft = (addAnyway: boolean = false) => {
     if (newDraftID === undefined && draft === undefined && !addingDraft) {
@@ -348,13 +353,21 @@ const DraftPanel: FC<DraftSectionProps> = (
     setNewDraftID(undefined)
   }
 
+  const remove: FormEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault()
+    if (draft !== undefined) {
+      // noinspection SpellCheckingInspection
+      deleteDraft({ coddraft: draft.coddraft })
+    }
+  }
+
   const searchCustomer: FormEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault()
     doUpdateDraft(true)
     // noinspection SpellCheckingInspection
     getCustomers({
       telname: '',
-      customers_number: matches ? 30 : 15,
+      customers_number: matchesMediumDesktop ? 30 : 15,
       page: 1,
     })
     changeSecondSidePanel(Panels.Customers)
@@ -374,6 +387,14 @@ const DraftPanel: FC<DraftSectionProps> = (
     openSecondSidePanel()
   }
 
+  const openDeleteModal = () => {
+    setShowModal(true)
+  }
+
+  const closeDeleteModal = () => {
+    setShowModal(false)
+  }
+
   useEffect(() => {
     if (draft !== undefined) {
       doUpdateDraft()
@@ -390,8 +411,8 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   useEffect(() => {
     window
-      .matchMedia('(min-width: 700px)')
-      .addEventListener('change', e => setMatches(e.matches))
+      .matchMedia('(min-width: 1250px)')
+      .addEventListener('change', e => setMatchesMediumDesktop(e.matches))
   }, [])
 
   useEffect(() => {
@@ -437,8 +458,41 @@ const DraftPanel: FC<DraftSectionProps> = (
   // noinspection SpellCheckingInspection
   return (
     <Container>
+      {
+        showModal &&
+        <Modal
+          cancel={ closeDeleteModal }
+          message={ '¿Seguro que quiere eliminar este borrador? Esta acción no puede deshacerse.' }
+          leftButton={
+            <Button
+              customType={ ButtonTypes.Danger }
+              onClick={ (e) => {
+                closeDeleteModal()
+                remove(e)
+                close()
+              } }
+            >
+              { 'Sí, eliminar' }
+            </Button>
+          }
+          rightButton={
+            <Button
+              customType={ ButtonTypes.Secondary }
+              onClick={ closeDeleteModal }
+            >
+              { 'No, cancelar' }
+            </Button>
+          }
+        />
+      }
       <TitleWrapper>
-        <h2>{ draft !== undefined ? 'Borrador ' + draft.coddraft : newDraftID !== undefined ? 'Borrador ' + newDraftID : 'Nuevo pedido' }</h2>
+        <h2>
+          { draft !== undefined ?
+            'Borrador ' + draft.coddraft
+            :
+            newDraftID !== undefined ? 'Borrador ' + newDraftID : 'Nuevo pedido'
+          }
+        </h2>
         <ExitButton onClick={ close }>
           <i className={ 'bi bi-x' } />
         </ExitButton>
@@ -512,12 +566,18 @@ const DraftPanel: FC<DraftSectionProps> = (
           <InputMessage message={ errors1['pickUpTime'] } />
         </FieldWrapper>
         <Options>
-          <Button
-            customType={ ButtonTypes.Danger }
-            onClick={ close }
-          >
-            { draft !== undefined ? 'Eliminar borrador' : 'Cancelar' }
-          </Button>
+          {
+            draft !== undefined &&
+            <Button
+              customType={ ButtonTypes.Danger }
+              onClick={ (e) => {
+                e.preventDefault()
+                openDeleteModal()
+              } }
+            >
+              { 'Eliminar borrador' }
+            </Button>
+          }
           <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
         </Options>
       </Form>

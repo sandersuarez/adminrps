@@ -87,6 +87,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     getDrafts,
     getDraft,
     editDraft,
+    deleteDraft,
   } = useDrafts(sessionCheck)
 
   const [draftProducts, setDraftProducts] = useState<DraftProductReqData[] | undefined>(
@@ -216,6 +217,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           draftProducts={ draftProducts }
           addOrder={ addOrder }
           getDrafts={ getDrafts }
+          deleteDraft={ deleteDraft }
         />
       break
   }
