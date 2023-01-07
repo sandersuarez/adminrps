@@ -36,7 +36,7 @@ function obtain_products(array $requirements): array
       $name_clause = " AND (nameproduct REGEXP :nameproduct)";
     }
 
-    // SQL Query to search total number customers
+    // SQL Query to search total number products
     $query = $connection->prepare("SELECT count(codproduct) FROM " . PRODUCTS .
       " WHERE productdeleted = :productdeleted AND coduser = :coduser" . $name_clause);
 

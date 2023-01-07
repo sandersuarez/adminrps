@@ -12,7 +12,7 @@ import Panels from '../shapes/Panels'
 import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import { forEach } from 'lodash'
-import DraftShape, { DraftContent } from '../shapes/DraftShape'
+import DraftShape from '../shapes/DraftShape'
 import Modal from './Modal'
 
 const Container = styled.article`
@@ -32,14 +32,14 @@ const Container = styled.article`
 `
 
 interface IProps {
-  setFirstSidePanel: React.Dispatch<React.SetStateAction<Panels>>
+  setFirstSidePanel: (Panel: Panels) => void
   handleOpenSidePanel: () => void
   message: DraftMessage | undefined
-  setColMessage: React.Dispatch<React.SetStateAction<DraftMessage | undefined>>
+  setColMessage: (message: DraftMessage | undefined) => void
   getDrafts: () => void
   getDraft: (draftID: number) => void
   deleteDrafts: () => void
-  drafts: (DraftShape & DraftContent)[] | undefined
+  drafts: DraftShape[] | undefined
 }
 
 const Drafts: FC<IProps> = (
@@ -74,7 +74,7 @@ const Drafts: FC<IProps> = (
             key={ index }
             id={ draft.coddraft.toString() }
             draft={ draft }
-            setColMessage={ setColMessage }
+            setColDraftMessage={ setColMessage }
             onClick={ handleClick }
           />,
         )
@@ -131,13 +131,11 @@ const Drafts: FC<IProps> = (
       <h2>Borradores</h2>
       {
         message !== undefined && message.type === DraftMessageTypes.Info &&
-        <Alert message={ message.content }
-               type={ AlertTypes.Empty } />
+        <Alert message={ message.content } type={ AlertTypes.Empty } />
       }
       {
         message !== undefined && message.type === DraftMessageTypes.Error &&
-        <Alert message={ message.content + '. Contacte con el administrador.' }
-               type={ AlertTypes.Error } />
+        <Alert message={ message.content + '. Contacte con el administrador.' } type={ AlertTypes.Error } />
       }
       {
         message !== undefined && message.type === DraftMessageTypes.Warning &&

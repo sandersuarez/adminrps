@@ -2,7 +2,7 @@ import { SessionCheckType, ForbidReasons } from './useSession'
 import Message from '../shapes/Message'
 import { buildParametrizedUrl, useFetch, useFetchWith } from './useFetch'
 import { useState } from 'react'
-import DraftShape, { DraftContent, DraftReqData } from '../shapes/DraftShape'
+import DraftShape, { DraftReqData } from '../shapes/DraftShape'
 import Errors from '../shapes/Errors'
 
 // noinspection SpellCheckingInspection
@@ -17,7 +17,7 @@ export interface AddDraft {
 
 export interface GetDrafts {
   Response:
-    { drafts: (DraftShape & DraftContent)[] }
+    { drafts: DraftShape[] }
     | { empty: string }
     | Errors
     | ForbidReasons
@@ -27,7 +27,7 @@ export interface GetDrafts {
 export interface GetDraft {
   Request: { coddraft: number },
   Response:
-    { draft: (DraftShape & DraftContent)[] }
+    { draft: DraftShape[] }
     | Errors
     | ForbidReasons
 }
@@ -78,7 +78,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     buildParametrizedUrl`api/obtain_draft?coddraft=${ 'coddraft' }`,
   )
 
-  const { doRequest: doEditDraftRequest } =
+  const { doRequest: doEditDraftRequest, pending: editingDraft } =
     useFetchWith.bodyParams<EditDraft['Request'], EditDraft['Response']>
     ('api/edit_draft', { method: 'PUT' })
 
@@ -92,8 +92,8 @@ function useDrafts(sessionCheck: SessionCheckType) {
   const [newDraftID, setNewDraftID] = useState<number>()
   const [individualMessage, setIndividualMessage] = useState<DraftMessage>()
   const [collectiveMessage, setCollectiveMessage] = useState<DraftMessage>()
-  const [draft, setDraft] = useState<DraftShape & DraftContent>()
-  const [drafts, setDrafts] = useState<(DraftShape & DraftContent)[]>()
+  const [draft, setDraft] = useState<DraftShape>()
+  const [drafts, setDrafts] = useState<DraftShape[]>()
 
   const addDraft = (data: AddDraft['Request']) => {
     sessionCheck(() => {
@@ -248,6 +248,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
     collectiveMessage,
     draft,
     addingDraft,
+    editingDraft,
     drafts,
     setNewDraftID,
     setDraft,

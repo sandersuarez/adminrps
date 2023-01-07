@@ -5,28 +5,26 @@
  * @param array $requirements
  * @return array
  */
-function obtain_active_orders($requirements)
+function obtain_active_orders(array $requirements): array
 {
   // If the page number is invalid its value will be the default
-  if (!filter_var($requirements['page'], FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])) $requirements['page'] = 1;
+  if (
+    !filter_var(
+      $requirements['page'],
+      FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '99999999999999999']])
+  ) {
+    $requirements['page'] = 1;
+  }
 
   // Pagination calculation
   $begin = $requirements['page'] - 1;
-  $end = 15;
 
-  switch ($requirements['orders_number']) {
-    case 15:
-      $end = 15;
-      break;
-    case 30:
-      $end = 30;
-      break;
-    default:
-      $end = 15;
-  }
+  $orders_number = match ($requirements['orders_number']) {
+    30 => 30,
+    default => 15,
+  };
 
-  $begin = $begin * $end;
-  $end = $begin + $end;
+  $begin = $begin * $orders_number;
 
   try {
     $connection = create_pdo_object();
@@ -34,7 +32,8 @@ function obtain_active_orders($requirements)
     $today_clause = '';
     if ($requirements['today'] == 1 || $requirements['today'] == 0) {
       if ($requirements['today']) {
-        $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".pickuptime, " . ORDERS . ".numdayorder";
+        $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".pickuptime, " .
+          ORDERS . ".numdayorder";
       } else {
         $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC";
       }
@@ -45,116 +44,109 @@ function obtain_active_orders($requirements)
     // If there is a customer name to search, the clause is added
     $tel_name_clause = '';
     $requirements['telnamecustomer'] = trim($requirements['telnamecustomer']);
-    if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1)
-      $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS . ".telcustomer REGEXP :telnamecustomer))";
+    if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) {
+      $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS .
+        ".telcustomer REGEXP :telnamecustomer))";
+    }
 
-    // SQL Query to search active orders
-    $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " .
-      ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
-      ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
-      CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $tel_name_clause . $today_clause . " LIMIT :begin, :end");
+    // SQL Query to search total number products
+    $query = $connection->prepare("SELECT count(" . ORDERS . ".codorder) FROM " . ORDERS . " JOIN " . CUSTOMERS .
+      " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer  LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS .
+      ".codorder = " . ORDERS_SOLD . ".codorder WHERE " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD .
+      ".codordersold IS NULL" . $tel_name_clause . $today_clause);
 
     // Parameters binding and execution
     $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
-    $query->bindParam(':begin', $begin, PDO::PARAM_INT);
-    $query->bindParam(':end', $end, PDO::PARAM_INT);
 
-    if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) $query->bindParam(':telnamecustomer', $requirements['telnamecustomer'], PDO::PARAM_STR);
+    if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) {
+      $query->bindParam(':telnamecustomer', $requirements['telnamecustomer']);
+    }
 
     $query->execute();
-    $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    if ($result) {
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+    if ($result && $result["count(" . ORDERS . ".codorder)"]) {
 
-      $answer = array('orders' => $result);
-      $query->closeCursor();
+      // If the page is out of bounds, the page it is redirected to the last posible one
+      if ($result["count(" . ORDERS . ".codorder)"] <= $begin) {
+        // Pagination calculation
+        $redirect_page = ceil($result["count(" . ORDERS . ".codorder)"] / $orders_number);
+        $begin = $redirect_page - 1;
+        $begin = $begin * $orders_number;
+      }
 
-      for ($i = 0; sizeof($answer['orders']) > $i; $i++) {
+      // The posible pages number
+      $posible_pages = ceil($result["count(" . ORDERS . ".codorder)"] / $orders_number);
 
-        // SQL Query to search the products of the order
-        $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
-          ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
-          ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " .
-          ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser");
+      // SQL Query to search active orders
+      $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS .
+        ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " . ORDERS . ".codcustomer, " . CUSTOMERS .
+        ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " . ORDERS .
+        ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " .
+        ORDERS_SOLD . ".codorder WHERE " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD .
+        ".codordersold IS NULL" . $tel_name_clause . $today_clause . " LIMIT :begin, :end");
 
-        // Parameters binding and execution
-        $query->bindParam(':codorder', $answer['orders'][$i]['codorder'], PDO::PARAM_INT);
-        $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+      // Parameters binding and execution
+      $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+      $query->bindParam(':begin', $begin, PDO::PARAM_INT);
+      $query->bindParam(':end', $orders_number, PDO::PARAM_INT);
 
-        $query->execute();
-        $result = $query->fetchAll(PDO::FETCH_ASSOC);
-        if ($result) $answer['orders'][$i]['products'] = $result;
+      if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) {
+        $query->bindParam(':telnamecustomer', $requirements['telnamecustomer']);
+      }
+
+      $query->execute();
+      $result = $query->fetchAll(PDO::FETCH_ASSOC);
+      if ($result) {
+
+        $answer = array('orders' => $result);
         $query->closeCursor();
+
+        for ($i = 0; sizeof($answer['orders']) > $i; $i++) {
+
+          // SQL Query to search the products of the order
+          $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS .
+            ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " . ORDERS_CONTAIN .
+            ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN .
+            ".codproduct = " . PRODUCTS . ".codproduct JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " .
+            ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS .
+            ".codcustomer WHERE " . ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser");
+
+          // Parameters binding and execution
+          $query->bindParam(':codorder', $answer['orders'][$i]['codorder'], PDO::PARAM_INT);
+          $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
+
+          $query->execute();
+          $result = $query->fetchAll(PDO::FETCH_ASSOC);
+          if ($result) {
+            $answer['orders'][$i]['products'] = $result;
+          }
+          $query->closeCursor();
+        }
+
+        $answer['pages'] = $posible_pages;
+      } else {
+        if ($requirements['today']) {
+          $answer = array('message' => 'No hay pedidos activos');
+        } else {
+          $answer = array('message' => 'No hay pedidos sin reclamar');
+        }
       }
     } else {
-      if ($requirements['today']) {
-        $answer = array('message' => 'No hay pedidos en elaboración');
+      if ($requirements['telnamecustomer'] !== '') {
+        $answer = array('empty' => 'No hay pedidos que coincidan con la búsqueda');
       } else {
-        $answer = array('message' => 'No hay pedidos sin reclamar');
+        if ($requirements['today']) {
+          $answer = array('message' => 'No hay pedidos activos');
+        } else {
+          $answer = array('message' => 'No hay pedidos sin reclamar');
+        }
       }
     }
 
     clear_query_data($query, $connection);
     return $answer;
   } catch (PDOException $e) {
-    if ($query !== null) $query->closeCursor();
-    $connection = null;
-    return process_pdo_exception($e);
-  }
-}
-
-/**
- * Function to obtain the number of active orders added by a user according to paging
- * @param array $requirements
- * @return array
- */
-function obtain_active_orders_number($requirements)
-{
-  try {
-    $connection = create_pdo_object();
-
-    $today_clause = '';
-    if ($requirements['today'] == 1 || $requirements['today'] == 0) {
-      if ($requirements['today']) {
-        $today_clause = " AND " . ORDERS . ".dateorder = (CURDATE()) ORDER BY " . ORDERS . ".pickuptime, " . ORDERS . ".numdayorder";
-      } else {
-        $today_clause = " AND " . ORDERS . ".dateorder <> (CURDATE()) ORDER BY " . ORDERS . ".dateorder DESC";
-      }
-    } else {
-      return array('message' => 'Selecciona un espacio de tiempo válido');
-    }
-
-    // If there is a customer name to search, the clause is added
-    $tel_name_clause = '';
-    $requirements['telnamecustomer'] = trim($requirements['telnamecustomer']);
-    if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1)
-      $tel_name_clause = " AND ((" . CUSTOMERS . ".namecustomer REGEXP :telnamecustomer) OR (" . CUSTOMERS . ".telcustomer REGEXP :telnamecustomer))";
-
-    // SQL Query to search active orders
-    $query = $connection->prepare("SELECT count(" . ORDERS . ".codorder) FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
-      ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
-      CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL" . $tel_name_clause . $today_clause);
-
-    // Parameters binding and execution
-    $query->bindParam(':coduser', $_SESSION['id'], PDO::PARAM_INT);
-
-    if ($requirements['telnamecustomer'] !== '' && $requirements['today'] == 1) $query->bindParam(':telnamecustomer', $requirements['telnamecustomer'], PDO::PARAM_STR);
-
-    $query->execute();
-    $result = $query->fetchAll(PDO::FETCH_ASSOC);
-    if ($result) {
-      $answer = array('num_orders' => $result[0]['count(orders.codorder)']);
-    } else {
-      if ($requirements['today']) {
-        $answer = array('message' => 'No hay pedidos en elaboración');
-      } else {
-        $answer = array('message' => 'No hay pedidos sin reclamar');
-      }
-    }
-
-    clear_query_data($query, $connection);
-    return $answer;
-  } catch (PDOException $e) {
-    if ($query !== null) $query->closeCursor();
+    $query?->closeCursor();
     $connection = null;
     return process_pdo_exception($e);
   }

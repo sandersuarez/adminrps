@@ -15,7 +15,7 @@ import Panels from '../../shapes/Panels'
 import useCustomers from '../../hooks/useCustomers'
 import ProductsSelection from '../products/ProductsSelection'
 import useProducts from '../../hooks/useProducts'
-import { DraftProductReqData } from '../../shapes/ProductShape'
+import { ProductReqData } from '../../shapes/ProductShape'
 import NewProductInDraft from '../products/NewProductInDraft'
 import useOrders from '../../hooks/useOrders'
 import ActiveOrders from '../orders/ActiveOrders'
@@ -67,7 +67,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const [secondSidePanel, setSecondSidePanel] = React.useState<Panels>()
   const [draftCustomerID, setDraftCustomerID] = React.useState<number>()
   const [selectedCustomer, setSelectedCustomer] = useState<number>()
-  const [newProductToAdd, setNewProductToAdd] = useState<DraftProductReqData>()
+  const [newProductToAdd, setNewProductToAdd] = useState<ProductReqData>()
+  const [triggerGetOrders, setTriggerGetOrders] = useState<boolean>(false)
 
   const [matchesMediumDesktop, setMatchesMediumDesktop] =
     useState<boolean>(window.matchMedia('(min-width: 1250px)').matches)
@@ -81,6 +82,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     draft,
     drafts,
     addingDraft,
+    editingDraft,
     setCollectiveMessage: setColDraftMessage,
     setIndividualMessage: setIndDraftMessage,
     setNewDraftID,
@@ -93,7 +95,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     deleteDrafts,
   } = useDrafts(sessionCheck)
 
-  const [draftProducts, setDraftProducts] = useState<DraftProductReqData[] | undefined>(
+  const [draftProducts, setDraftProducts] = useState<ProductReqData[] | undefined>(
     draft?.products?.map(product => {
       // noinspection SpellCheckingInspection
       return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
@@ -122,7 +124,16 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   } = useProducts(sessionCheck)
 
   const {
+    individualMessage: indOrderMessage,
+    collectiveMessage: colOrderMessage,
+    orders,
+    activePage: ordersActivePage,
+    totalPages: ordersTotalPages,
+    setActivePage: ordersSetActivePage,
+    getOrders,
     addOrder,
+    setIndividualMessage: setIndOrderMessage,
+    setCollectiveMessage: setColOrderMessage,
   } = useOrders(sessionCheck)
 
   const handleOpenFirstSidePanel = () => {
@@ -160,8 +171,10 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
         }))
       }
+    } else {
+      setDraftProducts(undefined)
     }
-  }, [draft?.products])
+  }, [draft])
 
   useEffect(() => {
     window
@@ -214,6 +227,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           addDraft={ addDraft }
           editDraft={ editDraft }
           addingDraft={ addingDraft }
+          editingDraft={ editingDraft }
           getCustomers={ getCustomers }
           setDraftCustomerID={ setDraftCustomerID }
           draftCustomerID={ draftCustomerID }
@@ -222,6 +236,8 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           addOrder={ addOrder }
           getDrafts={ getDrafts }
           deleteDraft={ deleteDraft }
+          setDraft={ setDraft }
+          triggerGetOrders={ setTriggerGetOrders }
         />
       break
   }
@@ -283,8 +299,18 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
       <HomeWrapper>
         <WelcomeLayer userName={ username } logout={ logout } />
         <ActiveOrders
+          activePage={ ordersActivePage }
+          totalPages={ ordersTotalPages }
+          setActivePage={ ordersSetActivePage }
+          setFirstSidePanel={ setFirstSidePanel }
           handleOpenSidePanel={ handleOpenFirstSidePanel }
           handleNewOrder={ handleNewOrder }
+          message={ colOrderMessage }
+          setColMessage={ setColOrderMessage }
+          getOrders={ getOrders }
+          orders={ orders }
+          triggerGetOrders={ triggerGetOrders }
+          setTriggerGetOrders={ setTriggerGetOrders }
         />
         <Drafts
           setFirstSidePanel={ setFirstSidePanel }

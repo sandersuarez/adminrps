@@ -4,7 +4,9 @@ import colors from '../styles/colors'
 import breakpoints from '../styles/breakpoints'
 import OrderProductsTable from './orders/OrderProductsTable'
 import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
-import DraftShape, { DraftContent } from '../shapes/DraftShape'
+import DraftShape from '../shapes/DraftShape'
+import { OrderMessage, OrderMessageTypes } from '../hooks/useOrders'
+import OrderShape from '../shapes/OrderShape'
 
 const PickUpTime = styled.p`
   --border-distance: .85em;
@@ -69,9 +71,10 @@ export interface NoteProps {
   key: Key
   id: string | undefined
   className?: string
-  draft?: DraftShape & DraftContent
-  order?: {}
-  setColMessage: React.Dispatch<React.SetStateAction<DraftMessage | undefined>>
+  draft?: DraftShape
+  order?: OrderShape
+  setColDraftMessage?: (message: DraftMessage | undefined) => void
+  setColOrderMessage?: (message: OrderMessage | undefined) => void
   onClick: MouseEventHandler<HTMLElement>
 }
 
@@ -84,7 +87,8 @@ const Note: FC<NoteProps> = (
     id,
     draft,
     order,
-    setColMessage,
+    setColDraftMessage,
+    setColOrderMessage,
     onClick,
   },
 ) => {
@@ -118,7 +122,7 @@ const Note: FC<NoteProps> = (
         {
           (draft.telcustomer === null || draft.telcustomer === undefined) &&
           (draft.telcustomertmp === null || draft.telcustomertmp === undefined) &&
-          <p>{'Teléfono: '}<i>{ '(Sin teléfono)' }</i></p>
+          <p>{ 'Teléfono: ' }<i>{ '(Sin teléfono)' }</i></p>
         }
         {
           draft.pickuptime !== null && draft.pickuptime !== undefined &&
@@ -128,14 +132,22 @@ const Note: FC<NoteProps> = (
   } else if (order !== undefined) {
     children =
       <>
-        <h3>{ 'Nº ' }</h3>
-        <p>{ 'Luisa Santos' }</p>
-        <p>{ '640000000' }</p>
-        <PickUpTime>{ '12:35' }</PickUpTime>
+        <h3>{ 'Nº ' + order.numdayorder }</h3>
+        <p>{ order.namecustomer }</p>
+        <p>{ order.telcustomer }</p>
+        <PickUpTime>{ order.hourorder.substring(0, 5) }</PickUpTime>
+        <OrderProductsTable
+          orderProducts={ order.products }
+        />
       </>
   } else {
     let error = 'Error: No note data value set'
-    setColMessage({ content: error, type: DraftMessageTypes.Error })
+    if (setColDraftMessage !== undefined) {
+      setColDraftMessage({ content: error, type: DraftMessageTypes.Error })
+    }
+    if (setColOrderMessage !== undefined) {
+      setColOrderMessage({ content: error, type: OrderMessageTypes.Error })
+    }
     if (console && console.error) {
       console.error(error)
     }

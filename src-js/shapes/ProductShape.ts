@@ -1,5 +1,5 @@
 // noinspection SpellCheckingInspection
-export type DraftProductReqData = {
+export type ProductReqData = {
   codproduct: number,
   amountproduct: number,
 }

@@ -17,7 +17,7 @@ import { css } from '@emotion/react'
 import AlertTypes from '../../shapes/AlertTypes'
 import { AddProduct, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
 import { isUndefined } from 'lodash'
-import { DraftProductReqData } from '../../shapes/ProductShape'
+import { ProductReqData } from '../../shapes/ProductShape'
 import breakpoints from '../../styles/breakpoints'
 
 const Container = styled.article`
@@ -60,7 +60,7 @@ interface IProps {
   draftID: number | undefined
   message: ProductMessage | undefined
   setMessage: (message: ProductMessage | undefined) => void
-  setNewProductToAdd: (product: DraftProductReqData | undefined) => void
+  setNewProductToAdd: (product: ProductReqData | undefined) => void
 }
 
 const NewProductInDraft: FC<IProps> = (

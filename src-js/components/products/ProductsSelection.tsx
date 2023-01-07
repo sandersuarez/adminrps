@@ -1,6 +1,6 @@
 import React, { FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import { GetProducts, ProductMessage, ProductMessageTypes } from '../../hooks/useProducts'
-import ProductShape, { DraftProductReqData } from '../../shapes/ProductShape'
+import ProductShape, { ProductReqData } from '../../shapes/ProductShape'
 import Alert from '../Alert'
 import AlertTypes from '../../shapes/AlertTypes'
 import SearchBar from '../SearchBar'
@@ -32,13 +32,13 @@ interface IProps {
   setColMessage: (message: ProductMessage | undefined) => void
   products: ProductShape[] | undefined
   getProducts: (data: GetProducts['Request']) => void
-  draftProducts: DraftProductReqData[] | undefined
-  setDraftProducts: (tempDraftProducts: DraftProductReqData[] | undefined) => void
+  draftProducts: ProductReqData[] | undefined
+  setDraftProducts: (tempDraftProducts: ProductReqData[] | undefined) => void
   changeSecondSidePanel: (panel: Panels) => void
   indProductMessage: ProductMessage | undefined
   setIndProductMessage: (message: ProductMessage | undefined) => void
-  newProductToAdd: DraftProductReqData | undefined
-  setNewProductToAdd: (product: DraftProductReqData | undefined) => void
+  newProductToAdd: ProductReqData | undefined
+  setNewProductToAdd: (product: ProductReqData | undefined) => void
 }
 
 const ProductsSelection: FC<IProps> = (
@@ -63,7 +63,7 @@ const ProductsSelection: FC<IProps> = (
 
   const [searchString, setSearchString] = useState<string>('')
 
-  const [selectedProducts, setSelectedProducts] = useState<DraftProductReqData[] | undefined>(draftProducts)
+  const [selectedProducts, setSelectedProducts] = useState<ProductReqData[] | undefined>(draftProducts)
 
   const [priceFormatter] =
     useState(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }))
@@ -150,6 +150,15 @@ const ProductsSelection: FC<IProps> = (
     if (products !== undefined) {
       setProductList(
         products.map((product) => {
+
+          let initialAmount: number | undefined = 0
+          if (selectedProducts !== undefined) {
+            initialAmount = selectedProducts.find(selected => {
+              return selected.codproduct == product.codproduct
+            })?.amountproduct
+          }
+          
+          // noinspection SpellCheckingInspection
           return (
             <SelectableProduct
               key={ product.codproduct }
@@ -158,9 +167,7 @@ const ProductsSelection: FC<IProps> = (
               price={ priceFormatter.format(parseFloat(product.priceproduct)) }
               stock={ product.stockproduct !== null ? product.stockproduct : undefined }
               setAmount={ setAmount }
-              initialAmount={ selectedProducts?.find(selected => {
-                return selected.codproduct == product.codproduct
-              })?.amountproduct }
+              initialAmount={ initialAmount }
             />
           )
         }),

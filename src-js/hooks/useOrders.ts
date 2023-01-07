@@ -1,9 +1,25 @@
 import { ForbidReasons, SessionCheckType } from './useSession'
 import Errors from '../shapes/Errors'
 import Message from '../shapes/Message'
-import { useFetchWith } from './useFetch'
+import { buildParametrizedUrl, useFetchWith } from './useFetch'
 import { useState } from 'react'
 import { DraftMessage, DraftMessageTypes } from './useDrafts'
+import OrderShape from '../shapes/OrderShape'
+import { assign } from 'lodash'
+
+// noinspection SpellCheckingInspection
+export interface GetOrders {
+  Request: {
+    telnamecustomer: string,
+    orders_number: number,
+    today: number,
+  }
+  Response:
+    { orders: (OrderShape)[], pages: number }
+    | { empty: string }
+    | Errors
+    | ForbidReasons
+}
 
 // noinspection SpellCheckingInspection
 export interface AddOrder {
@@ -29,9 +45,47 @@ export type OrderMessage = Message<OrderMessageTypes>
 function useOrders(sessionCheck: SessionCheckType) {
 
   const [individualMessage, setIndividualMessage] = useState<OrderMessage>()
+  const [collectiveMessage, setCollectiveMessage] = useState<OrderMessage>()
+  const [orders, setOrders] = useState<OrderShape[]>()
+  const [activePage, setActivePage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
+
+  // noinspection SpellCheckingInspection
+  const { doRequest: doGetOrdersRequest } =
+    useFetchWith.urlPlaceholders<GetOrders['Request'] & { page: number }, GetOrders['Response']>(
+      buildParametrizedUrl
+        `api/obtain_active_orders?telnamecustomer=${ 'telnamecustomer' }&page=${ 'page' }&
+        orders_number=${ 'orders_number' }&today=${ 'today' }`,
+    )
 
   const { doRequest: doAddOrderRequest } =
     useFetchWith.bodyParams<AddOrder['Request'], AddOrder['Response']>('api/add_order')
+
+  const getOrders = (data: GetOrders['Request']) => {
+    sessionCheck(() => {
+      setCollectiveMessage(undefined)
+      doGetOrdersRequest(assign(data, { page: activePage }))
+        .then((res) => {
+
+          if ('orders' in res && 'pages' in res) {
+            setOrders(res['orders'])
+            setTotalPages(res['pages'])
+          }
+
+          if ('empty' in res) {
+            setOrders(undefined)
+            setCollectiveMessage({ content: res['empty'], type: OrderMessageTypes.Info })
+          }
+          manageErrors(res, setCollectiveMessage)
+
+        }).catch(reason => {
+        setCollectiveMessage({ content: reason, type: OrderMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
+    })
+  }
 
   const addOrder = (
     data: AddOrder['Request'],
@@ -87,7 +141,14 @@ function useOrders(sessionCheck: SessionCheckType) {
 
   return {
     individualMessage,
+    collectiveMessage,
+    orders,
+    activePage,
+    totalPages,
     setIndividualMessage,
+    setCollectiveMessage,
+    setActivePage,
+    getOrders,
     addOrder,
   }
 }

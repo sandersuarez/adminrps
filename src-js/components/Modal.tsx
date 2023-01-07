@@ -25,6 +25,7 @@ const Container = styled.article`
   max-width: 40rem;
   background: ${ colors.section };
   padding-bottom: ${ margins.mobile.mediumVertical };
+  box-shadow: 0 10px 15px 3px rgba(0, 0, 0, 0.35);
 
   ${ Options } {
     margin-top: unset !important;

@@ -7,13 +7,13 @@ import Options from './buttons/Options'
 import Button from './buttons/Button'
 import ButtonTypes from '../shapes/ButtonTypes'
 import { AddDraft, DeleteDraft, DraftMessage, DraftMessageTypes, EditDraft } from '../hooks/useDrafts'
-import DraftShape, { DraftContent } from '../shapes/DraftShape'
+import DraftShape from '../shapes/DraftShape'
 import { css } from '@emotion/react'
 import useValid, { ValidEvents } from '../hooks/useValid'
 import { assign, isEqual } from 'lodash'
 import Panels from '../shapes/Panels'
 import { GetCustomers } from '../hooks/useCustomers'
-import { DraftProductReqData } from '../shapes/ProductShape'
+import { ProductReqData } from '../shapes/ProductShape'
 import { AddOrder } from '../hooks/useOrders'
 import breakpoints from '../styles/breakpoints'
 import Modal from './Modal'
@@ -74,22 +74,25 @@ interface DraftSectionProps {
   setMessage: (message: DraftMessage | undefined) => void
   newDraftID: number | undefined
   setNewDraftID: React.Dispatch<React.SetStateAction<number | undefined>>
-  draft: (DraftShape & DraftContent) | undefined
+  draft: DraftShape | undefined
   addDraft: (data: AddDraft['Request']) => void
   editDraft: (data: EditDraft['Request']) => void
   addingDraft: boolean
+  editingDraft: boolean
   getCustomers: (data: GetCustomers['Request']) => void
   setDraftCustomerID: (id: number | undefined) => void
   draftCustomerID: number | undefined
   setSelectedCustomer: (id: number | undefined) => void
-  draftProducts: DraftProductReqData[] | undefined
+  draftProducts: ProductReqData[] | undefined
   addOrder: (
     data: AddOrder['Request'],
-    action: () => void, callback:
-      (DraftMessage: DraftMessage | undefined) => void,
+    action: () => void,
+    callback: (DraftMessage: DraftMessage | undefined) => void,
   ) => void,
   getDrafts: () => void,
   deleteDraft: (data: DeleteDraft['Request']) => void
+  setDraft: (draft: DraftShape | undefined) => void
+  triggerGetOrders: (state: boolean) => void
 }
 
 const DraftPanel: FC<DraftSectionProps> = (
@@ -105,6 +108,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     addDraft,
     editDraft,
     addingDraft,
+    editingDraft,
     getCustomers,
     setDraftCustomerID,
     draftCustomerID,
@@ -113,6 +117,8 @@ const DraftPanel: FC<DraftSectionProps> = (
     addOrder,
     getDrafts,
     deleteDraft,
+    setDraft,
+    triggerGetOrders,
   }) => {
 
   const [customerName, setCustomerName] = useState<string>('')
@@ -123,6 +129,7 @@ const DraftPanel: FC<DraftSectionProps> = (
     useState<boolean>(window.matchMedia('(min-width: 1250px)').matches)
 
   const [showModal, setShowModal] = useState<boolean>(false)
+  const [addOrderProcess, setAddOrderProcess] = useState<boolean>(false)
 
   const doUpdateDraft = (addAnyway: boolean = false) => {
     if (newDraftID === undefined && draft === undefined && !addingDraft) {
@@ -267,11 +274,55 @@ const DraftPanel: FC<DraftSectionProps> = (
     }
   }
 
-  const {
-    validateField,
-    errors1,
-    commit: validateSubmit,
-  } = useValid(() => {
+  const checkIfModified = () => {
+
+    let customerNameTrimmed: null | string = customerName.trim()
+    let customerPhoneTrimmed: null | string = customerPhone.trim()
+    customerNameTrimmed = customerNameTrimmed === '' ? null : customerNameTrimmed
+    customerPhoneTrimmed = customerPhoneTrimmed === '' ? null : customerPhoneTrimmed
+    let pickUpTimeSet = pickUpTime === '' ? null : pickUpTime
+
+    let modified = false
+
+    if (newDraftID !== undefined) {
+      if (customerNameTrimmed !== null || customerPhoneTrimmed !== null || pickUpTimeSet !== null) {
+        modified = true
+      }
+      if (draftProducts !== undefined && draftProducts.length > 0) {
+        modified = true
+      }
+    }
+
+    if (draft !== undefined) {
+      if (draft.codcustomer === null) {
+        if (draft.namecustomertmp !== customerNameTrimmed ||
+          draft.telcustomertmp !== customerPhoneTrimmed ||
+          draftCustomerID !== undefined) {
+          modified = true
+        }
+      } else {
+        if (draft.codcustomer !== draftCustomerID) {
+          modified = true
+        }
+      }
+
+      if (draft.pickuptime !== pickUpTimeSet) {
+        modified = true
+      }
+
+      let previousProducts = draft?.products?.map(product => {
+        // noinspection SpellCheckingInspection
+        return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
+      })
+
+      if (!isEqual(draftProducts, previousProducts)) {
+        modified = true
+      }
+    }
+    return modified
+  }
+
+  const doAddOrder = () => {
     if (draft !== undefined) {
       // noinspection SpellCheckingInspection
       addOrder(
@@ -279,9 +330,20 @@ const DraftPanel: FC<DraftSectionProps> = (
         () => {
           close()
           getDrafts()
+          triggerGetOrders(true)
         },
         setMessage,
       )
+    }
+  }
+
+  const {
+    validateField,
+    errors1,
+    commit: validateSubmit,
+  } = useValid(() => {
+    if (draft !== undefined) {
+      setAddOrderProcess(true)
     }
   })
 
@@ -351,6 +413,7 @@ const DraftPanel: FC<DraftSectionProps> = (
   const close = () => {
     closeSidePanel()
     setNewDraftID(undefined)
+    setDraft(undefined)
   }
 
   const remove: FormEventHandler<HTMLButtonElement> = (e) => {
@@ -394,6 +457,20 @@ const DraftPanel: FC<DraftSectionProps> = (
   const closeDeleteModal = () => {
     setShowModal(false)
   }
+
+  useEffect(() => {
+    if (!editingDraft && addOrderProcess && draft !== undefined) {
+      doAddOrder()
+      setAddOrderProcess(false)
+    }
+  }, [editingDraft])
+
+  useEffect(() => {
+    if (!checkIfModified() && !editingDraft && addOrderProcess) {
+      doAddOrder()
+      setAddOrderProcess(false)
+    }
+  }, [addOrderProcess])
 
   useEffect(() => {
     if (draft !== undefined) {
@@ -553,7 +630,7 @@ const DraftPanel: FC<DraftSectionProps> = (
             <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
           }
         </Options>
-        <OrderProductsTable products={ draft?.products } />
+        <OrderProductsTable draftProducts={ draft?.products } css={ css`max-width: 75rem` } />
         <InputMessage message={ errors1['products'] } />
         <Button customType={ ButtonTypes.Primary } onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
         <FieldWrapper css={ hourFieldStyles }>

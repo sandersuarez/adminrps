@@ -1,10 +1,10 @@
-import React, { FC } from 'react'
+import React, { FC, MouseEventHandler, ReactElement, useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
 import SearchBar from '../SearchBar'
 import NoteContainer from '../NoteContainer'
 import Alert from '../Alert'
-import Note from '../Note'
+import Note, { NoteProps } from '../Note'
 import OrderProductsTable from './OrderProductsTable'
 import Pagination from '../Pagination'
 import fonts from '../../styles/fonts'
@@ -12,6 +12,11 @@ import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import { css } from '@emotion/react'
 import ButtonTypes from '../../shapes/ButtonTypes'
+import { GetOrders, OrderMessage, OrderMessageTypes } from '../../hooks/useOrders'
+import AlertTypes from '../../shapes/AlertTypes'
+import Panels from '../../shapes/Panels'
+import OrderShape from '../../shapes/OrderShape'
+import { forEach } from 'lodash'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -26,7 +31,8 @@ const Container = styled.article`
   }
 
   ${ breakpoints.tablet } {
-    margin: 2rem 0 0 0;
+    margin-top: ${ margins.tablet.bigVertical };
+    gap: ${ margins.tablet.mediumVertical };
   }
 
   ${ breakpoints.smallDesktop } {
@@ -52,8 +58,18 @@ const Container = styled.article`
 `
 
 interface IProps {
+  activePage: number
+  totalPages: number
+  setActivePage: (page: number) => void
+  setFirstSidePanel: (Panel: Panels) => void
   handleOpenSidePanel: () => void
   handleNewOrder: () => void
+  message: OrderMessage | undefined
+  setColMessage: (message: OrderMessage | undefined) => void
+  getOrders: (data: GetOrders['Request']) => void
+  orders: OrderShape[] | undefined
+  triggerGetOrders: boolean
+  setTriggerGetOrders: (state: boolean) => void
 }
 
 /*
@@ -68,12 +84,100 @@ interface IProps {
  * bar to filter by phone number or customer name, pagination, and responsive styles to make them awesome in all
  * kind of versions.
  */
-const ActiveOrders: FC<IProps> = ({ handleOpenSidePanel, handleNewOrder }) => {
+const ActiveOrders: FC<IProps> = (
+  {
+    activePage,
+    totalPages,
+    setActivePage,
+    setFirstSidePanel,
+    handleOpenSidePanel,
+    handleNewOrder,
+    message,
+    setColMessage,
+    getOrders,
+    orders,
+    triggerGetOrders,
+    setTriggerGetOrders,
+  }) => {
+
+  const [phoneNameCustomer, setPhoneNameCustomer] = useState<string>('')
+  const [notes, setNotes] = useState<ReactElement<NoteProps>[]>()
+
+  const [matchesTablet, setMatchesTablet] =
+    useState<boolean>(window.matchMedia('(min-width: 700px)').matches)
+
+  const doGetOrders = () => {
+    // noinspection SpellCheckingInspection
+    getOrders({
+      telnamecustomer: phoneNameCustomer,
+      orders_number: matchesTablet ? 30 : 15,
+      today: 1,
+    })
+  }
+
+  const handleClick: MouseEventHandler<HTMLElement> = (e) => {
+    /*setFirstSidePanel(Panels.Orders)
+    getOrder(Number(e.currentTarget.id))
+    handleOpenSidePanel()*/
+  }
+
+  const generateNotes = () => {
+    let notes: ReactElement<NoteProps>[] = []
+    if (orders !== undefined) {
+      forEach(orders, (order, index) => {
+
+        // noinspection SpellCheckingInspection
+        notes.push(
+          <Note
+            key={ index }
+            id={ order.codorder.toString() }
+            order={ order }
+            setColOrderMessage={ setColMessage }
+            onClick={ handleClick }
+          />,
+        )
+      })
+    }
+    setNotes(notes)
+  }
+
+  useEffect(() => {
+    if (phoneNameCustomer != '') {
+      setColMessage(undefined)
+    }
+  }, [phoneNameCustomer])
+
+  useEffect(doGetOrders, [activePage, phoneNameCustomer, matchesTablet])
+  useEffect(generateNotes, [orders])
+
+  useEffect(() => {
+    window
+      .matchMedia('(min-width: 700px)')
+      .addEventListener('change', e => setMatchesTablet(e.matches))
+  }, [])
+
+  useEffect(() => {
+    if (triggerGetOrders) {
+      setTriggerGetOrders(false)
+      doGetOrders()
+    }
+  }, [triggerGetOrders])
 
   return (
     <Container>
       <h2>Pedidos en elaboración</h2>
-      <h1>Jajajajjaa definitivamente no es gracioso</h1>
+      {
+        message !== undefined && message.type === OrderMessageTypes.Info &&
+        <Alert message={ message.content } type={ AlertTypes.Empty } />
+      }
+      {
+        message !== undefined && message.type === OrderMessageTypes.Error &&
+        <Alert message={ message.content + '. Contacte con el administrador.' } type={ AlertTypes.Error } />
+      }
+      {
+        message !== undefined && message.type === OrderMessageTypes.Warning &&
+        <Alert message={ message.content } type={ AlertTypes.Warning } />
+      }
       <Button
         customType={ ButtonTypes.Primary }
         css={ css`align-self: start` }
@@ -81,7 +185,10 @@ const ActiveOrders: FC<IProps> = ({ handleOpenSidePanel, handleNewOrder }) => {
       >
         { 'Nuevo pedido' }
       </Button>
-
+      {
+        orders !== undefined &&
+        <NoteContainer noteList={ notes } />
+      }
     </Container>
   )
 }

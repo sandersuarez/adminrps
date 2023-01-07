@@ -88,16 +88,17 @@ const TableContainer = styled.div`
 
 const Container = styled.div`
   position: relative;
-  max-width: 75rem;
 
   ${ breakpoints.tablet } {
     margin-top: ${ margins.tablet.vertical };
   }
 `
 
+// noinspection SpellCheckingInspection
 interface OrderProductsTableProps {
   className?: string
-  products: (ProductShape & { amountproductdraft: number })[] | undefined
+  draftProducts?: (ProductShape & { amountproductdraft: number })[]
+  orderProducts?: (ProductShape & { amountproductorder: number })[]
 }
 
 /**
@@ -107,24 +108,38 @@ interface OrderProductsTableProps {
 const OrderProductsTable: FC<OrderProductsTableProps> = (
   {
     className,
-    products,
+    draftProducts,
+    orderProducts,
   }) => {
 
   const formatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
-  const [total, setTotal] = useState<number>(products !== undefined ?
-    products.reduce((acc, product) => {
+
+  // noinspection SpellCheckingInspection
+  const [total, setTotal] = useState<number>(draftProducts !== undefined ?
+    draftProducts.reduce((acc, product) => {
       return acc + parseFloat(product.priceproduct) * product.amountproductdraft
     }, 0)
-    : 0,
+    :
+    orderProducts !== undefined ?
+      orderProducts.reduce((acc, product) => {
+        return acc + parseFloat(product.priceproduct) * product.amountproductorder
+      }, 0)
+      : 0,
   )
 
   useEffect(() => {
-    setTotal(products !== undefined ?
-      products.reduce((acc, product) => {
+    setTotal(draftProducts !== undefined ?
+      draftProducts.reduce((acc, product) => {
         return acc + parseFloat(product.priceproduct) * product.amountproductdraft
       }, 0)
-      : 0)
-  }, [products])
+      :
+      orderProducts !== undefined ?
+        orderProducts.reduce((acc, product) => {
+          return acc + parseFloat(product.priceproduct) * product.amountproductorder
+        }, 0)
+        : 0,
+    )
+  }, [draftProducts, orderProducts])
 
   return (
     <Container className={ className }>
@@ -140,8 +155,8 @@ const OrderProductsTable: FC<OrderProductsTableProps> = (
           <tbody children={
             <>
               {
-                products !== undefined ?
-                  products.map((product, index) => {
+                draftProducts !== undefined ?
+                  draftProducts.map((product, index) => {
                     return (
                       <tr key={ index }>
                         <td scope={ 'row' }>{ product.nameproduct }
@@ -153,11 +168,24 @@ const OrderProductsTable: FC<OrderProductsTableProps> = (
                     )
                   })
                   :
-                  <tr>
-                    <td scope={ 'row' }></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
+                  orderProducts !== undefined ?
+                    orderProducts.map((product, index) => {
+                      return (
+                        <tr key={ index }>
+                          <td scope={ 'row' }>{ product.nameproduct }
+                            <span>{ '(' + formatter.format(parseFloat(product.priceproduct)) + ')' }</span>
+                          </td>
+                          <td>{ product.amountproductorder }</td>
+                          <td>{ formatter.format(parseFloat(product.priceproduct) * product.amountproductorder) }</td>
+                        </tr>
+                      )
+                    })
+                    :
+                    <tr>
+                      <td scope={ 'row' }></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
               }
               <tr>
                 <td scope={ 'row' }></td>
