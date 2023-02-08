@@ -20,8 +20,8 @@ function obtain_active_orders(array $requirements): array
   $begin = $requirements['page'] - 1;
 
   $orders_number = match ($requirements['orders_number']) {
-    30 => 30,
-    default => 15,
+    '30' => 30,
+    default => 16,
   };
 
   $begin = $begin * $orders_number;

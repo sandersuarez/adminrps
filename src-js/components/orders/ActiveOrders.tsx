@@ -120,7 +120,7 @@ const ActiveOrders: FC<IProps> = (
     // noinspection SpellCheckingInspection
     getOrders({
       telnamecustomer: phoneNameCustomer,
-      orders_number: matchesTablet ? 30 : 15,
+      orders_number: matchesTablet ? 30 : 16,
       today: 1,
     })
   }
@@ -196,9 +196,13 @@ const ActiveOrders: FC<IProps> = (
       >
         { 'Nuevo pedido' }
       </Button>
+      <SearchBar searchString={ phoneNameCustomer } setSearchString={ setPhoneNameCustomer } />
       {
         orders !== undefined &&
-        <NoteContainer noteList={ notes } />
+        <>
+          <NoteContainer noteList={ notes } />
+          <Pagination activePage={ activePage } totalPages={ totalPages } setActivePage={ setActivePage } />
+        </>
       }
     </Container>
   )

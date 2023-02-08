@@ -34,12 +34,12 @@ $app->get('/obtain_active_orders', function (Request $request, Response $respons
 
         $response_content = json_encode(obtain_active_orders($requirements), JSON_UNESCAPED_UNICODE);
       } else {
-        $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
+        $response_content = json_encode(array('message' => 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
       }
     } else {
       $response_content =
         json_encode(
-          array('forbidden', 'You do not have permission to access this service'),
+          array('forbidden' => 'You do not have permission to access this service'),
           JSON_UNESCAPED_UNICODE
         );
     }
