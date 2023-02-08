@@ -72,6 +72,7 @@ const Drafts: FC<IProps> = (
         notes.push(
           <Note
             key={ index }
+            index={ index }
             id={ draft.coddraft.toString() }
             draft={ draft }
             setColDraftMessage={ setColMessage }

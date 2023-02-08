@@ -5,6 +5,7 @@ const breakpoints = {
   desktop: '@media only screen and (min-width: 992px)',
   mediumDesktop: '@media only screen and (min-width: 1250px)',
   bigDesktop: '@media only screen and (min-width: 1400px)',
+  veryBigDesktop: '@media only screen and (min-width: 1750px)',
 
   // If changed, change the constant inputMaxWidth in the sizes file.
   formLimits: '@media only screen and (min-width: 544px)',

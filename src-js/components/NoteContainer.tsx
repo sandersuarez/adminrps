@@ -32,12 +32,8 @@ const Container = styled.div`
     }
   }
 
-  ${ breakpoints.desktop } {
-    grid-template-columns: repeat(auto-fit, minmax(min(24ch, 100%), 1fr));
-
-    ${ Note } {
-      grid-column-end: span 1;
-    }
+  ${ breakpoints.veryBigDesktop } {
+    grid-template-columns: repeat(8, 1fr);
   }
 `
 

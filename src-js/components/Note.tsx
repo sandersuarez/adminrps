@@ -69,6 +69,7 @@ const Container = styled.article`
 
 export interface NoteProps {
   key: Key
+  index: number
   id: string | undefined
   className?: string
   draft?: DraftShape
@@ -84,6 +85,7 @@ export interface NoteProps {
 const Note: FC<NoteProps> = (
   {
     className: className,
+    index,
     id,
     draft,
     order,
@@ -136,9 +138,12 @@ const Note: FC<NoteProps> = (
         <p>{ order.namecustomer }</p>
         <p>{ order.telcustomer }</p>
         <PickUpTime>{ order.hourorder.substring(0, 5) }</PickUpTime>
-        <OrderProductsTable
-          orderProducts={ order.products }
-        />
+        {
+          index < 4 &&
+          <OrderProductsTable
+            orderProducts={ order.products }
+          />
+        }
       </>
   } else {
     let error = 'Error: No note data value set'

@@ -5,7 +5,6 @@ import SearchBar from '../SearchBar'
 import NoteContainer from '../NoteContainer'
 import Alert from '../Alert'
 import Note, { NoteProps } from '../Note'
-import OrderProductsTable from './OrderProductsTable'
 import Pagination from '../Pagination'
 import fonts from '../../styles/fonts'
 import margins from '../../styles/margins'
@@ -43,15 +42,26 @@ const Container = styled.article`
     }
   }
 
+  ${ breakpoints.mediumDesktop } {
+    ${ Note } {
+      &:not(:nth-of-type(n+5)) {
+        grid-column-end: span 6;
+      }
+    }
+  }
+
   ${ breakpoints.bigDesktop } {
     ${ Note } {
       &:not(:nth-of-type(n+5)) {
-        grid-column-end: span 2;
-        grid-row-end: span 2;
+        grid-column-end: span 3;
       }
+    }
+  }
 
-      &:nth-of-type(3), &:nth-of-type(4) {
-        grid-row-start: 3;
+  ${ breakpoints.veryBigDesktop } {
+    ${ Note } {
+      &:not(:nth-of-type(n+5)) {
+        grid-column-end: span 4;
       }
     }
   }
@@ -130,6 +140,7 @@ const ActiveOrders: FC<IProps> = (
         notes.push(
           <Note
             key={ index }
+            index={ index }
             id={ order.codorder.toString() }
             order={ order }
             setColOrderMessage={ setColMessage }
