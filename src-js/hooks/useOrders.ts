@@ -3,7 +3,7 @@ import Errors from '../shapes/Errors'
 import Message from '../shapes/Message'
 import { buildParametrizedUrl, useFetchWith } from './useFetch'
 import { useState } from 'react'
-import { DraftMessage, DraftMessageTypes } from './useDrafts'
+import { DraftMessage, DraftMessageTypes, GetDraft } from './useDrafts'
 import OrderShape from '../shapes/OrderShape'
 import { assign } from 'lodash'
 
@@ -17,6 +17,15 @@ export interface GetOrders {
   Response:
     { orders: (OrderShape)[], pages: number }
     | { empty: string }
+    | Errors
+    | ForbidReasons
+}
+
+// noinspection SpellCheckingInspection
+export interface GetOrder {
+  Request: { codorder: number },
+  Response:
+    { order: OrderShape[] }
     | Errors
     | ForbidReasons
 }
@@ -44,12 +53,6 @@ export type OrderMessage = Message<OrderMessageTypes>
  */
 function useOrders(sessionCheck: SessionCheckType) {
 
-  const [individualMessage, setIndividualMessage] = useState<OrderMessage>()
-  const [collectiveMessage, setCollectiveMessage] = useState<OrderMessage>()
-  const [orders, setOrders] = useState<OrderShape[]>()
-  const [activePage, setActivePage] = useState<number>(1)
-  const [totalPages, setTotalPages] = useState<number>(1)
-
   // noinspection SpellCheckingInspection
   const { doRequest: doGetOrdersRequest } =
     useFetchWith.urlPlaceholders<GetOrders['Request'] & { page: number }, GetOrders['Response']>(
@@ -58,8 +61,20 @@ function useOrders(sessionCheck: SessionCheckType) {
         orders_number=${ 'orders_number' }&today=${ 'today' }`,
     )
 
+  // noinspection SpellCheckingInspection
+  const { doRequest: doGetOrderRequest } = useFetchWith.urlPlaceholders<GetOrder['Request'], GetOrder['Response']>(
+    buildParametrizedUrl`api/obtain_active_order?codorder=${ 'codorder' }`,
+  )
+
   const { doRequest: doAddOrderRequest } =
     useFetchWith.bodyParams<AddOrder['Request'], AddOrder['Response']>('api/add_order')
+
+  const [individualMessage, setIndividualMessage] = useState<OrderMessage>()
+  const [collectiveMessage, setCollectiveMessage] = useState<OrderMessage>()
+  const [order, setOrder] = useState<OrderShape>()
+  const [orders, setOrders] = useState<OrderShape[]>()
+  const [activePage, setActivePage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
 
   const getOrders = (data: GetOrders['Request']) => {
     sessionCheck(() => {
@@ -80,6 +95,27 @@ function useOrders(sessionCheck: SessionCheckType) {
 
         }).catch(reason => {
         setCollectiveMessage({ content: reason, type: OrderMessageTypes.Error })
+        if (console && console.error) {
+          console.error(reason)
+        }
+      })
+    })
+  }
+
+  const getOrder = (data: GetOrder['Request']) => {
+    sessionCheck(() => {
+      setIndividualMessage(undefined)
+      doGetOrderRequest(data)
+        .then((res) => {
+
+          if ('order' in res) {
+            setOrder(res['order'][0])
+          }
+
+          manageErrors(res, setIndividualMessage)
+
+        }).catch(reason => {
+        setIndividualMessage({ content: reason, type: OrderMessageTypes.Error })
         if (console && console.error) {
           console.error(reason)
         }
@@ -142,6 +178,7 @@ function useOrders(sessionCheck: SessionCheckType) {
   return {
     individualMessage,
     collectiveMessage,
+    order,
     orders,
     activePage,
     totalPages,

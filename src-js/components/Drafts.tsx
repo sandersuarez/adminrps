@@ -9,7 +9,7 @@ import margins from '../styles/margins'
 import ButtonTypes from '../shapes/ButtonTypes'
 import Options from './buttons/Options'
 import Panels from '../shapes/Panels'
-import { DraftMessage, DraftMessageTypes } from '../hooks/useDrafts'
+import { DraftMessage, DraftMessageTypes, GetDraft } from '../hooks/useDrafts'
 import AlertTypes from '../shapes/AlertTypes'
 import { forEach } from 'lodash'
 import DraftShape from '../shapes/DraftShape'
@@ -37,7 +37,7 @@ interface IProps {
   message: DraftMessage | undefined
   setColMessage: (message: DraftMessage | undefined) => void
   getDrafts: () => void
-  getDraft: (draftID: number) => void
+  getDraft: (data: GetDraft['Request']) => void
   deleteDrafts: () => void
   drafts: DraftShape[] | undefined
 }
@@ -59,7 +59,8 @@ const Drafts: FC<IProps> = (
 
   const handleClick: MouseEventHandler<HTMLElement> = (e) => {
     setFirstSidePanel(Panels.Drafts)
-    getDraft(Number(e.currentTarget.id))
+    // noinspection SpellCheckingInspection
+    getDraft({ coddraft: Number(e.currentTarget.id) })
     handleOpenSidePanel()
   }
 

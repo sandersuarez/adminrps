@@ -55,8 +55,6 @@ $app->get('/obtain_active_orders', function (Request $request, Response $respons
 
 $app->get('/obtain_active_order', function (Request $request, Response $response) {
 
-  $response_content = '';
-
   // Security check
   $security = security();
   if (is_array($security)) {
@@ -68,10 +66,14 @@ $app->get('/obtain_active_order', function (Request $request, Response $response
       if (array_key_exists('codorder', $params)) {
         $response_content = json_encode(obtain_active_order($params['codorder']), JSON_UNESCAPED_UNICODE);
       } else {
-        $response_content = json_encode(array('message', 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
+        $response_content = json_encode(array('message' => 'Falta un campo requerido'), JSON_UNESCAPED_UNICODE);
       }
     } else {
-      $response_content = json_encode(array('forbidden', 'You do not have permission to access this service'), JSON_UNESCAPED_UNICODE);
+      $response_content =
+        json_encode(
+          array('forbidden' => 'You do not have permission to access this service'),
+          JSON_UNESCAPED_UNICODE
+        );
     }
   } else {
     $response_content = json_encode(reason_no_session($security), JSON_UNESCAPED_UNICODE);

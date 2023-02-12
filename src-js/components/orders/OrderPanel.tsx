@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import styled from '@emotion/styled'
 import OrderProductsTable from './OrderProductsTable'
 import margins from '../../styles/margins'
@@ -12,6 +12,11 @@ import Options from '../buttons/Options'
 import TitleWrapper from '../TitleWrapper'
 import ExitButton from '../buttons/ExitButton'
 import FieldWrapper from '../forms/FieldWrapper'
+import { AddDraft, EditDraft } from '../../hooks/useDrafts'
+import { assign, isEqual } from 'lodash'
+import Panels from '../../shapes/Panels'
+import { OrderMessage } from '../../hooks/useOrders'
+import OrderShape from '../../shapes/OrderShape'
 
 const Container = styled.section`
   display: flex;
@@ -38,9 +43,25 @@ const formStyles = css`
 interface OrderSectionProps {
   handleCloseSidePanel: () => void
   handleOpenSecondSidePanel: () => void
+  changeSecondSidePanel: (panel: Panels) => void
+  message: OrderMessage | undefined
+  setMessage: (message: OrderMessage | undefined) => void
+  order: OrderShape | undefined
 }
 
-const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSecondSidePanel }) => {
+const OrderPanel: FC<OrderSectionProps> = (
+  {
+    handleCloseSidePanel,
+    handleOpenSecondSidePanel,
+    changeSecondSidePanel,
+    message,
+    setMessage,
+    order,
+  }) => {
+
+  const [customerName, setCustomerName] = useState<string>('')
+  const [customerPhone, setCustomerPhone] = useState<string>('')
+  const [pickUpTime, setPickUpTime] = useState<string>('')
   const [editMode, setEditMode] = React.useState<boolean>(false)
 
   const handleExitClick = () => {
@@ -51,16 +72,118 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
     setEditMode(true)
   }
 
+  const doUpdateDraft = (addAnyway: boolean = false) => {
+
+    // noinspection SpellCheckingInspection
+    let data: EditDraft['Request'] = { coddraft: 0 }
+    let modified = false
+
+    let customerNameTrimmed: null | string = customerName.trim()
+    let customerPhoneTrimmed: null | string = customerPhone.trim()
+    customerNameTrimmed = customerNameTrimmed === '' ? null : customerNameTrimmed
+    customerPhoneTrimmed = customerPhoneTrimmed === '' ? null : customerPhoneTrimmed
+
+    let pickUpTimeSet = pickUpTime === '' ? null : pickUpTime
+
+    if (newDraftID !== undefined) {
+      // noinspection SpellCheckingInspection
+      assign(data, { coddraft: newDraftID })
+
+      if (customerNameTrimmed !== null || customerPhoneTrimmed !== null || pickUpTimeSet !== null) {
+
+        if (customerNameTrimmed !== null) {
+          // noinspection SpellCheckingInspection
+          assign(data, { namecustomertmp: customerNameTrimmed })
+        }
+
+        if (customerPhoneTrimmed !== null) {
+          // noinspection SpellCheckingInspection
+          assign(data, { telcustomertmp: customerPhoneTrimmed })
+        }
+
+        if (pickUpTimeSet !== null) {
+          // noinspection SpellCheckingInspection
+          assign(data, { pickuptime: pickUpTime })
+        }
+
+        modified = true
+      }
+
+      if (draftProducts !== undefined && draftProducts.length > 0) {
+        // noinspection SpellCheckingInspection
+        assign(data, { products: draftProducts })
+        modified = true
+      }
+    }
+
+    if (draft !== undefined) {
+      // noinspection SpellCheckingInspection
+      assign(data, { coddraft: draft.coddraft })
+
+      if (draft.codcustomer === null) {
+        if (draft.namecustomertmp !== customerNameTrimmed) {
+          // noinspection SpellCheckingInspection
+          assign(data, { namecustomertmp: customerNameTrimmed })
+          modified = true
+        }
+
+        if (draft.telcustomertmp !== customerPhoneTrimmed) {
+          // noinspection SpellCheckingInspection
+          assign(data, { telcustomertmp: customerPhoneTrimmed })
+          modified = true
+        }
+
+        if (draftCustomerID !== undefined) {
+          // noinspection SpellCheckingInspection
+          assign(data, { namecustomertmp: '', telcustomertmp: '', codcustomer: draftCustomerID })
+          modified = true
+        }
+      } else {
+        if (draft.codcustomer !== draftCustomerID) {
+          // noinspection SpellCheckingInspection
+          assign(data, { codcustomer: draftCustomerID === undefined ? 0 : draftCustomerID })
+          modified = true
+        }
+      }
+
+      if (draft.pickuptime !== pickUpTimeSet) {
+        // noinspection SpellCheckingInspection
+        assign(data, { pickuptime: pickUpTimeSet })
+        modified = true
+      }
+
+      let previousProducts = draft?.products?.map(product => {
+        // noinspection SpellCheckingInspection
+        return { codproduct: product.codproduct, amountproduct: product.amountproductdraft }
+      })
+
+      if (!isEqual(draftProducts, previousProducts)) {
+        // noinspection SpellCheckingInspection
+        assign(data, { products: draftProducts === undefined ? [] : draftProducts })
+        modified = true
+      }
+    }
+
+    if (modified) {
+      editDraft(data)
+    }
+  }
+
   return (
     <Container>
       <TitleWrapper>
-        <h2>{ 'Pedido Nº 1 - 06/04/2022' }</h2>
-        <ExitButton onClick={ handleExitClick }>
+        <h2>{ 'Pedido ' + (order !== undefined ? order.numdayorder : '') }</h2>
+        <ExitButton onClick={ close }>
           <i className={ 'bi bi-x' } />
         </ExitButton>
       </TitleWrapper>
-      <p><b>{ 'Hora aproximada de recogida: ' }</b>{ '12:43' }</p>
-      <p><b>{ 'Luisa Santos' }</b><br /><b>{ 'Teléfono: ' }</b>{ '676676676' }</p>
+      {
+        order !== undefined &&
+        <>
+          <p><b>{ 'Hora aproximada de recogida: ' }</b>{ order.pickuptime }</p>
+          <p><b>{ order.namecustomer }</b><br /><b>{ 'Teléfono: ' }</b>{ order.telcustomer }</p>
+        </>
+      }
       {
         editMode ?
           <Options>
@@ -75,7 +198,10 @@ const OrderPanel: FC<OrderSectionProps> = ({ handleCloseSidePanel, handleOpenSec
           :
           null
       }
-      <OrderProductsTable editable={ editMode } />
+      {
+        order !== undefined &&
+        <OrderProductsTable orderProducts={ order.products } />
+      }
       {
         editMode ?
           <>

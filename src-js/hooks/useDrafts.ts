@@ -105,7 +105,7 @@ function useDrafts(sessionCheck: SessionCheckType) {
           // noinspection SpellCheckingInspection
           setNewDraftID(res['coddraft'])
           // noinspection SpellCheckingInspection
-          getDraft(res['coddraft'])
+          getDraft({ coddraft: res['coddraft'] })
         }
 
         if ('overflow' in res) {
@@ -146,11 +146,11 @@ function useDrafts(sessionCheck: SessionCheckType) {
     })
   }
 
-  const getDraft = (draftID: number) => {
+  const getDraft = (data: GetDraft['Request']) => {
     sessionCheck(() => {
       setIndividualMessage(undefined)
       // noinspection SpellCheckingInspection
-      doGetDraftRequest({ coddraft: draftID }).then((res) => {
+      doGetDraftRequest(data).then((res) => {
 
         if ('draft' in res) {
           setNewDraftID(undefined)
@@ -174,7 +174,8 @@ function useDrafts(sessionCheck: SessionCheckType) {
 
         if ('success_message' in res) {
           setNewDraftID(undefined)
-          getDraft(data.coddraft)
+          // noinspection SpellCheckingInspection
+          getDraft({ coddraft: data.coddraft })
         }
         manageErrors(res, setIndividualMessage)
 

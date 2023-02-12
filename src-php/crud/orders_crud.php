@@ -157,20 +157,27 @@ function obtain_active_orders(array $requirements): array
  * @param integer $codorder
  * @return array
  */
-function obtain_active_order($codorder)
+function obtain_active_order(int $codorder): array
 {
   // Requirements control
-  if (!filter_var($codorder, FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']]))
+  if (
+    !filter_var(
+      $codorder,
+      FILTER_VALIDATE_INT, ['options' => ['min_range' => '1', 'max_range' => '9223372036854775808']])
+  ) {
     return array('message' => 'El código de pedido es inválido');
+  }
 
   try {
     $connection = create_pdo_object();
 
     // SQL Query to search active orders
-    $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS . ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " .
-      ORDERS . ".codcustomer, " . CUSTOMERS . ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " .
-      ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " . ORDERS_SOLD . ".codorder WHERE " .
-      ORDERS . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
+    $query = $connection->prepare("SELECT " . ORDERS . ".codorder, " . ORDERS . ".numdayorder, " . ORDERS .
+      ".dateorder, " . ORDERS . ".hourorder, " . ORDERS . ".pickuptime, " . ORDERS . ".codcustomer, " . CUSTOMERS .
+      ".namecustomer, " . CUSTOMERS . ".telcustomer FROM " . ORDERS . " JOIN " . CUSTOMERS . " ON " . ORDERS .
+      ".codcustomer = " . CUSTOMERS . ".codcustomer LEFT JOIN " . ORDERS_SOLD . " ON " . ORDERS . ".codorder = " .
+      ORDERS_SOLD . ".codorder WHERE " . ORDERS . ".codorder = :codorder AND " . CUSTOMERS .
+      ".coduser = :coduser AND " . ORDERS_SOLD . ".codordersold IS NULL");
 
     // Parameters binding and execution
     $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
@@ -184,10 +191,12 @@ function obtain_active_order($codorder)
       $query->closeCursor();
 
       // SQL Query to search the products of the order
-      $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " . PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " .
-        ORDERS_CONTAIN . ".amountproductorder FROM " . ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS . ".codproduct JOIN " .
-        ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " . CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " .
-        ORDERS_CONTAIN . ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser");
+      $query = $connection->prepare("SELECT " . ORDERS_CONTAIN . ".codproduct, " . PRODUCTS . ".nameproduct, " .
+        PRODUCTS . ".priceproduct, " . PRODUCTS . ".stockproduct, " . ORDERS_CONTAIN . ".amountproductorder FROM " .
+        ORDERS_CONTAIN . " JOIN " . PRODUCTS . " ON " . ORDERS_CONTAIN . ".codproduct = " . PRODUCTS .
+        ".codproduct JOIN " . ORDERS . " ON " . ORDERS_CONTAIN . ".codorder = " . ORDERS . ".codorder JOIN " .
+        CUSTOMERS . " ON " . ORDERS . ".codcustomer = " . CUSTOMERS . ".codcustomer WHERE " . ORDERS_CONTAIN .
+        ".codorder = :codorder AND " . CUSTOMERS . ".coduser = :coduser");
 
       // Parameters binding and execution
       $query->bindParam(':codorder', $codorder, PDO::PARAM_INT);
@@ -203,7 +212,7 @@ function obtain_active_order($codorder)
     clear_query_data($query, $connection);
     return $answer;
   } catch (PDOException $e) {
-    if ($query !== null) $query->closeCursor();
+    $query?->closeCursor();
     $connection = null;
     return process_pdo_exception($e);
   }

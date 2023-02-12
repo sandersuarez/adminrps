@@ -126,6 +126,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const {
     individualMessage: indOrderMessage,
     collectiveMessage: colOrderMessage,
+    order,
     orders,
     activePage: ordersActivePage,
     totalPages: ordersTotalPages,
@@ -211,6 +212,10 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
         <OrderPanel
           handleCloseSidePanel={ handleCloseFirstSidePanel }
           handleOpenSecondSidePanel={ handleOpenSecondSidePanel }
+          changeSecondSidePanel={ setSecondSidePanel }
+          message={ indOrderMessage }
+          setMessage={ setIndOrderMessage }
+          order={ order }
         />
       break
     case Panels.Drafts:
