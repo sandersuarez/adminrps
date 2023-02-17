@@ -186,6 +186,7 @@ function useOrders(sessionCheck: SessionCheckType) {
     setCollectiveMessage,
     setActivePage,
     getOrders,
+    getOrder,
     addOrder,
   }
 }

@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react'
-import styled from '@emotion/styled'
 import OrderProductsTable from './OrderProductsTable'
 import margins from '../../styles/margins'
 import Button from '../buttons/Button'
@@ -12,22 +11,12 @@ import Options from '../buttons/Options'
 import TitleWrapper from '../TitleWrapper'
 import ExitButton from '../buttons/ExitButton'
 import FieldWrapper from '../forms/FieldWrapper'
-import { AddDraft, EditDraft } from '../../hooks/useDrafts'
+import { EditDraft } from '../../hooks/useDrafts'
 import { assign, isEqual } from 'lodash'
 import Panels from '../../shapes/Panels'
 import { OrderMessage } from '../../hooks/useOrders'
 import OrderShape from '../../shapes/OrderShape'
-
-const Container = styled.section`
-  display: flex;
-  flex-direction: column;
-  row-gap: ${ margins.mobile.mediumVertical };
-  padding: ${ margins.mobile.lateral };
-
-  p {
-    margin: 0;
-  }
-`
+import Panel from '../Panel'
 
 const formStyles = css`
   flex-direction: row;
@@ -170,7 +159,7 @@ const OrderPanel: FC<OrderSectionProps> = (
   }
 
   return (
-    <Container>
+    <Panel>
       <TitleWrapper>
         <h2>{ 'Pedido ' + (order !== undefined ? order.numdayorder : '') }</h2>
         <ExitButton onClick={ close }>
@@ -238,7 +227,7 @@ const OrderPanel: FC<OrderSectionProps> = (
             </Form>
           </>
       }
-    </Container>
+    </Panel>
   )
 }
 

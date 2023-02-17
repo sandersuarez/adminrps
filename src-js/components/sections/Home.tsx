@@ -132,6 +132,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
     totalPages: ordersTotalPages,
     setActivePage: ordersSetActivePage,
     getOrders,
+    getOrder,
     addOrder,
     setIndividualMessage: setIndOrderMessage,
     setCollectiveMessage: setColOrderMessage,
@@ -159,6 +160,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
   const handleNewOrder = () => {
     setNewDraftID(undefined)
     setDraft(undefined)
+    setFirstSidePanel(Panels.Drafts)
   }
 
   useEffect(getDrafts, [draft, newDraftID])
@@ -313,6 +315,7 @@ const Home: FC<IProps> = ({ username, logout, sessionCheck, sessionRenew }) => {
           message={ colOrderMessage }
           setColMessage={ setColOrderMessage }
           getOrders={ getOrders }
+          getOrder={ getOrder }
           orders={ orders }
           triggerGetOrders={ triggerGetOrders }
           setTriggerGetOrders={ setTriggerGetOrders }

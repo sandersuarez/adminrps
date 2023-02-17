@@ -11,11 +11,12 @@ import margins from '../../styles/margins'
 import Button from '../buttons/Button'
 import { css } from '@emotion/react'
 import ButtonTypes from '../../shapes/ButtonTypes'
-import { GetOrders, OrderMessage, OrderMessageTypes } from '../../hooks/useOrders'
+import { GetOrder, GetOrders, OrderMessage, OrderMessageTypes } from '../../hooks/useOrders'
 import AlertTypes from '../../shapes/AlertTypes'
 import Panels from '../../shapes/Panels'
 import OrderShape from '../../shapes/OrderShape'
 import { forEach } from 'lodash'
+import { GetDraft } from '../../hooks/useDrafts'
 
 const Container = styled.article`
   margin-top: ${ margins.mobile.bigVertical };
@@ -77,6 +78,7 @@ interface IProps {
   message: OrderMessage | undefined
   setColMessage: (message: OrderMessage | undefined) => void
   getOrders: (data: GetOrders['Request']) => void
+  getOrder: (data: GetOrder['Request']) => void
   orders: OrderShape[] | undefined
   triggerGetOrders: boolean
   setTriggerGetOrders: (state: boolean) => void
@@ -105,6 +107,7 @@ const ActiveOrders: FC<IProps> = (
     message,
     setColMessage,
     getOrders,
+    getOrder,
     orders,
     triggerGetOrders,
     setTriggerGetOrders,
@@ -126,9 +129,9 @@ const ActiveOrders: FC<IProps> = (
   }
 
   const handleClick: MouseEventHandler<HTMLElement> = (e) => {
-    /*setFirstSidePanel(Panels.Orders)
-    getOrder(Number(e.currentTarget.id))
-    handleOpenSidePanel()*/
+    setFirstSidePanel(Panels.Orders)
+    getOrder({ codorder: Number(e.currentTarget.id) })
+    handleOpenSidePanel()
   }
 
   const generateNotes = () => {

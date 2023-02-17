@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import margins from '../styles/margins'
 import React, { FC, FormEventHandler, useEffect, useState } from 'react'
 import TitleWrapper from './TitleWrapper'
@@ -25,44 +24,13 @@ import InputMessage from './forms/InputMessage'
 import OrderProductsTable from './orders/OrderProductsTable'
 import Alert from './Alert'
 import Input from './forms/Input'
+import Panel from './Panel'
 
 const hourFieldStyles = css`
   margin-top: ${ margins.mobile.littleGap };
 
   ${ breakpoints.tablet } {
     margin-top: ${ margins.tablet.gridSpace };
-  }
-`
-
-const Container = styled.section`
-  display: flex;
-  flex-direction: column;
-  row-gap: ${ margins.mobile.mediumVertical };
-  padding: ${ margins.mobile.lateral };
-
-  p {
-    margin: 0;
-  }
-
-  ${ Options } {
-    flex-direction: initial;
-
-    &:nth-last-of-type(1) {
-      margin-top: ${ margins.mobile.mediumVertical };
-    }
-  }
-
-  ${ breakpoints.tablet } {
-    row-gap: ${ margins.tablet.mediumVertical };
-    padding: ${ margins.tablet.lateral };
-
-    ${ Options } {
-      margin-top: 0;
-
-      &:nth-last-of-type(1) {
-        margin-top: ${ margins.tablet.mediumVertical };
-      }
-    }
   }
 `
 
@@ -538,7 +506,7 @@ const DraftPanel: FC<DraftSectionProps> = (
 
   // noinspection SpellCheckingInspection
   return (
-    <Container>
+    <Panel>
       {
         showModal &&
         <Modal
@@ -662,7 +630,7 @@ const DraftPanel: FC<DraftSectionProps> = (
           <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
         </Options>
       </Form>
-    </Container>
+    </Panel>
   )
 }
 
