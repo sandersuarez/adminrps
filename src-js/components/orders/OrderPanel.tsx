@@ -17,16 +17,34 @@ import Panels from '../../shapes/Panels'
 import { OrderMessage } from '../../hooks/useOrders'
 import OrderShape from '../../shapes/OrderShape'
 import Panel from '../Panel'
+import styled from '@emotion/styled'
+import breakpoints from '../../styles/breakpoints'
+
+const P = styled.p`
+
+  &:first-of-type {
+    margin-bottom: .5em;
+  }
+
+  span {
+    margin-left: .5em;
+  }
+`
 
 const formStyles = css`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
-  margin-top: ${ margins.mobile.mediumVertical };
+  margin-top: ${ margins.mobile.vertical };
 
   div {
     flex-grow: 1;
   }
+
+  ${ breakpoints.tablet } {
+    margin-top: ${ margins.tablet.gridSpace };
+  }
+}
 `
 
 interface OrderSectionProps {
@@ -169,8 +187,11 @@ const OrderPanel: FC<OrderSectionProps> = (
       {
         order !== undefined &&
         <>
-          <p><b>{ 'Hora aproximada de recogida: ' }</b>{ order.pickuptime }</p>
-          <p><b>{ order.namecustomer }</b><br /><b>{ 'Teléfono: ' }</b>{ order.telcustomer }</p>
+          <P><b>{ 'Hora aproximada de recogida:' }</b><span>{ order.pickuptime }</span></P>
+          <div>
+            <P><b>{ order.namecustomer }</b></P>
+            <P><b>{ 'Teléfono:' }</b><span>{ order.telcustomer }</span></P>
+          </div>
         </>
       }
       {
@@ -218,11 +239,11 @@ const OrderPanel: FC<OrderSectionProps> = (
               children={ 'Editar pedido' }
             />
             <Form css={ formStyles } noValidate>
-              <div>
+              <FieldWrapper>
                 <Label htmlFor={ 'given-money' }>{ 'Ingrese el dinero entregado por el cliente:' }</Label>
                 <Input id={ 'given-money' } />
-              </div>
-              <p>{ 'El cambio es: ' }<b>{ '4,00 €' }</b></p>
+              </FieldWrapper>
+              <P>{ 'El cambio es:' }<span><b>{ '4,00 €' }</b></span></P>
               <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>
             </Form>
           </>
