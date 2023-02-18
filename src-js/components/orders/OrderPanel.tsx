@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, FormEventHandler, useState } from 'react'
 import OrderProductsTable from './OrderProductsTable'
 import margins from '../../styles/margins'
 import Button from '../buttons/Button'
@@ -19,6 +19,7 @@ import OrderShape from '../../shapes/OrderShape'
 import Panel from '../Panel'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
+import useValid, { ValidEvents } from '../../hooks/useValid'
 
 const P = styled.p`
 
@@ -70,6 +71,7 @@ const OrderPanel: FC<OrderSectionProps> = (
   const [customerPhone, setCustomerPhone] = useState<string>('')
   const [pickUpTime, setPickUpTime] = useState<string>('')
   const [editMode, setEditMode] = React.useState<boolean>(false)
+  const [givenMoney, setGivenMoney] = useState<string>('')
 
   const handleExitClick = () => {
     setEditMode(false)
@@ -77,6 +79,39 @@ const OrderPanel: FC<OrderSectionProps> = (
 
   const handleEditClick = () => {
     setEditMode(true)
+  }
+
+  const {
+    validateField,
+    errors1,
+    commit: validateSubmit,
+  } = useValid(() => {
+
+  })
+
+  const handleChange: FormEventHandler<HTMLInputElement> = (e) => {
+    e.persist()
+
+    const value = e.currentTarget.value
+    const name = e.currentTarget.name
+
+    let event
+    if (e.type === 'change') {
+      event = ValidEvents.Change
+    }
+    if (e.type === 'blur') {
+      event = ValidEvents.Blur
+    }
+
+    if (name === 'given-money') {
+      setGivenMoney(value)
+      validateField({ name: 'given-money', value: givenMoney, event: event })
+    }
+  }
+
+  const handleSubmitCloseOrder: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
+    validateSubmit([{ name: 'given-money', value: givenMoney, event: ValidEvents.Submit }])
   }
 
   const doUpdateDraft = (addAnyway: boolean = false) => {
@@ -238,10 +273,14 @@ const OrderPanel: FC<OrderSectionProps> = (
               css={ css`align-self: end` }
               children={ 'Editar pedido' }
             />
-            <Form css={ formStyles } noValidate>
+            <Form css={ formStyles } onSubmit={ handleSubmitCloseOrder } noValidate>
               <FieldWrapper>
                 <Label htmlFor={ 'given-money' }>{ 'Ingrese el dinero entregado por el cliente:' }</Label>
-                <Input id={ 'given-money' } />
+                <Input
+                  id={ 'given-money' }
+                  onChange={ handleChange }
+                  onBlur={ handleChange }
+                />
               </FieldWrapper>
               <P>{ 'El cambio es:' }<span><b>{ '4,00 €' }</b></span></P>
               <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>
