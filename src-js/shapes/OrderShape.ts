@@ -10,7 +10,7 @@ type OrderShape = {
   telcustomer: string,
   pickuptime: string,
   codcustomer: number,
-  products?: (ProductShape & { amountproductorder: number })[],
+  products: (ProductShape & { amountproductorder: number })[],
 }
 
 export default OrderShape
