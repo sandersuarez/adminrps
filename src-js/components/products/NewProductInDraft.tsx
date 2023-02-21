@@ -19,6 +19,7 @@ import { AddProduct, ProductMessage, ProductMessageTypes } from '../../hooks/use
 import { isUndefined } from 'lodash'
 import { ProductReqData } from '../../shapes/ProductShape'
 import breakpoints from '../../styles/breakpoints'
+import NormalFontSpan from '../NormalFontSpan'
 
 const Container = styled.article`
   ${ breakpoints.tablet } {
@@ -207,7 +208,10 @@ const NewProductInDraft: FC<IProps> = (
           </div>
         </FieldWrapper>
         <FieldWrapper>
-          <Label htmlFor={ 'product-price' }>{ 'Precio:' }</Label>
+          <Label htmlFor={ 'product-price' }>
+            { 'Precio:' }
+            <NormalFontSpan>{'(máximo 3 cifras)' }</NormalFontSpan>
+          </Label>
           <div>
             <Input
               type={ 'text' }
