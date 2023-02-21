@@ -1,4 +1,4 @@
-import React, { FC, FormEventHandler, useState } from 'react'
+import React, { FC, FormEventHandler, useEffect, useState } from 'react'
 import OrderProductsTable from './OrderProductsTable'
 import margins from '../../styles/margins'
 import Button from '../buttons/Button'
@@ -12,7 +12,7 @@ import TitleWrapper from '../TitleWrapper'
 import ExitButton from '../buttons/ExitButton'
 import FieldWrapper from '../forms/FieldWrapper'
 import { EditDraft } from '../../hooks/useDrafts'
-import { assign, isEqual } from 'lodash'
+import { assign, isEqual, replace } from 'lodash'
 import Panels from '../../shapes/Panels'
 import { OrderMessage } from '../../hooks/useOrders'
 import OrderShape from '../../shapes/OrderShape'
@@ -20,6 +20,8 @@ import Panel from '../Panel'
 import styled from '@emotion/styled'
 import breakpoints from '../../styles/breakpoints'
 import useValid, { ValidEvents } from '../../hooks/useValid'
+import InputMessage from '../forms/InputMessage'
+import NormalFontSpan from '../NormalFontSpan'
 
 const P = styled.p`
 
@@ -67,11 +69,35 @@ const OrderPanel: FC<OrderSectionProps> = (
     order,
   }) => {
 
+  const formatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' })
+
   const [customerName, setCustomerName] = useState<string>('')
   const [customerPhone, setCustomerPhone] = useState<string>('')
   const [pickUpTime, setPickUpTime] = useState<string>('')
   const [editMode, setEditMode] = React.useState<boolean>(false)
-  const [givenMoney, setGivenMoney] = useState<string>('')
+
+  // noinspection SpellCheckingInspection
+  const [total, setTotal] = useState<number>(order !== undefined ?
+    order.products.reduce((acc, product) => {
+      return acc + parseFloat(product.priceproduct) * product.amountproductorder
+    }, 0)
+    : 0,
+  )
+
+  const calculateExchange = () => {
+
+    if (order === undefined) {
+      return '0,00'
+    }
+
+    let givenMoneyStandard = replace(givenMoney, /,/g, '.')
+    let givenMoneyNumeric = Number.parseFloat(givenMoneyStandard)
+
+    return formatter.format(givenMoneyNumeric - total)
+  }
+
+  const [givenMoney, setGivenMoney] = useState<string>('0,00')
+  const [exchange, setExchange] = useState<string>(calculateExchange())
 
   const handleExitClick = () => {
     setEditMode(false)
@@ -211,6 +237,21 @@ const OrderPanel: FC<OrderSectionProps> = (
     }
   }
 
+  useEffect(() => {
+    if (order !== undefined) {
+      setTotal(order.products !== undefined ?
+        order.products.reduce((acc, product) => {
+          return acc + parseFloat(product.priceproduct) * product.amountproductorder
+        }, 0)
+        : 0,
+      )
+    }
+  }, [order])
+
+  useEffect(() => {
+    setExchange(calculateExchange())
+  }, [total, givenMoney])
+
   return (
     <Panel>
       <TitleWrapper>
@@ -275,14 +316,23 @@ const OrderPanel: FC<OrderSectionProps> = (
             />
             <Form css={ formStyles } onSubmit={ handleSubmitCloseOrder } noValidate>
               <FieldWrapper>
-                <Label htmlFor={ 'given-money' }>{ 'Ingrese el dinero entregado por el cliente:' }</Label>
+                <Label htmlFor={ 'given-money' }>
+                  { 'Ingrese el dinero entregado por el cliente:' }
+                  <NormalFontSpan>{ '(máximo 3 cifras)' }</NormalFontSpan>
+                </Label>
                 <Input
+                  type={ 'text' }
                   id={ 'given-money' }
+                  name={ 'given-money' }
                   onChange={ handleChange }
                   onBlur={ handleChange }
+                  maxLength={ 6 }
+                  valid={ errors1['givenMoney'] === undefined }
+                  value={ givenMoney }
                 />
+                <InputMessage message={ errors1['givenMoney'] } />
               </FieldWrapper>
-              <P>{ 'El cambio es:' }<span><b>{ '4,00 €' }</b></span></P>
+              <P>{ 'El cambio es:' }<span><b>{ exchange }</b></span></P>
               <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>
             </Form>
           </>

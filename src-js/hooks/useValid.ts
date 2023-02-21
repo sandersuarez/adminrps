@@ -119,6 +119,20 @@ const useValid = (callback: () => void) => {
           }
           break
 
+        case 'given-money':
+          if (element.value.length == 0 &&
+            (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
+            assign(tmpErrors, { givenMoney: 'El dinero entregado es obligatorio' })
+          } else {
+            if (!/^\d{1,3}[,.]\d{0,2}$|^\d{1,3}$/g.test(element.value) &&
+              (element.event === ValidEvents.Submit || element.event === ValidEvents.Blur)) {
+              assign(tmpErrors, { givenMoney: 'El formato de la cifra es inválida' })
+            } else {
+              unset(tmpErrors, 'givenMoney')
+            }
+          }
+          break
+
         default:
           break
       }
