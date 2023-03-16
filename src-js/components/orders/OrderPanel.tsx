@@ -93,11 +93,15 @@ const OrderPanel: FC<OrderSectionProps> = (
     let givenMoneyStandard = replace(givenMoney, /,/g, '.')
     let givenMoneyNumeric = Number.parseFloat(givenMoneyStandard)
 
+    if (isNaN(givenMoneyNumeric)) {
+      return formatter.format(0)
+    }
+
     return formatter.format(givenMoneyNumeric - total)
   }
 
   const [givenMoney, setGivenMoney] = useState<string>('0,00')
-  const [exchange, setExchange] = useState<string>(calculateExchange())
+  const [exchange, setExchange] = useState<string>('0,00 €')
 
   const handleExitClick = () => {
     setEditMode(false)
@@ -252,6 +256,10 @@ const OrderPanel: FC<OrderSectionProps> = (
     setExchange(calculateExchange())
   }, [total, givenMoney])
 
+  useEffect(() => {
+    validateField({ name: 'exchange', value: exchange, event: ValidEvents.Change })
+  }, [exchange])
+
   return (
     <Panel>
       <TitleWrapper>
@@ -330,7 +338,7 @@ const OrderPanel: FC<OrderSectionProps> = (
                   valid={ errors1['givenMoney'] === undefined }
                   value={ givenMoney }
                 />
-                <InputMessage message={ errors1['givenMoney'] } />
+                <InputMessage message={ errors1['givenMoney'] !== undefined ? errors1['givenMoney'] : errors1['exchange'] } />
               </FieldWrapper>
               <P>{ 'El cambio es:' }<span><b>{ exchange }</b></span></P>
               <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>

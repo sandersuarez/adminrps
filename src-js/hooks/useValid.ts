@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { assign, forEach, merge, unset } from 'lodash'
+import { assign, forEach, merge, replace, unset } from 'lodash'
 
 export enum ValidEvents { Change = 'Change', Blur = 'Blur', Submit = 'Submit'}
 
@@ -89,7 +89,7 @@ const useValid = (callback: () => void) => {
           if (element.value.length == 0 && element.event === ValidEvents.Submit) {
             assign(tmpErrors, { customerName: 'El nombre del cliente es obligatorio' })
           } else {
-           unset(tmpErrors, 'customerName')
+            unset(tmpErrors, 'customerName')
           }
           break
 
@@ -130,6 +130,19 @@ const useValid = (callback: () => void) => {
             } else {
               unset(tmpErrors, 'givenMoney')
             }
+          }
+          break
+
+        case 'exchange':
+
+          let exchangeStandard = replace(element.value, /,/g, '.')
+          let exchangeNumeric = Number.parseFloat(exchangeStandard)
+
+          if ((!isNaN(exchangeNumeric) && exchangeNumeric < 0) &&
+            (element.event === ValidEvents.Submit || element.event === ValidEvents.Change)) {
+            assign(tmpErrors, { exchange: 'El dinero entregado es insuficiente' })
+          } else {
+            unset(tmpErrors, 'exchange')
           }
           break
 
