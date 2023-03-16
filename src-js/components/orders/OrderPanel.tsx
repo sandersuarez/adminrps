@@ -11,10 +11,10 @@ import Options from '../buttons/Options'
 import TitleWrapper from '../TitleWrapper'
 import ExitButton from '../buttons/ExitButton'
 import FieldWrapper from '../forms/FieldWrapper'
-import { EditDraft } from '../../hooks/useDrafts'
+import { DraftMessageTypes, EditDraft } from '../../hooks/useDrafts'
 import { assign, isEqual, replace } from 'lodash'
 import Panels from '../../shapes/Panels'
-import { OrderMessage } from '../../hooks/useOrders'
+import { OrderMessage, OrderMessageTypes } from '../../hooks/useOrders'
 import OrderShape from '../../shapes/OrderShape'
 import Panel from '../Panel'
 import styled from '@emotion/styled'
@@ -22,6 +22,8 @@ import breakpoints from '../../styles/breakpoints'
 import useValid, { ValidEvents } from '../../hooks/useValid'
 import InputMessage from '../forms/InputMessage'
 import NormalFontSpan from '../NormalFontSpan'
+import Alert from '../Alert'
+import AlertTypes from '../../shapes/AlertTypes'
 
 const P = styled.p`
 
@@ -137,6 +139,10 @@ const OrderPanel: FC<OrderSectionProps> = (
       setGivenMoney(value)
       validateField({ name: 'given-money', value: givenMoney, event: event })
     }
+  }
+
+  const handleSubmitEditOrder: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
   }
 
   const handleSubmitCloseOrder: FormEventHandler<HTMLFormElement> = (e) => {
@@ -269,81 +275,134 @@ const OrderPanel: FC<OrderSectionProps> = (
         </ExitButton>
       </TitleWrapper>
       {
-        order !== undefined &&
-        <>
-          <P><b>{ 'Hora aproximada de recogida:' }</b><span>{ order.pickuptime }</span></P>
-          <div>
-            <P><b>{ order.namecustomer }</b></P>
-            <P><b>{ 'Teléfono:' }</b><span>{ order.telcustomer }</span></P>
-          </div>
-        </>
+        message !== undefined && message.type === OrderMessageTypes.Error &&
+        <Alert message={ message.content + '. Contacte con el administrador.' }
+               type={ AlertTypes.Error } />
       }
       {
-        editMode ?
-          <Options>
-            <Button
-              customType={ ButtonTypes.Secondary }
-              onClick={ handleOpenSecondSidePanel }
-            >
-              { 'Cambiar cliente' }
-            </Button>
-            <Button customType={ ButtonTypes.Secondary }>{ 'Nuevo cliente' }</Button>
-          </Options>
-          :
-          null
+        message !== undefined && message.type === OrderMessageTypes.Warning &&
+        <Alert message={ message.content } type={ AlertTypes.Warning } />
       }
       {
         order !== undefined &&
-        <OrderProductsTable orderProducts={ order.products } />
-      }
-      {
-        editMode ?
-          <>
-            <Button
-              customType={ ButtonTypes.Primary }
-              css={ css`align-self: start` }
-              children={ 'Añadir producto' }
-            />
-            <FieldWrapper css={ css`margin-top: ${ margins.mobile.mediumVertical }` }>
-              <Label htmlFor={ 'pick-up-hour' }>{ 'Hora aproximada de recogida:' }</Label>
-              <Input id={ 'pick-up-hour' } />
-            </FieldWrapper>
-            <Options css={ css`margin-top: ${ margins.mobile.bigVertical }` }>
-              <Button customType={ ButtonTypes.Primary }>{ 'Guardar cambios' }</Button>
-              <Button customType={ ButtonTypes.Secondary }>{ 'Cancelar' }</Button>
-              <Button customType={ ButtonTypes.Danger }>{ 'Cancelar pedido' }</Button>
-            </Options>
-          </>
-          :
-          <>
-            <Button
-              customType={ ButtonTypes.Secondary }
-              onClick={ handleEditClick }
-              css={ css`align-self: end` }
-              children={ 'Editar pedido' }
-            />
-            <Form css={ formStyles } onSubmit={ handleSubmitCloseOrder } noValidate>
-              <FieldWrapper>
-                <Label htmlFor={ 'given-money' }>
-                  { 'Ingrese el dinero entregado por el cliente:' }
-                  <NormalFontSpan>{ '(máximo 3 cifras)' }</NormalFontSpan>
-                </Label>
-                <Input
-                  type={ 'text' }
-                  id={ 'given-money' }
-                  name={ 'given-money' }
-                  onChange={ handleChange }
-                  onBlur={ handleChange }
-                  maxLength={ 6 }
-                  valid={ errors1['givenMoney'] === undefined }
-                  value={ givenMoney }
-                />
-                <InputMessage message={ errors1['givenMoney'] !== undefined ? errors1['givenMoney'] : errors1['exchange'] } />
-              </FieldWrapper>
-              <P>{ 'El cambio es:' }<span><b>{ exchange }</b></span></P>
-              <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>
-            </Form>
-          </>
+        (
+          editMode ?
+            <>
+              <Form onSubmit={ handleSubmitEditOrder }>
+                <FieldWrapper>
+                  <Label htmlFor={ 'customer-name' }>{ 'Nombre del cliente:' }</Label>
+                  <Input
+                    type={ 'text' }
+                    name={ 'customer-name' }
+                    id={ 'customer-name' }
+                    maxLength={ 60 }
+                    onChange={ handleChange }
+                    onBlur={ handleChange }
+                    value={ customerName }
+                    disabled={ disableCustomerInputs }
+                    valid={ errors1['customerName'] === undefined }
+                  />
+                  <InputMessage message={ errors1['customerName'] } />
+                </FieldWrapper>
+                <FieldWrapper>
+                  <Label htmlFor={ 'customer-phone' }>{ 'Teléfono del cliente:' }</Label>
+                  <Input
+                    type={ 'tel' }
+                    name={ 'customer-phone' }
+                    id={ 'customer-phone' }
+                    maxLength={ 9 }
+                    onChange={ handleChange }
+                    onBlur={ handleChange }
+                    value={ customerPhone }
+                    disabled={ disableCustomerInputs }
+                    valid={ errors1['customerPhone'] === undefined }
+                  />
+                  <InputMessage message={ errors1['customerPhone'] } />
+                </FieldWrapper>
+                <Options>
+                  <Button
+                    customType={ ButtonTypes.Primary }
+                    onClick={ searchCustomer }
+                  >
+                    { 'Buscar cliente' }
+                  </Button>
+                  {
+                    disableCustomerInputs &&
+                    <Button customType={ ButtonTypes.Primary } onClick={ resetCustomer }>{ 'Nuevo cliente' }</Button>
+                  }
+                </Options>
+                <OrderProductsTable draftProducts={ draft?.products } css={ css`max-width: 75rem` } />
+                <InputMessage message={ errors1['products'] } />
+                <Button customType={ ButtonTypes.Primary }
+                        onClick={ searchProducts }>{ 'Seleccionar productos' }</Button>
+                <FieldWrapper css={ hourFieldStyles }>
+                  <Label htmlFor={ 'pick-up-time' }>{ 'Hora aproximada de recogida:' }</Label>
+                  <Input
+                    type={ 'time' }
+                    name={ 'pick-up-time' }
+                    id={ 'pick-up-time' }
+                    value={ pickUpTime }
+                    onChange={ handleChange }
+                    onBlur={ handleChange }
+                    valid={ errors1['pickUpTime'] === undefined }
+                  />
+                  <InputMessage message={ errors1['pickUpTime'] } />
+                </FieldWrapper>
+                <Options>
+                  {
+                    draft !== undefined &&
+                    <Button
+                      customType={ ButtonTypes.Danger }
+                      onClick={ (e) => {
+                        e.preventDefault()
+                        openDeleteModal()
+                      } }
+                    >
+                      { 'Eliminar borrador' }
+                    </Button>
+                  }
+                  <Button customType={ ButtonTypes.Primary }>{ 'Guardar pedido' }</Button>
+                </Options>
+              </Form>
+            </>
+            :
+            <>
+              <P><b>{ 'Hora aproximada de recogida:' }</b><span>{ order.pickuptime.substring(0, 5) }</span></P>
+              <div>
+                <P><b>{ order.namecustomer }</b></P>
+                <P><b>{ 'Teléfono:' }</b><span>{ order.telcustomer }</span></P>
+              </div>
+              <OrderProductsTable orderProducts={ order.products } />
+              <Button
+                customType={ ButtonTypes.Secondary }
+                onClick={ handleEditClick }
+                css={ css`align-self: end` }
+                children={ 'Editar pedido' }
+              />
+              <Form css={ formStyles } onSubmit={ handleSubmitCloseOrder } noValidate>
+                <FieldWrapper>
+                  <Label htmlFor={ 'given-money' }>
+                    { 'Ingrese el dinero entregado por el cliente:' }
+                    <NormalFontSpan>{ '(máximo 3 cifras)' }</NormalFontSpan>
+                  </Label>
+                  <Input
+                    type={ 'text' }
+                    id={ 'given-money' }
+                    name={ 'given-money' }
+                    onChange={ handleChange }
+                    onBlur={ handleChange }
+                    maxLength={ 6 }
+                    valid={ errors1['givenMoney'] === undefined }
+                    value={ givenMoney }
+                  />
+                  <InputMessage
+                    message={ errors1['givenMoney'] !== undefined ? errors1['givenMoney'] : errors1['exchange'] } />
+                </FieldWrapper>
+                <P>{ 'El cambio es:' }<span><b>{ exchange }</b></span></P>
+                <Button customType={ ButtonTypes.Primary }>{ 'Entregar pedido' }</Button>
+              </Form>
+            </>
+        )
       }
     </Panel>
   )
