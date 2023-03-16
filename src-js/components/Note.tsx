@@ -137,7 +137,7 @@ const Note: FC<NoteProps> = (
         <h3>{ 'Nº ' + order.numdayorder }</h3>
         <p>{ order.namecustomer }</p>
         <p>{ order.telcustomer }</p>
-        <PickUpTime>{ order.hourorder.substring(0, 5) }</PickUpTime>
+        <PickUpTime>{ order.pickuptime.substring(0, 5) }</PickUpTime>
         {
           index < 4 &&
           <OrderProductsTable
